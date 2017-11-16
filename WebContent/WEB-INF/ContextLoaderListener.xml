@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+       xmlns:tx="http://www.springframework.org/schema/tx"  
+       xmlns:aop="http://www.springframework.org/schema/aop"  
+       xmlns:context="http://www.springframework.org/schema/context"  
+       xmlns:mvc="http://www.springframework.org/schema/mvc"  
+       xsi:schemaLocation="http://www.springframework.org/schema/beans    
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd    
+     http://www.springframework.org/schema/tx    
+     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd    
+     http://www.springframework.org/schema/aop    
+     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd    
+     http://www.springframework.org/schema/mvc  
+     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd  
+     http://www.springframework.org/schema/context    
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd">  
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/risk?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+		<!-- <property name="minIdle" value="${jdbc.pool_size_min}" />
+		<property name="maxActive" value="${jdbc.pool_size_max}" /> -->
+	</bean> 
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+				<prop key="hibernate.show_sql">
+					true
+				</prop>
+				<prop key="hibernate.hbm2ddl.auto">
+					update
+				</prop>
+				<prop key="hibernate.auto">
+					none
+				</prop>
+				<prop key="hibernate.jdbc.batch_size">
+					50
+				</prop>
+				<prop key="hibernate.jdbc.fetch_size">
+					100
+				</prop>
+				 <prop key="hibernate.query.factory_class">
+					org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory
+				</prop>
+			</props>
+		</property>
+		<property name="annotatedClasses">
+			<list>		
+			</list>
+		</property>
+		<property name="mappingLocations">
+			<list>
+				<!--<value>classpath*:/model/oracle/**/*.hbm.xml</value>
+				<value>classpath*:/jbpm.task.hbm.xml</value>
+				<value>classpath*:/jbpm.repository.hbm.xml</value>
+				<value>classpath*:/config/jbpm.history.hbm.xml</value>
+				<value>classpath*:/jbpm.execution.hbm.xml</value>-->
+			</list>
+		</property>
+		<property name="packagesToScan">
+            <list>
+               	<value>com.ling2.**.model.**</value>
+               	<value>org.magic7.**.model.**</value>
+               	<value>org.magic7.**.domain.**</value>
+            </list>
+         </property>
+	</bean>
+		
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<aop:config proxy-target-class="true">
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.ling2..*.service..*.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.ling2..*.context..*.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.magic7..*.service..*.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.magic7..*.context..*.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* velox.service..*.*(..))"/>
+	</aop:config>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+		<tx:method name="recycle*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="publish*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="audit*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="dispatch*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="import*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="gen*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="invalid*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="valid*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="clean*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="save*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="insert*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="change*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="create*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="delete*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="del*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="update*"  propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="remove*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="batch*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="submint*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="submit*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="suspend*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="auto*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="add*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="clone*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="send*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="exec*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="syn*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="authorize*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="authorizate*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="synchronize*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="generate*" propagation="REQUIRED" rollback-for="BusinessException" />
+		<tx:method name="calculate*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="agency*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="grante*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="register*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="deploy*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="set*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="init*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="process*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<!-- workflow start -->
+		<tx:method name="start*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="forward*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="withdrawTask*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="claim*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="release*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="suspend*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="resume*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="complete*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="batch*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="rollbackTask*" propagation="REQUIRED" rollback-for="BusinessException"  />		
+		<tx:method name="deploy*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<tx:method name="native*" propagation="REQUIRED" rollback-for="BusinessException"  />
+		<!-- workflow end -->
+		<tx:method name="current*" read-only="true" />
+		<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+	
+	
+</beans>

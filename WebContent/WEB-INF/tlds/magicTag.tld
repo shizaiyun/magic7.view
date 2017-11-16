@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE taglib
+    PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+    "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<tlib-version>1.0</tlib-version>
+	<jsp-version>1.2</jsp-version>
+	<short-name>Magic Tag Library</short-name>	
+	<description>
+		The tag is to create magicView on jsp
+	</description>  
+     
+    <!--**********************************************-->
+    <!--             magicView Tag                  -->
+    <!--**********************************************-->
+	<tag>
+		<name>magicView</name>
+		<tag-class>org.magic7.view.tag.MagicViewTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The tag is to create magicView on jsp
+		</description>
+
+		<attribute>
+            <name>space</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the space            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>region</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the region            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>view</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the view            	            	
+            </description>
+        </attribute>
+        
+        <attribute>
+            <name>destination</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the destination            	            	
+            </description>
+        </attribute> 
+     </tag> 
+     
+     
+     <!--**********************************************-->
+    <!--             MagicListView Tag                  -->
+    <!--**********************************************-->
+	<tag>
+		<name>magicListView</name>
+		<tag-class>org.magic7.view.tag.MagicListViewTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The tag is to create magicListView on jsp
+		</description>
+
+		<attribute>
+            <name>space</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the space            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>region</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the region            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>view</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the view            	            	
+            </description>
+        </attribute>
+        
+        <attribute>
+            <name>destination</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the destination            	            	
+            </description>
+        </attribute> 
+     </tag> 
+     
+    <!--**********************************************-->
+    <!--             MagicDetail Tag                  -->
+    <!--**********************************************-->
+	<tag>
+		<name>magicDetail</name>
+		<tag-class>org.magic7.view.tag.MagicDetailTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The tag is to create MagicDetail on jsp
+		</description>
+
+		<attribute>
+            <name>space</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the space            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>objectId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the objectId            	            	
+            </description>
+        </attribute>
+     </tag>
+     
+    <!--**********************************************-->
+    <!--             MagicRegion Tag                  -->
+    <!--**********************************************-->
+     <tag>
+		<name>magicRegion</name>
+		<tag-class>org.magic7.view.tag.MagicRegionTag</tag-class>
+		<body-content>JSP</body-content>
+		<description>
+			The tag is to create Region on jsp
+		</description>
+
+		<attribute>
+            <name>space</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the space            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>region</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the region            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>objectId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the objectId            	            	
+            </description>
+        </attribute> 
+     </tag> 
+           		
+</taglib>
