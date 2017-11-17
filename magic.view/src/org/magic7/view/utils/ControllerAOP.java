@@ -1,6 +1,7 @@
 package org.magic7.view.utils;
 
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.magic7.view.module.ResultBean;
 
 public class ControllerAOP {
 	
