@@ -1,6 +1,5 @@
-<%@page import="org.magic7.core.domain.MagicSpace"%>
+<%@ page import="org.magic7.core.domain.MagicSpace"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="m" uri="/magicTag.tld" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,13 +10,14 @@
 		window.location="listSpaces";
 	}
 </script>
-<title>space list</title>
+<title>添加空间</title>
 <%
 	request.setAttribute("horizontal", MagicSpace.TabLayout.HORIZONTAL);
 	request.setAttribute("vertical", MagicSpace.TabLayout.VERTICAL);
 %>
 </head>
 <body>
+<div style="background-color: #11111;">编辑空间</div>
 <form action="saveSpace" method="get" id="queryForm">
 	<input type="hidden" name="spaceId" value="${space.id }">
 	<table style="width: 100%" border=1>
@@ -47,7 +47,10 @@
 	</div>
 </form>
 <hr>
-
+${space.id }
+<jsp:include page="listRegions.jsp" flush="true">
+	<jsp:param name="spaceId" value="${space.id }" />
+</jsp:include>
 
 </body>
 
