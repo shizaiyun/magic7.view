@@ -79,6 +79,11 @@
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
+
+.mainArea_title {
+ 	background-color: #555555;
+}  
+
 	h2 {
                 border: solid cornflowerblue 1px;
                 height: 28px;
@@ -117,8 +122,7 @@
 .lib_Menu li{display:block;cursor:pointer;width:114px;color:#949694;font-weight:bold; margin-bottom:2px;height:25px;line-height:25px; background-color:#E4F2FD}
 .lib_Menu li.hover{padding:0px;background:#fff;width:116px;border:1px solid #95C9E1; border-right:0;color:#739242;height:25px;line-height:25px;}
 .lib_Content{margin-top:0px; border-top:none;padding:20px; border-left:0; margin-left:130px;}
-
-            
+         
 </style>
 
 <script type="text/javascript">
@@ -161,7 +165,6 @@ function changeVerticalTab(tab) {
 </script>
 </head>
 <body>
-<div style="background-color: #555555;">案件详情页面</div>
 <m:magicDetail space="${space }" objectId="${objectId }"></m:magicDetail>
 <hr>
 

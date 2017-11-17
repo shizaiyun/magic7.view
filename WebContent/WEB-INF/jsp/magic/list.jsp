@@ -82,7 +82,9 @@
 .s1 {
  background-color: yellow;
 }
-
+.queryArea_title {
+ background-color: #555555;
+}
 </style>
 
 <script type="text/javascript">
@@ -228,7 +230,6 @@ function deleteItem(){
 </script>
 </head>
 <body>
-<div style="background-color: #555555;">案件清单</div>
 <form action="" method="post" id="queryForm">
 	<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1"></m:magicView>
 	<div style="text-align: center;">

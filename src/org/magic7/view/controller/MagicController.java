@@ -25,7 +25,7 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping(value = "/magic")
 public class MagicController {
-	private static final Integer PAGE_SIZE = 2;
+	private static final Integer PAGE_SIZE = 10;
 	
 	/**
 	 * 初始化列表页面
