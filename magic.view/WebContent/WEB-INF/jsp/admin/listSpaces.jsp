@@ -11,7 +11,7 @@
 </head>
 <body>
 <form action="" method="get" id="queryForm">
-	<input type="text" name="spaceName" value="${spaceName }"></input>
+	按名称查询：<input type="text" name="spaceName" value="${spaceName }"></input>
 	<div style="text-align: center;">
 		<input class="button" type="submit" value="查询" >
 		<input class="button" type="reset" value="重置">
@@ -27,11 +27,11 @@
 	<tr>
 		<td>空间名称</td>
 		<td>空间说明</td>
-		<td>空间分区</td>
+		<td>空间分隔符</td>
 	</tr>
 	<c:forEach var="space" items="${spaces }">
 		<tr>
-			<td>${space.name}</td>
+			<td><a href="showSpace?spaceId=${space.id }">${space.name}</a></td>
 			<td>${space.description}</td>
 			<td>${space.partition}</td>
 		</tr>
