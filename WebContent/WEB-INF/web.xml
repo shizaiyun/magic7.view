@@ -14,7 +14,7 @@
     <listener-class>org.magic7.utils.SpringContextUtil</listener-class>
   </listener>
   <listener>
-    <listener-class>org.magic7.utils.RegionClasGenerateUtil</listener-class>
+    <listener-class>org.magic7.view.listener.RegionClassGenerateListener</listener-class>
   </listener>
   <filter>
     <filter-name>CharacterEncodingFilter</filter-name>

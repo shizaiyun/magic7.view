@@ -64,7 +64,7 @@
     <bean id="controllerAOP" class="org.magic7.view.utils.ControllerAOP" />  
     <aop:config>  
         <aop:aspect id="aspect" ref="controllerAOP">  
-            <aop:pointcut id="target" expression="execution(public org.magic7.view.utils.ResultBean *(..))" />
+            <aop:pointcut id="target" expression="execution(public org.magic7.view.module.ResultBean *(..))" />
             <aop:around method="handlerControllerMethod"  pointcut-ref="target"/> 
         </aop:aspect>  
     </aop:config>
