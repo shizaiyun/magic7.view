@@ -28,12 +28,14 @@
 		<td>空间名称</td>
 		<td>空间说明</td>
 		<td>空间分隔符</td>
+		<td>是否有效</td>
 	</tr>
 	<c:forEach var="space" items="${spaces }">
 		<tr>
 			<td><a href="showSpace?spaceId=${space.id }">${space.name}</a></td>
 			<td>${space.description}</td>
 			<td>${space.partition}</td>
+			<td>${space.valid}</td>
 		</tr>
 	</c:forEach>
 </table>

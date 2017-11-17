@@ -33,6 +33,12 @@
 					<option <c:if test="${space.tabLayout eq vertical.name }">selected</c:if> value ="${vertical.name }">垂直分布</option>
 				</select>
 			</td>
+			<td>是否有效：
+				<select name="valid">
+					<option <c:if test="${space.valid eq true}">selected</c:if> value ="true">是</option>
+					<option <c:if test="${space.valid eq false}">selected</c:if> value ="false">否</option>
+				</select>
+			</td>
 		</tr>
 	</table>
 	<div style="text-align: center;">
