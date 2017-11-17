@@ -65,9 +65,9 @@ public class MagicController {
 		String listView = base.getString("listView");
 		Integer currentPage	 = base.getInt("currentPage");
 		JSONObject criteria = (JSONObject) requestParm.get("criteria");
-		List<MagicDimension> queryConditions = MagicSpaceHandler.createQueryCondition(space, region, criteria);
-		List<MagicRegionRow> rowInfos = MagicSpaceHandler.listRow(space, region, listView, null, null, true,queryConditions, " id ", (currentPage-1)*PAGE_SIZE, PAGE_SIZE);
-		Integer totalCount =  MagicSpaceHandler.listRowCount(space, region, null, null, true, queryConditions);
+		List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region, criteria);
+		List<MagicRegionRow> rowInfos = MagicSpaceHandler.listRow(space, region, listView, null, null, true,searchCriterias, " id ", (currentPage-1)*PAGE_SIZE, PAGE_SIZE);
+		Integer totalCount =  MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
 		PageBean<List<MagicRegionRow>> pageBean = new PageBean<>(currentPage,PAGE_SIZE, totalCount, rowInfos);
 		return new ResultBean<PageBean<List<MagicRegionRow>>>(pageBean);
 	}
