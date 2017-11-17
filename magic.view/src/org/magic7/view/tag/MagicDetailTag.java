@@ -7,8 +7,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.magic7.core.service.MagicService;
-import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.view.utils.MagicTagUtil;
 
 
@@ -18,7 +16,6 @@ public final class MagicDetailTag extends TagSupport {
 	 * 序列化
 	 */
 	private static final long serialVersionUID = -137059850317165619L;
-	public static MagicService service = MagicServiceFactory.getLawService();
 	HttpSession session;
 	private String space = null;
 	private String objectId = null;

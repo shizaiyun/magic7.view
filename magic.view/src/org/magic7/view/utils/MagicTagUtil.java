@@ -16,7 +16,7 @@ import org.magic7.core.service.MagicSpaceHandler;
 import org.springframework.util.CollectionUtils;
 
 public class MagicTagUtil {
-	public static MagicService service = MagicServiceFactory.getLawService();
+	public static MagicService service = MagicServiceFactory.getMagicService();
 	public static String getMagicRegionView(String space, String region, String view, Integer destination) {
 		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
 		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
