@@ -5,15 +5,17 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<script>
+	function addItem() {
+		window.location="showRegion?spaceId=${spaceId}&spaceName=${spaceName}";
+	}
+</script>
 <title>space list</title>
-
 </head>
 <body>
 <div style="background-color: #11111;">编辑空间分区</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
-	<input class="button" type="button" value="修改" onclick="modifyItem()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
@@ -24,7 +26,7 @@
 	</tr>
 	<c:forEach var="region" items="${spaceRegions }">
 		<tr>
-			<td><a href="showRegion?regionId=${region.id }">${region.name}</a></td>
+			<td><a href="showRegion?regionId=${region.id }&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${region.name}</a></td>
 			<td>${region.description}</td>
 			<td>${region.multiply}</td>
 		</tr>
