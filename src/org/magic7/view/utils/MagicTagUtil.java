@@ -50,7 +50,7 @@ public class MagicTagUtil {
 	public static String getMagicDetail(String space,String  contextPath,String objectId) {
 		StringBuffer html = new StringBuffer();
 		MagicSpace magicSpace = service.getSpaceByName(space);
-		List<MagicSpaceRegion> spaceRegions = service.listSpaceRegion(magicSpace.getId(), " seq ", 0, 1000);
+		List<MagicSpaceRegion> spaceRegions = service.listSpaceRegion(space,magicSpace.getId(), " seq ", 0, 1000);
 		MagicSpaceRegion mainRegion = null;
 		List<MagicSpaceRegion> tabRegions = new ArrayList<>();
 		for (MagicSpaceRegion magicSpaceRegion : spaceRegions) {

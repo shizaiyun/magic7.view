@@ -130,6 +130,28 @@ public class MagicController {
 		saveRow(rowData);
 		return new ResultBean<Boolean>(true);
 	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/submitRow")
+	@ResponseBody
+	public ResultBean<Boolean> submitRow(@RequestBody String parm) throws Exception {
+		JSONObject rowData = JSONObject.fromObject(parm);
+		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"));
+		Iterator<String> iterator = rowData.keys();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			if(key.equals("rowId")) {
+				continue;
+			}
+			String value = rowData.getString(key);
+			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);
+			item.setStrValue(value);
+		}
+		row.setValid(true);
+		MagicSpaceHandler.executeTrigger(row, "onSubmit", null);
+		MagicSpaceHandler.saveRow(row);
+		return new ResultBean<Boolean>(true);
+	}
 
 	/**
 	 * 删除整个object
