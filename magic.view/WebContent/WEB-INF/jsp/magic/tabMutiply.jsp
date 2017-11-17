@@ -13,7 +13,7 @@
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/normalize.css'/>">
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/pagination.css'/>">
 
-<title>tabDetail</title>
+<title>tabMutiply</title>
 <style type="text/css">
 			span.title { 
 					width:80px; 
@@ -112,7 +112,26 @@
  
   .hiddenTr_visibility{
  	visibility:hidden;
- }          
+ }
+
+ .toolbar{
+ 	background-color: #E7E7E7;
+ 	height: 30px;
+ }       
+ .toobar_title{
+ 	font-size: 12px;
+    color: #333333;
+    height: 30px;
+    line-height: 30px;
+ 	padding-left: 10px;
+ }    
+ .toobar_button{
+ 	padding-right: 10px;
+ 	position: absolute;
+    right: 5px;
+    vertical-align: middle;
+    margin-top: 2px;
+ }         
 </style>
 
 <script type="text/javascript">
@@ -309,8 +328,5 @@ function checkAll() {
 </script>
 </head>
 <body>
-<div align="right"><input class="button" type="button" value="新增" onclick="addRow()" /><input class="button" type="button" value="删除" onclick="deleteRow()" /><input class="button" type="button" value="保存" onclick="saveRows()"/></div>
-<table class="gridTable" style="width: 100%" id="gridTable">
 	<m:magicRegion space="${space }" region="${region }" objectId="${objectId }"></m:magicRegion>
-</table>
 </html>

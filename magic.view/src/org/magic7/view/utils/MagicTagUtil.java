@@ -22,37 +22,17 @@ public class MagicTagUtil {
 		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
 		StringBuffer html = new StringBuffer();
 		if(multiply) {
-			html.append(assembleRegionMultiply(dimensions));
+			html.append(assembleRegionMultiply(dimensions,null));
 		}else {
+			if(StringUtils.isNotBlank(view)) {
+				MagicSpace magicSpace = service.getSpaceByName(space);
+				html.append("<div class=\"queryArea_title\">"+magicSpace.getDescription()+"</div>");
+			}
 			html.append(assembleRegionSingle(dimensions,destination,null));
 		}
 		return html.toString();
 	}
 	
-	private static Object assembleRegionMultiply(List<MagicDimension> dimensions) {
-		StringBuffer html = new StringBuffer();
-		if(!CollectionUtils.isEmpty(dimensions)) {
-			html.append("<thead><tr id=\"title\"><th style=\"width: 10px;text-align: center;\"><input id=\"checkAll\"  type=\"checkbox\" onclick=\"checkAll()\" /></th>");
-			for (MagicDimension dimension : dimensions) {
-				String requiredStr = StringUtils.EMPTY;
-				if(dimension.getRequired()) {
-					requiredStr="<span style=\"color:red\">*</span>";
-				}
-				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+requiredStr+dimension.getDescription()+"</th>");
-			}
-			html.append("</tr>");
-			
-			html.append("<tr id=\"hiddenTr\" class=\"hiddenTr_displayNone\"><td style=\"width: 10px;text-align: center;\"><input type=\"checkbox\" name=\"rowId\" value=\"\" /></td>");
-			for (MagicDimension dimension : dimensions) {
-				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
-				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
-				html.append("<td  name=\""+dimension.getDisplayName()+"\">"+input+"</td>");
-			}
-			html.append("</tr></thead>");
-		}
-		return html.toString();
-	}
 
 	public static String getMagicListView(String space, String region, String view, Integer destination) {
 		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
@@ -63,36 +43,6 @@ public class MagicTagUtil {
 				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+dimension.getDescription()+"</th>");
 			}
 			html.append("</tr></thead>");
-		}
-		return html.toString();
-	}
-	
-	public static String getMagicRegion(String space, String region, String objectId) {
-		Integer destination = MagicDimension.Destination.FOR_DATA.getCode();
-		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
-		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,destination);
-		StringBuffer html = new StringBuffer();
-		if(multiply) {
-			html.append(assembleRegionMultiply(dimensions));
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
-			if(!CollectionUtils.isEmpty(rows)&& !CollectionUtils.isEmpty(dimensions)) {
-				for (MagicRegionRow row : rows) {
-					html.append("<tr><td style=\"width: 10px;text-align: center;\"><input  type=\"checkbox\" name=\"rowId\" value=\""+row.getId()+"\" /></td>");
-					for (MagicDimension dimension : dimensions) {
-						String displayName = dimension.getDisplayName();
-						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-						MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
-						MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-						String input = getInput(pageType, region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
-						html.append("<td>"+input+"</td>");
-					}
-					html.append("</tr>");
-				}
-			}
-		}else {
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
-			MagicRegionRow row= rows.get(0);
-			html.append(assembleRegionSingle(dimensions,destination,row));
 		}
 		return html.toString();
 	}
@@ -112,7 +62,7 @@ public class MagicTagUtil {
 			}
 		}
 		if(mainRegion!=null) {
-			html.append("<div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+mainRegion.getSpaceName()+"&region="+mainRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 200px;width:100%\"  ></iframe></div>");
+			html.append("<div class=\"mainArea_title\">"+mainRegion.getDescription()+"</div><div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+mainRegion.getSpaceName()+"&region="+mainRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 200px;width:100%\"  ></iframe></div>");
 		}
 		
 		MagicSpace.TabLayout layout = MagicSpace.TabLayout.getTabLayout(magicSpace.getTabLayout());
@@ -123,6 +73,24 @@ public class MagicTagUtil {
 		}
 		return html.toString();
 	}
+	
+	public static String getMagicRegion(String space, String region, String objectId) {
+		Integer destination = MagicDimension.Destination.FOR_DATA.getCode();
+		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
+		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,destination);
+		StringBuffer html = new StringBuffer();
+		if(multiply) {
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
+			html.append(assembleRegionMultiply(dimensions,rows));
+			
+		}else {
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
+			MagicRegionRow row= rows.get(0);
+			html.append(assembleRegionSingle(dimensions,destination,row));
+		}
+		return html.toString();
+	}
+	
 	
 	private static String assembleRegionTabHorizontal(List<MagicSpaceRegion> tabRegions,String  contextPath,String objectId) {
 		StringBuffer html = new StringBuffer();
@@ -227,6 +195,50 @@ public class MagicTagUtil {
 					html.append("<div style=\"text-align: center;padding-right: 10px\"><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveItem()\"/><input class=\"button\" type=\"button\" value=\"提交\" onclick=\"submitItem()\"/><input class=\"button\" type=\"button\" value=\"删除\" onclick=\"deleteItem()\"/><input class=\"button\" type=\"button\" value=\"返回\" onclick=\"closeDialog()\"/></div>");
 				}
 			}
+		}
+		return html.toString();
+	}
+	
+	private static Object assembleRegionMultiply(List<MagicDimension> dimensions,List<MagicRegionRow> rows) {
+		StringBuffer html = new StringBuffer();
+		if(!CollectionUtils.isEmpty(dimensions)) {
+			MagicSpaceRegion region = service.getSpaceRegion(dimensions.get(0).getSpaceName(), dimensions.get(0).getSpaceRegionName());
+			html.append("<div class=\"toolbar\"><span class=\"toobar_title\">"+region.getDescription()+"</span><span class=\"toobar_button\"><input class=\"button\" type=\"button\" value=\"新增\" onclick=\"addRow()\" /><input class=\"button\" type=\"button\" value=\"删除\" onclick=\"deleteRow()\" /><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveRows()\"/></span></div>");
+			html.append("<table class=\"gridTable\" style=\"width: 100%\" id=\"gridTable\">");
+			html.append("<thead><tr id=\"title\"><th style=\"width: 10px;text-align: center;\"><input id=\"checkAll\"  type=\"checkbox\" onclick=\"checkAll()\" /></th>");
+			for (MagicDimension dimension : dimensions) {
+				String requiredStr = StringUtils.EMPTY;
+				if(dimension.getRequired()) {
+					requiredStr="<span style=\"color:red\">*</span>";
+				}
+				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+requiredStr+dimension.getDescription()+"</th>");
+			}
+			html.append("</tr>");
+			html.append("<tr id=\"hiddenTr\" class=\"hiddenTr_displayNone\"><td style=\"width: 10px;text-align: center;\"><input type=\"checkbox\" name=\"rowId\" value=\"\" /></td>");
+			for (MagicDimension dimension : dimensions) {
+				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
+				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
+				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+				html.append("<td  name=\""+dimension.getDisplayName()+"\">"+input+"</td>");
+			}
+			html.append("</tr></thead>");
+			
+			if(!CollectionUtils.isEmpty(rows)) {
+				for (MagicRegionRow row : rows) {
+					html.append("<tr><td style=\"width: 10px;text-align: center;\"><input  type=\"checkbox\" name=\"rowId\" value=\""+row.getId()+"\" /></td>");
+					for (MagicDimension dimension : dimensions) {
+						String displayName = dimension.getDisplayName();
+						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
+						MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
+						MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
+						String input = getInput(pageType, row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+						html.append("<td>"+input+"</td>");
+					}
+					html.append("</tr>");
+				}
+			}
+			
+			html.append("</table>");
 		}
 		return html.toString();
 	}
