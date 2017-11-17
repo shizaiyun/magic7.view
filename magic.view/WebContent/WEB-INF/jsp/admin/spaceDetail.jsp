@@ -47,8 +47,7 @@
 	</div>
 </form>
 <hr>
-${space.id }
-<jsp:include page="listRegions.jsp" flush="true">
+<jsp:include page="regionList.jsp" flush="true">
 	<jsp:param name="spaceId" value="${space.id }" />
 </jsp:include>
 

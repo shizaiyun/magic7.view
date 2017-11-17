@@ -7,6 +7,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <title>space list</title>
+<script>
+	function addItem() {
+		window.location="showSpace";
+	}
+</script>
 
 </head>
 <body>
@@ -20,7 +25,6 @@
 <hr>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
-	<input class="button" type="button" value="修改" onclick="modifyItem()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
