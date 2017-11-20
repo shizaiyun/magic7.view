@@ -52,6 +52,8 @@
 </form>
 <hr>
 <jsp:include page="dimensionList.jsp" flush="true" />
+<hr>
+<jsp:include page="viewList.jsp" flush="true" />
 </body>
 
 </html>

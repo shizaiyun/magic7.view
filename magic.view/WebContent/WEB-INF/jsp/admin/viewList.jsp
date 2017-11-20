@@ -21,16 +21,10 @@
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
 		<td>视图名称</td>
-		<td>视图说明</td>
-		<td>是否多行</td>
-		<td>显示顺序</td>
 	</tr>
-	<c:forEach var="region" items="${spaceRegions }">
+	<c:forEach var="view" items="${views }">
 		<tr>
-			<td><a href="showRegion?regionId=${region.id }&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${region.name}</a></td>
-			<td>${region.description}</td>
-			<td>${region.multiply}</td>
-			<td>${region.seq}</td>
+			<td><a href="showView?regionId=${region.id }&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${view.name}</a></td>
 		</tr>
 	</c:forEach>
 </table>
