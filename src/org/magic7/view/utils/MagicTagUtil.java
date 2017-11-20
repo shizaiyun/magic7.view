@@ -179,9 +179,9 @@ public class MagicTagUtil {
 				String input = StringUtils.EMPTY;
 				if(row!=null) {
 					MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-					input = getInput(pageType, region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+					input = getInput(pageType, region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
 				}else {
-					input = getInput(pageType, region+"_"+displayName, displayName, null, valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+					input = getInput(pageType, region+"_"+displayName, displayName, null, valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
 				}
 				html.append("<div class=\"item\"><span class=\"title\">"+dimension.getDescription()+":</span><span class=\"content\">"+input+"</span></div>");
 				if(itemCount%lineItemCount==0 && itemCount != dimensions.size()) {
@@ -218,7 +218,7 @@ public class MagicTagUtil {
 			for (MagicDimension dimension : dimensions) {
 				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
 				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
 				html.append("<td  name=\""+dimension.getDisplayName()+"\">"+input+"</td>");
 			}
 			html.append("</tr></thead>");
@@ -231,7 +231,7 @@ public class MagicTagUtil {
 						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
 						MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
 						MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-						String input = getInput(pageType, row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceName(), dimension.getUrl(),dimension.getRequired());
+						String input = getInput(pageType, row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
 						html.append("<td>"+input+"</td>");
 					}
 					html.append("</tr>");
@@ -243,7 +243,7 @@ public class MagicTagUtil {
 		return html.toString();
 	}
 	
-	private static String getInput(MagicDimension.PageType  pageType,String id,String name,String value,MagicDimension.ValueType valueType,String choiceName,String url,Boolean required) {
+	private static String getInput(MagicDimension.PageType  pageType,String id,String name,String value,MagicDimension.ValueType valueType,String choiceCode,String url,Boolean required) {
 		String html =StringUtils.EMPTY;
 		String valueStr = StringUtils.EMPTY;
 		if(value==null) {
@@ -268,7 +268,7 @@ public class MagicTagUtil {
 			break;
 		case DROP_DOWN_LIST:
 			StringBuffer options = new StringBuffer("<option></option>");
-			List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItemByName(choiceName);
+			List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,choiceCode);
 			for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
 				if(StringUtils.isNotBlank(value) && value.equals(magicChoiceItem.getValueCode())) {
 					options.append("<option value=\""+magicChoiceItem.getValueCode()+"\" selected>"+magicChoiceItem.getValueName()+"</option>");

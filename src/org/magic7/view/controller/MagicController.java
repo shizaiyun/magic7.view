@@ -3,6 +3,8 @@ package org.magic7.view.controller;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicObject;
@@ -31,14 +33,17 @@ public class MagicController {
 	 * 初始化列表页面
 	 * @param space
 	 * @param region
-	 * @param queryView
+	 * @param queryView 查询
 	 * @param listView
 	 * @return 列表页面
 	 */
 	@RequestMapping(value = "/showList", method = RequestMethod.GET)
-	public ModelAndView showList(@RequestParam(value = "space") String space,
-			@RequestParam(value = "region") String region, @RequestParam(value = "queryView") String queryView,
-			@RequestParam(value = "listView") String listView) {
+	public ModelAndView showList(HttpServletRequest request) {
+		String space = request.getParameter("space");
+		String region = request.getParameter("region");
+		String queryView = request.getParameter("queryView");
+		String listView = request.getParameter("listView");
+		
 		ModelAndView mode = new ModelAndView();
 		mode.addObject("space", space);
 		mode.addObject("region", region);
