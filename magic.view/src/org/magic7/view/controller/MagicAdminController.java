@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
+import org.magic7.core.domain.MagicSpaceRegionView;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
@@ -106,6 +107,7 @@ public class MagicAdminController {
 		request.setAttribute("regionName", region.getName());
 		request.setAttribute("regionId", region.getId());
 		listDimension(request);
+		listView(request);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/regionDetail");
 		return mode;
@@ -123,6 +125,7 @@ public class MagicAdminController {
 		request.setAttribute("regionName", region.getName());
 		request.setAttribute("regionId", region.getId());
 		listDimension(request);
+		listView(request);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/regionDetail");
 		return mode;
@@ -172,6 +175,37 @@ public class MagicAdminController {
 		request.setAttribute("spaceId", spaceId);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/dimensionList");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/listViews", method = RequestMethod.GET)
+	public ModelAndView listView(HttpServletRequest request) {
+		Object temp = request.getAttribute("spaceName");
+		String spaceName = null;
+		if(temp!=null)
+			spaceName = temp.toString();
+		else
+			spaceName = request.getParameter("spaceName");
+		String regionName = null;
+		temp = request.getAttribute("regionName");
+		if(temp!=null)
+			regionName = temp.toString();
+		else
+			regionName = request.getParameter("regionName");
+		
+		System.out.println("spaceName:"+spaceName);
+		System.out.println("regionName:"+regionName);
+		List<MagicSpaceRegionView> views = service.listSpaceRegionView(spaceName, regionName);
+		
+		request.setAttribute("views", views);
+		String spaceId = request.getParameter("spaceId");
+		String regionId = request.getParameter("regionId");
+		request.setAttribute("regionName", regionName);
+		request.setAttribute("regionId", regionId);
+		request.setAttribute("spaceName", spaceName);
+		request.setAttribute("spaceId", spaceId);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/viewList");
 		return mode;
 	}
 	
