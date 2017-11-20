@@ -17,6 +17,7 @@
 	request.setAttribute("forQuery", MagicDimension.Destination.FOR_QUERY);
 	request.setAttribute("forData", MagicDimension.Destination.FOR_DATA);
 	request.setAttribute("forButton", MagicDimension.Destination.FOR_BUTTON);
+	request.setAttribute("forTemp", MagicDimension.Destination.FOR_TEMP);
 	
 	request.setAttribute("button", MagicDimension.PageType.BUTTON);
 	request.setAttribute("checkBox", MagicDimension.PageType.CHECK_BOX);
@@ -32,11 +33,10 @@
 	request.setAttribute("numValue", MagicDimension.ValueType.NUM_VALUE);
 	request.setAttribute("listStr", MagicDimension.ValueType.LIST_STR_VALUE);
 	request.setAttribute("attachment", MagicDimension.ValueType.ATTACHMENT_VALUE);
-	request.setAttribute("temp", MagicDimension.ValueType.TEMP);
 %>
 </head>
 <body>
-<div style="background-color: #11111;">编辑维度</div>rrrr${regionId }ddd
+<div style="background-color: #11111;">编辑维度</div>
 <form action="saveDimension" method="get" id="queryForm">
 	<input type="hidden" name="regionId" value="${regionId }">
 	<input type="hidden" name="regionName" value="${regionName }">
@@ -53,23 +53,27 @@
 			<td>分区顺序：<input type="text" name="seq" value="${dimension.seq }"></input></td>
 			<td>用途：
 				<select name="destination">
-					<option <c:if test="${dimension.destination eq forQuery.code}">selected</c:if> value ="${forQuery.code }">查询</option>
 					<option <c:if test="${dimension.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>
+					<option <c:if test="${dimension.destination eq forQuery.code}">selected</c:if> value ="${forQuery.code }">查询</option>
 					<option <c:if test="${dimension.destination eq forButton.code}">selected</c:if> value ="${forButton.code }">按钮</option>
+					<option <c:if test="${dimension.destination eq forTemp.code}">selected</c:if> value ="${forButton.code }">临时变量</option>
 				</select>
 			</td>
 			<td valign="middle" nowrap="nowrap">页面元素类型：
 				<select name="pageType" style="vertical-align: middle;" 
-				onchange="choiceDiv.style.display='None';urlDive.style.display='None';if(this.selectedIndex==2) choiceDiv.style.display='Inline'; else if(this.selectedIndex==3) urlDive.style.display='Inline'; ">
-					<option <c:if test="${dimension.pageType eq button.code}">selected</c:if> value ="${button.code}">按钮</option>
-					<option <c:if test="${dimension.pageType eq checkBox.code}">selected</c:if> value ="${checkBox.code }">复选框</option>
+				onchange="choiceDiv.style.display='None';urlDive.style.display='None';if(this.selectedIndex==1) choiceDiv.style.display='Inline'; else if(this.selectedIndex==2) urlDive.style.display='Inline'; ">
+					<option <c:if test="${dimension.pageType eq textEditor.code}">selected</c:if> value ="${textEditor.code }">文本框</option>
 					<option <c:if test="${dimension.pageType eq dropDownList.code}">selected</c:if> value ="${dropDownList.code }" >下拉列表</option>
 					<option <c:if test="${dimension.pageType eq popUp.code}">selected</c:if> value ="${popUp.code }">弹出框</option>
 					<option <c:if test="${dimension.pageType eq textArea.code}">selected</c:if> value ="${textArea.code }">文本域</option>
-					<option <c:if test="${dimension.pageType eq textEditor.code}">selected</c:if> value ="${textEditor.code }">文本框</option>
+					<option <c:if test="${dimension.pageType eq checkBox.code}">selected</c:if> value ="${checkBox.code }">复选框</option>
+					<option <c:if test="${dimension.pageType eq radio.code}">selected</c:if> value ="${radio.code }">单选框</option>
+					<option <c:if test="${dimension.pageType eq button.code}">selected</c:if> value ="${button.code}">按钮</option>
 				</select>
-				<div id="choiceDiv" style="display: none;">请输入选择项：<textarea  style="vertical-align: middle;" rows="3" cols="20"></textarea></div>
-				<div id="urlDive" style="display: none;">请输入弹出框url地址：<textarea  style="vertical-align: middle;" rows="3" cols="30"></textarea></div>
+				<div id="choiceDiv" style="display: none;">请输入选择项：<textarea name="choiceItemPairs" style="vertical-align: middle;" rows="3" cols="20"></textarea></div>
+				<div id="urlDive" style="display: none;">请输入弹出框url地址：<textarea name="popUpUrl" style="vertical-align: middle;" rows="3" cols="30">${dimension.url }</textarea></div>
+				<c:if test="${dimension.pageType eq dropDownList.code}"><script>choiceDiv.style.display='Inline';</script></c:if>
+				<c:if test="${dimension.pageType eq popUp.code}"><script>urlDive.style.display='Inline';</script></c:if>
 			</td>
 		</tr>
 		<tr>
@@ -81,7 +85,6 @@
 					<option <c:if test="${dimension.valueType eq numValue.code}">selected</c:if> value ="${numValue.code }">数字</option>
 					<option <c:if test="${dimension.valueType eq listStr.code}">selected</c:if> value ="${listStr.code }">字符数组</option>
 					<option <c:if test="${dimension.valueType eq attachment.code}">selected</c:if> value ="${attachment.code }">附件</option>
-					<option <c:if test="${dimension.valueType eq temp.code}">selected</c:if> value ="${temp.code }">临时变量</option>
 				</select>
 			</td>
 			<td>是否必填：
