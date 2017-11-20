@@ -51,7 +51,7 @@
 	</div>
 </form>
 <hr>
-
+<jsp:include page="dimensionList.jsp" flush="true" />
 </body>
 
 </html>
