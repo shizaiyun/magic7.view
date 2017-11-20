@@ -24,7 +24,7 @@
 	</tr>
 	<c:forEach var="view" items="${views }">
 		<tr>
-			<td><a href="showView?regionId=${region.id }&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${view.name}</a></td>
+			<td><a href="showView?regionId=${region.id}&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${view.name}</a></td>
 		</tr>
 	</c:forEach>
 </table>
