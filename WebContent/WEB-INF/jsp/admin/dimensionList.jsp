@@ -27,7 +27,7 @@
 	</tr>
 	<c:forEach var="dimension" items="${dimensions }">
 		<tr>
-			<td><a href="showRegion?regionId=${region.id }&spaceName=${region.spaceName}&spaceId=${region.spaceId}">${dimension.name}</a></td>
+			<td><a href="showDimension?dimensionId=${dimension.id }&spaceName=${dimension.spaceName}&spaceId=${dimension.spaceId}&regionId=${dimension.spaceRegionId}&regionName=${dimension.spaceRegionName}">${dimension.name}</a></td>
 			<td>${dimension.displayName}</td>
 			<td>${dimension.description}</td>
 			<td>${dimension.seq}</td>
