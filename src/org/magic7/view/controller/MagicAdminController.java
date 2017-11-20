@@ -199,7 +199,6 @@ public class MagicAdminController {
 			dimension = service.getDimensionById(dimensionId);
 		else 
 			dimension = new MagicDimension();
-		System.out.println("regionId:"+request.getParameter("regionId"));
 		dimension.setName(request.getParameter("name"));
 		dimension.setDisplayName(request.getParameter("displayName"));
 		dimension.setDescription(request.getParameter("description"));
@@ -216,7 +215,7 @@ public class MagicAdminController {
 		dimension.setVisible(Boolean.parseBoolean(request.getParameter("visible")));
 		dimension.setLnk(Boolean.parseBoolean(request.getParameter("lnk")));
 		dimension.setVirtual(!dimension.getLnk());
-		System.out.println("spaceId:"+dimension.getSpaceId());
+		dimension.setUrl(request.getParameter("popUpUrl"));
 		
 		service.saveDimension(dimension);
 		request.setAttribute("dimension", dimension);
