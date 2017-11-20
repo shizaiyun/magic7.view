@@ -230,14 +230,17 @@ function deleteItem(){
 </script>
 </head>
 <body>
-<form action="" method="post" id="queryForm">
-	<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1"></m:magicView>
-	<div style="text-align: center;">
-		<input class="button" type="button" value="查询" onclick="loadGridTable(1)">
-		<input class="button" type="reset" value="重置">
-	</div>
-</form>
-<hr>
+<c:if test="${queryView !=null}">
+	<form action="" method="post" id="queryForm">
+		<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1"></m:magicView>
+		<div style="text-align: center;">
+			<input class="button" type="button" value="查询" onclick="loadGridTable(1)">
+			<input class="button" type="reset" value="重置">
+		</div>
+	</form>
+	<hr>
+</c:if>
+
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
 	<input class="button" type="button" value="修改" onclick="modifyItem()">

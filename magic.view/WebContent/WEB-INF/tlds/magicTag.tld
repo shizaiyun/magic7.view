@@ -90,7 +90,7 @@
         
         <attribute>
             <name>view</name>
-            <required>true</required>
+            <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
             	The value of the view            	            	
