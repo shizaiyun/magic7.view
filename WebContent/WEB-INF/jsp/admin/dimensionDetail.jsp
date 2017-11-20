@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
 	function back() {
-		window.location="showRegion?regionId=${dimension.spaceRegionId}&spaceName=${dimension.spaceName}&spaceId=${dimension.spaceId}";
+		window.location="showRegion?regionId=${regionId}&spaceName=${spaceName}&spaceId=${spaceId}";
 	}
 </script>
 <title>编辑维度</title>
