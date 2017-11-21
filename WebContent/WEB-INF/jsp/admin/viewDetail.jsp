@@ -55,5 +55,6 @@
 </form>
 <hr>
 </body>
-
+<hr>
+<jsp:include page="viewItemList.jsp" flush="true" />
 </html>
