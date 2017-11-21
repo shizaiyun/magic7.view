@@ -10,6 +10,7 @@ import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
 import org.magic7.core.domain.MagicSpaceRegionView;
+import org.magic7.core.domain.MagicSpaceRegionViewItem;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
@@ -259,6 +260,56 @@ public class MagicAdminController {
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/dimensionDetail");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/showView", method = RequestMethod.GET)
+	public ModelAndView showView(HttpServletRequest request) {
+		String viewId = request.getParameter("viewId");
+		MagicSpaceRegionView view = null;
+		System.out.println("viewId:"+viewId);
+		if(StringUtils.isNotEmpty(viewId))
+			view = service.getViewById(viewId);
+		System.out.println("view:"+view.getName());
+		if(view!=null) {
+			List<MagicSpaceRegionViewItem> items = service.listSpaceRegionViewItem(view.getSpaceName(), view.getSpaceRegionName(), view.getName(), " seq ");
+			request.setAttribute("items", items);
+		}
+		request.setAttribute("view", view);
+		request.setAttribute("spaceName", request.getParameter("spaceName"));
+		request.setAttribute("spaceId", request.getParameter("spaceId"));
+		request.setAttribute("regionId", request.getParameter("regionId"));
+		request.setAttribute("regionName", request.getParameter("regionName"));
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/viewDetail");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/saveView", method = RequestMethod.GET)
+	public ModelAndView saveView(HttpServletRequest request) {
+		String viewId = request.getParameter("viewId");
+		MagicSpaceRegionView view = null;
+		if(StringUtils.isNotEmpty(viewId))
+			view = service.getViewById(viewId);
+		else {
+			view = new MagicSpaceRegionView();
+			view.setSpaceId(request.getParameter("spaceId"));
+			view.setSpaceRegionId(request.getParameter("regionId"));
+			view.setSpaceName(request.getParameter("spaceName"));
+			view.setSpaceRegionName(request.getParameter("regionName"));
+		}
+		view.setName(request.getParameter("name"));
+		service.saveSpaceRegionView(view);
+		
+		List<MagicSpaceRegionViewItem> items = service.listSpaceRegionViewItem(view.getSpaceName(), view.getSpaceRegionName(), view.getName(), " seq ");
+		request.setAttribute("view", view);
+		request.setAttribute("items", items);
+		request.setAttribute("spaceName", request.getParameter("spaceName"));
+		request.setAttribute("spaceId", request.getParameter("spaceId"));
+		request.setAttribute("regionId", request.getParameter("regionId"));
+		request.setAttribute("regionName", request.getParameter("regionName"));
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/viewDetail");
 		return mode;
 	}
 }
