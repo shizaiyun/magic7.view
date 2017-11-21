@@ -25,6 +25,9 @@
 		<td>维度显示名</td>
 		<td>维度说明</td>
 		<td>数据类型</td>
+		<td>是否可见</td>
+		<td>是否可编辑</td>
+		<td>是否必填</td>
 		<td>维度顺序</td>
 	</tr>
 	<c:forEach var="dimension" items="${dimensions }">
@@ -33,6 +36,9 @@
 			<td>${dimension.displayName}</td>
 			<td>${dimension.description}</td>
 			<td>${dimension.valueTypeName}</td>
+			<td>${dimension.visible}</td>
+			<td>${dimension.editable}</td>
+			<td>${dimension.required}</td>
 			<td>${dimension.seq}</td>
 		</tr>
 	</c:forEach>
