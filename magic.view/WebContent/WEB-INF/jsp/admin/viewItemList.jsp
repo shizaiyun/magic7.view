@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
 	function addViewItem() {
-		window.location="showViewItem?spaceId=${spaceId}&spaceName=${spaceName}";
+		window.open("showViewItem?spaceId=${spaceId}&spaceName=${spaceName}&regionName=${regionName}&regionId=${regionId}&viewId=${view.id}&viewName=${view.name}");
 	}
 </script>
 <title>view item list</title>

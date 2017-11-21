@@ -50,10 +50,12 @@
 		<input class="button" type="button" onClick="back()" value="返回">
 	</div>
 </form>
+<c:if test="${not empty region  }">
 <hr>
 <jsp:include page="dimensionList.jsp" flush="true" />
 <hr>
 <jsp:include page="viewList.jsp" flush="true" />
+</c:if>
 </body>
 
 </html>
