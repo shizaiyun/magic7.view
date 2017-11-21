@@ -6,8 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
-	function addItem() {
-		window.location="showRegion?spaceId=${spaceId}&spaceName=${spaceName}";
+	function addViewItem() {
+		window.location="showViewItem?spaceId=${spaceId}&spaceName=${spaceName}";
 	}
 </script>
 <title>view item list</title>
@@ -15,7 +15,7 @@
 <body>
 <div style="background-color: #11111;">编辑视图项</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
-	<input class="button" type="button" value="新增" onclick="addItem()">
+	<input class="button" type="button" value="新增视图项" onclick="addViewItem()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
@@ -29,7 +29,7 @@
 	</tr>
 	<c:forEach var="item" items="${items }">
 		<tr>
-			<td><a href="javascript:window.open('showView?itemId=${item.id }')">${item.name}</a></td>
+			<td><a href="javascript:window.open('showViewItem?itemId=${item.id }')">${item.name}</a></td>
 			<td>${item.dimension.description}</td>
 			<td>${item.editable}</td>
 			<td>${item.required}</td>

@@ -6,8 +6,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
-	function addItem() {
-		window.location="showRegion?spaceId=${spaceId}&spaceName=${spaceName}";
+	function addView() {
+		window.open('showView?regionId=${regionId}&spaceName=${spaceName}&spaceId=${spaceId}&regionName=${regionName }');
 	}
 </script>
 <title>view list</title>
@@ -15,7 +15,7 @@
 <body>
 <div style="background-color: #11111;">编辑视图</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
-	<input class="button" type="button" value="新增" onclick="addItem()">
+	<input class="button" type="button" value="新增" onclick="addView()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>

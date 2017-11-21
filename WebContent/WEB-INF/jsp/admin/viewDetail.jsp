@@ -37,23 +37,23 @@
 %>
 </head>
 <body>
-<div style="background-color: #11111;">编辑维度</div>
-<form action="saveView" method="get" id="queryForm">
-	<input type="hidden" name="regionId" value="${regionId }">
-	<input type="hidden" name="regionName" value="${regionName }">
-	<input type="hidden" name="spaceId" value="${spaceId }">
-	<input type="hidden" name="spaceName" value="${spaceName}">
-	<input type="hidden" name="viewId" value="${view.id}">
-	<table style="width: 100%" border=1>
-		<tr>
-			<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
-		</tr>
-	<div style="text-align: center;">
-		<input class="button" type="submit" value="保存" >
-		<input class="button" type="button" onClick="back()" value="返回">
-	</div>
-</form>
-<hr>
+	<div style="background-color: #11111;">编辑维度</div>
+	<form action="saveView" method="get" id="queryForm">
+		<input type="hidden" name="regionId" value="${regionId }">
+		<input type="hidden" name="regionName" value="${regionName }">
+		<input type="hidden" name="spaceId" value="${spaceId }">
+		<input type="hidden" name="spaceName" value="${spaceName}">
+		<input type="hidden" name="viewId" value="${view.id}">
+		<table style="width: 100%" border=1>
+			<tr>
+				<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
+			</tr>
+		</table>
+		<div style="text-align: center;">
+			<input class="button" type="submit" value="保存" >
+			<input class="button" type="button" onClick="back()" value="返回">
+		</div>
+	</form>
 </body>
 <hr>
 <jsp:include page="viewItemList.jsp" flush="true" />
