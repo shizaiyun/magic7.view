@@ -24,6 +24,7 @@
 			<tr>
 				<td>选择项取值名称：<input type="text" size=40 name="valueName" value="${item.valueName }"></input></td>
 				<td>选择项取值编码：<input type="text" size=40 name="valueCode" value="${item.valueCode }"></input></td>
+				<td>顺序：<input type="text" size=40 name="seq" value="${item.seq }"></input></td>
 			</tr>
 		</table>
 		<div style="text-align: center;">

@@ -35,13 +35,20 @@
 	request.setAttribute("numValue", MagicDimension.ValueType.NUM_VALUE);
 	request.setAttribute("listStr", MagicDimension.ValueType.LIST_STR_VALUE);
 	request.setAttribute("attachment", MagicDimension.ValueType.ATTACHMENT_VALUE);
+	
+	request.setAttribute("precise", MagicDimension.QueryType.PRECISE);
+	request.setAttribute("in", MagicDimension.QueryType.IN);
+	request.setAttribute("vague", MagicDimension.QueryType.VAGUE);
+	request.setAttribute("bigger", MagicDimension.QueryType.BIGGER);
+	request.setAttribute("smaller", MagicDimension.QueryType.SMALLER);
+	
 	MagicService service = MagicServiceFactory.getMagicService();
 	request.setAttribute("choices", service.listChoice(null, null));
 %>
 </head>
 <body>
 <div style="background-color: #11111;">编辑维度</div>
-<form action="saveDimension" method="get" id="queryForm">
+<form action="saveDimensionForQuery" method="get" id="queryForm">
 	<input type="hidden" name="regionId" value="${regionId }">
 	<input type="hidden" name="regionName" value="${regionName }">
 	<input type="hidden" name="spaceId" value="${spaceId }">
@@ -55,14 +62,6 @@
 		</tr>
 		<tr>
 			<td>分区顺序：<input type="text" name="seq" value="${dimension.seq }"></input></td>
-			<td>用途：
-				<select name="destination">
-					<option <c:if test="${dimension.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>
-					<option <c:if test="${dimension.destination eq forQuery.code}">selected</c:if> value ="${forQuery.code }">查询</option>
-					<option <c:if test="${dimension.destination eq forButton.code}">selected</c:if> value ="${forButton.code }">按钮</option>
-					<option <c:if test="${dimension.destination eq forTemp.code}">selected</c:if> value ="${forButton.code }">临时变量</option>
-				</select>
-			</td>
 			<td valign="middle" nowrap="nowrap">页面元素类型：
 				<select name="pageType" style="vertical-align: middle;" 
 				onchange="choiceDiv.style.display='None';urlDive.style.display='None';if(this.selectedIndex==1) choiceDiv.style.display='Inline'; else if(this.selectedIndex==2) urlDive.style.display='Inline'; ">
@@ -77,7 +76,7 @@
 				<div id="choiceDiv" style="display: none;">请输入选择项：
 					<select name="choiceCode">
 						<c:forEach var="choice" items="${choices }">
-							<option value="${choice.choiceCode }">${choice.choiceName }</option>
+							<option <c:if test="${dimension.choiceCode eq choice.choiceCode }">selected</c:if> value="${choice.choiceCode }">${choice.choiceName }</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -85,8 +84,6 @@
 				<c:if test="${dimension.pageType eq dropDownList.code}"><script>choiceDiv.style.display='Inline';</script></c:if>
 				<c:if test="${dimension.pageType eq popUp.code}"><script>urlDive.style.display='Inline';</script></c:if>
 			</td>
-		</tr>
-		<tr>
 			<td>数据类型：
 				<select name="valueType">
 					<option <c:if test="${dimension.valueType eq strValue.code}">selected</c:if> value ="${strValue.code}">字符串</option>
@@ -97,24 +94,15 @@
 					<option <c:if test="${dimension.valueType eq attachment.code}">selected</c:if> value ="${attachment.code }">附件</option>
 				</select>
 			</td>
-			<td>是否必填：
-				<select name="required">
-					<option <c:if test="${dimension.required eq true}">selected</c:if> value ="true">是</option>
-					<option <c:if test="${dimension.required eq false}">selected</c:if> value ="false">否</option>
-				</select>
-			</td>
-			<td>是否可编辑：
-				<select name="editable">
-					<option <c:if test="${dimension.editable eq true}">selected</c:if> value ="true">是</option>
-					<option <c:if test="${dimension.editable eq false}">selected</c:if> value ="false">否</option>
-				</select>
-			</td>
 		</tr>
 		<tr>
-			<td>是否可见：
-				<select name="visible">
-					<option <c:if test="${dimension.visible eq true}">selected</c:if> value ="true">是</option>
-					<option <c:if test="${dimension.visible eq false}">selected</c:if> value ="false">否</option>
+			<td>查询类型：
+				<select name="queryType">
+					<option <c:if test="${dimension.queryType eq precise.code}">selected</c:if> value ="${precise.code }">精确查询</option>
+					<option <c:if test="${dimension.queryType eq in.code}">selected</c:if> value ="${in.code }">In查询</option>
+					<option <c:if test="${dimension.queryType eq vague.code}">selected</c:if> value ="${vague.code }">模糊查询</option>
+					<option <c:if test="${dimension.queryType eq bigger.code}">selected</c:if> value ="${bigger.code }">大于查询</option>
+					<option <c:if test="${dimension.queryType eq smaller.code}">selected</c:if> value ="${smaller.code }">小于查询</option>
 				</select>
 			</td>
 			<td>是否链接到其他字段：

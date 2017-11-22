@@ -77,7 +77,7 @@
 				<div id="choiceDiv" style="display: none;">请输入选择项：
 					<select name="choiceCode">
 						<c:forEach var="choice" items="${choices }">
-							<option value="${choice.choiceCode }">${choice.choiceName }</option>
+							<option <c:if test="${dimension.choiceCode eq choice.choiceCode }">selected</c:if> value="${choice.choiceCode }">${choice.choiceName }</option>
 						</c:forEach>
 					</select>
 				</div>
