@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
 	function addView() {
-		window.open('showChoice');
+		window.open('showChoiceItem?choiceId=${choice.id}');
 	}
 </script>
 <title>view list</title>
@@ -25,7 +25,8 @@
 	</tr>
 	<c:forEach var="item" items="${items }">
 		<tr>
-			<td><a href="javascript:window.open('showChoiceItem?choiceId=${item.id }')">${item.name}</a></td>
+			<td><a href="javascript:window.open('showChoiceItem?choiceId=${item.id }')">${item.valueName}</a></td>
+			<td>${item.valueCode}</td>
 		</tr>
 	</c:forEach>
 </table>
