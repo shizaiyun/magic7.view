@@ -22,11 +22,13 @@
 	<tr>
 		<td>选择项取值名称</td>
 		<td>选择项取值编码</td>
+		<td>顺序</td>
 	</tr>
 	<c:forEach var="item" items="${items }">
 		<tr>
-			<td><a href="javascript:window.open('showChoiceItem?choiceId=${item.id }')">${item.valueName}</a></td>
+			<td><a href="javascript:window.open('showChoiceItem?itemId=${item.id }&choiceId=${choice.id}')">${item.valueName}</a></td>
 			<td>${item.valueCode}</td>
+			<td>${item.seq}</td>
 		</tr>
 	</c:forEach>
 </table>

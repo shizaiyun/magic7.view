@@ -8,7 +8,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
 	function addDimension() {
-		window.location="showDimensionForQuery?spaceId=${spaceId}&spaceName=${spaceName}&regionId=${regionId}&regionName=${regionName}";
+		window.location="showDimension?spaceId=${spaceId}&spaceName=${spaceName}&regionId=${regionId}&regionName=${regionName}&command=forQuery";
 	}
 </script>
 <title>space list</title>
@@ -27,9 +27,9 @@
 		<td>数据类型</td>
 		<td>查询类型</td>
 	</tr>
-	<c:forEach var="dimension" items="${dimensions }">
+	<c:forEach var="dimension" items="${dimensionsForQuery }">
 		<tr>
-			<td><a href="showDimensionForQuery?dimensionId=${dimension.id }&spaceName=${dimension.spaceName}&spaceId=${dimension.spaceId}&regionId=${dimension.spaceRegionId}&regionName=${dimension.spaceRegionName}">${dimension.name}</a></td>
+			<td><a href="showDimension?dimensionId=${dimension.id }&spaceName=${dimension.spaceName}&spaceId=${dimension.spaceId}&regionId=${dimension.spaceRegionId}&regionName=${dimension.spaceRegionName}&command=forQuery">${dimension.name}</a></td>
 			<td>${dimension.displayName}</td>
 			<td>${dimension.description}</td>
 			<td>${dimension.valueTypeName}</td>
