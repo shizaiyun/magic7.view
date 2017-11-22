@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.magic7.core.domain.MagicChoice;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
@@ -379,6 +380,67 @@ public class MagicAdminController {
 		request.setAttribute("viewName", request.getParameter("viewName"));
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/viewItemDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/showChoiceItem", method = RequestMethod.GET)
+	public ModelAndView showChoiceItem(HttpServletRequest request) {
+		String itemId = request.getParameter("itemId");
+		MagicSpaceRegionViewItem item = null;
+		System.out.println("itemId:"+itemId);
+		if(StringUtils.isNotEmpty(itemId))
+			item = service.getViewItemById(itemId);
+		else
+			item = new MagicSpaceRegionViewItem();
+		String spaceName = request.getParameter("spaceName");
+		String regionName = request.getParameter("regionName");
+		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, null, null, MagicDimension.Destination.FOR_DATA.getCode());
+		System.out.println("dimensions:"+dimensions);
+		request.setAttribute("dimensions", dimensions);
+		request.setAttribute("item", item);
+		request.setAttribute("spaceName",request.getParameter("spaceName") );
+		request.setAttribute("spaceId", request.getParameter("spaceId"));
+		request.setAttribute("regionId", request.getParameter("regionId"));
+		request.setAttribute("regionName", request.getParameter("regionName"));
+		request.setAttribute("viewId", request.getParameter("viewId"));
+		request.setAttribute("viewName", request.getParameter("viewName"));
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/viewItemDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/listChoice", method = RequestMethod.GET)
+	public ModelAndView listChoice(HttpServletRequest request) {
+		String choiceName = request.getParameter("choiceName");
+		List<MagicChoice> choices = service.listChoice(choiceName, null);
+		request.setAttribute("choices", choices);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceList");
+		return mode;
+	}
+	@RequestMapping(value = "/showChoice", method = RequestMethod.GET)
+	public ModelAndView showChoice(HttpServletRequest request) {
+		String choiceId = request.getParameter("choiceId");
+		MagicChoice choice = null;
+		if(StringUtils.isNotEmpty(choiceId))
+			choice = service.getChoiceById(choiceId);
+		request.setAttribute("choice", choice);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/saveChoice", method = RequestMethod.GET)
+	public ModelAndView saveChoice(HttpServletRequest request) {
+		String choiceId = request.getParameter("choiceId");
+		MagicChoice choice = null;
+		if(StringUtils.isNotEmpty(choiceId))
+			choice = service.getChoiceById(choiceId);
+		else
+			choice = new MagicChoice();
+		choice.setChoiceName(request.getParameter("name"));
+		choice.setChoiceCode(request.getParameter("code"));
+		service.saveChoice(choice);
+		request.setAttribute("choice", choice);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceDetail");
 		return mode;
 	}
 }
