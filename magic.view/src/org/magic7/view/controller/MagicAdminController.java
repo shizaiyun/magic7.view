@@ -80,7 +80,10 @@ public class MagicAdminController {
 			space = service.getSpaceById(spaceId);
 		request.setAttribute("space", space);
 		listRegion(request);
-		request.setAttribute("spaceName", space.getName());
+		if(space!=null) {
+			request.setAttribute("spaceName", space.getName());
+			request.setAttribute("spaceId", space.getId());
+		}
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/spaceDetail");
 		return mode;
