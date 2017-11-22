@@ -1,7 +1,11 @@
 package org.magic7.view.controller;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,7 +15,6 @@ import org.magic7.core.domain.MagicObject;
 import org.magic7.core.domain.MagicRegionRow;
 import org.magic7.core.domain.MagicSuperRowItem;
 import org.magic7.core.service.MagicSpaceHandler;
-import org.magic7.view.module.PageBean;
 import org.magic7.view.module.ResultBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,44 +40,53 @@ public class MagicController {
 	 * @param listView
 	 * @return 列表页面
 	 */
-	@RequestMapping(value = "/showList", method = RequestMethod.GET)
+	@RequestMapping(value = "/showList")
 	public ModelAndView showList(HttpServletRequest request) {
 		String space = request.getParameter("space");
 		String region = request.getParameter("region");
 		String queryView = request.getParameter("queryView");
 		String listView = request.getParameter("listView");
 		
+		Integer currentPage = 1;
+		String page = request.getParameter("currentPage");
+		if(page!=null) {
+			currentPage = Integer.parseInt(page);
+		}
+		String size = request.getParameter("pageSize");
+		Integer pageSize = PAGE_SIZE;
+		if(size!=null) {
+			pageSize = Integer.parseInt(size);
+		}
+		Map<String, Object> parmMap = assembleParmMap(request);
+		List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region, parmMap);
+		List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, listView, null, null, true,searchCriterias, " id ", (currentPage-1)*pageSize, pageSize);
+		Integer totalCount =  MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
+		
 		ModelAndView mode = new ModelAndView();
 		mode.addObject("space", space);
 		mode.addObject("region", region);
 		mode.addObject("queryView", queryView);
 		mode.addObject("listView", listView);
+		mode.addObject("rows", rows);
+		mode.addObject("currentPage",currentPage);
+		mode.addObject("pageSize",pageSize);
+		mode.addObject("totalCount",totalCount);
 		mode.setViewName("magic/list");
 		return mode;
 	}
 
-	/**
-	 * 加载列表页面数据信息
-	 * @param parm
-	 * @return
-	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/getList")
-	@ResponseBody
-	public ResultBean<PageBean<List<MagicRegionRow>>> getList(@RequestBody String parm) {
-		System.out.println("parm:" + parm);
-		JSONObject requestParm = JSONObject.fromObject(parm);
-		JSONObject base = (JSONObject) requestParm.get("base");
-		String space = base.getString("space");
-		String region = base.getString("region");
-		String listView = base.getString("listView");
-		Integer currentPage	 = base.getInt("currentPage");
-		JSONObject criteria = (JSONObject) requestParm.get("criteria");
-		List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region, criteria);
-		List<MagicRegionRow> rowInfos = MagicSpaceHandler.listRow(space, region, listView, null, null, true,searchCriterias, " id ", (currentPage-1)*PAGE_SIZE, PAGE_SIZE);
-		Integer totalCount =  MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
-		PageBean<List<MagicRegionRow>> pageBean = new PageBean<>(currentPage,PAGE_SIZE, totalCount, rowInfos);
-		return new ResultBean<PageBean<List<MagicRegionRow>>>(pageBean);
+	private Map<String, Object> assembleParmMap(HttpServletRequest request) {
+		Map<String,Object> parmMap = new HashMap<>();
+		Map<String,Object> requestMap = request.getParameterMap();
+		Set<Entry<String,Object>> entrySet = requestMap.entrySet();
+        for (Entry<String, Object> entry : entrySet) {
+               if(!entry.getKey().equals("space") && !entry.getKey().equals("region") && !entry.getKey().equals("queryView") && !entry.getKey().equals("listView")
+            		   && !entry.getKey().equals("currentPage") && !entry.getKey().equals("pageSize")) {
+            	   parmMap.put(entry.getKey(), StringUtils.join(request.getParameterValues(entry.getKey()), ","));
+               }
+        }
+		return parmMap;
 	}
 
 	/**
