@@ -85,8 +85,12 @@ public class MagicTagUtil {
 			
 		}else {
 			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
-			MagicRegionRow row= rows.get(0);
-			html.append(assembleRegionSingle(dimensions,destination,row));
+			if(rows!=null && rows.size()>0) {
+				MagicRegionRow row= rows.get(0);
+				html.append(assembleRegionSingle(dimensions,destination,row));
+			}else {
+				html.append(assembleRegionSingle(dimensions,destination,null));
+			}
 		}
 		return html.toString();
 	}
@@ -163,7 +167,7 @@ public class MagicTagUtil {
 				}
 			}
 			
-			Integer lineItemCount = magicSpaceRegion.getDimensionNum();
+			Integer lineItemCount = magicSpaceRegion.getDimensionNum()==null?3:magicSpaceRegion.getDimensionNum();
 			Integer itemCount = 1;
 			if(row!=null) {
 				html.append("<input type=\"hidden\" id=\""+dimensions.get(0).getSpaceRegionName()+"_rowId\" name=\"rowId\" value=\""+row.getId()+"\" >");
