@@ -7,7 +7,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
-	function addDimension() {
+	function addDimensionForQuery() {
 		window.location="showDimension?spaceId=${spaceId}&spaceName=${spaceName}&regionId=${regionId}&regionName=${regionName}&command=forQuery";
 	}
 </script>
@@ -16,7 +16,7 @@
 <body>
 <div style="background-color: #11111;">编辑查询维度</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
-	<input class="button" type="button" value="新增" onclick="addDimension()">
+	<input class="button" type="button" value="新增" onclick="addDimensionForQuery()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
