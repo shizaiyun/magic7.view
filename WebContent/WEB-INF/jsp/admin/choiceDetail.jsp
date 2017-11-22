@@ -19,6 +19,9 @@
 	<div style="background-color: #11111;">编辑选择项</div>
 	<form action="saveChoice" method="get" id="queryForm">
 		<input type="hidden" name="choiceId" value="${choice.id}">
+		<c:if test="${not empty choice }">
+			<input type="hidden" name="code" value="${choice.choiceCode}">
+		</c:if>
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>选择项名称：<input type="text" size=40 name="name" value="${choice.choiceName }"></input></td>
