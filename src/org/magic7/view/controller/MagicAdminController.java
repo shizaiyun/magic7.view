@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicChoice;
+import org.magic7.core.domain.MagicChoiceItem;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
@@ -109,6 +110,7 @@ public class MagicAdminController {
 		request.setAttribute("regionName", region.getName());
 		request.setAttribute("regionId", region.getId());
 		listDimension(request);
+		listDimensionForQuery(request);
 		listView(request);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/regionDetail");
@@ -128,6 +130,7 @@ public class MagicAdminController {
 			request.setAttribute("regionName", region.getName());
 			request.setAttribute("regionId", region.getId());
 			listDimension(request);
+			listDimensionForQuery(request);
 			listView(request);
 		}
 		ModelAndView mode = new ModelAndView();
@@ -168,8 +171,6 @@ public class MagicAdminController {
 		String viewName = request.getParameter("viewName");
 		String dimensionNames = request.getParameter("dimensionNames");
 		Integer destination = MagicDimension.Destination.FOR_DATA.getCode();
-		if(request.getParameter("destination")!=null)
-			destination = Integer.parseInt(request.getParameter("destination"));
 		System.out.println("spaceName:"+spaceName);
 		System.out.println("regionName:"+regionName);
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
@@ -179,6 +180,37 @@ public class MagicAdminController {
 		request.setAttribute("spaceId", spaceId);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/dimensionList");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/listDimensionForQuery", method = RequestMethod.GET)
+	public ModelAndView listDimensionForQuery(HttpServletRequest request) {
+		Object temp = request.getAttribute("spaceName");
+		String spaceName = null;
+		if(temp!=null)
+			spaceName = temp.toString();
+		else
+			spaceName = request.getParameter("spaceName");
+		
+		String regionName = null;
+		temp = request.getAttribute("regionName");
+		if(temp!=null)
+			regionName = temp.toString();
+		else
+			regionName = request.getParameter("regionName");
+		
+		String viewName = request.getParameter("viewName");
+		String dimensionNames = request.getParameter("dimensionNames");
+		Integer destination = MagicDimension.Destination.FOR_QUERY.getCode();
+		System.out.println("spaceName:"+spaceName);
+		System.out.println("regionName:"+regionName);
+		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
+		request.setAttribute("dimensions", dimensions);
+		String spaceId = request.getParameter("spaceId");
+		request.setAttribute("spaceName", spaceName);
+		request.setAttribute("spaceId", spaceId);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/dimensionListForQuery");
 		return mode;
 	}
 	
@@ -254,6 +286,7 @@ public class MagicAdminController {
 		dimension.setLnk(Boolean.parseBoolean(request.getParameter("lnk")));
 		dimension.setVirtual(!dimension.getLnk());
 		dimension.setUrl(request.getParameter("popUpUrl"));
+		dimension.setChoiceCode(request.getParameter("choiceCode"));
 		
 		service.saveDimension(dimension);
 		request.setAttribute("dimension", dimension);
@@ -382,31 +415,6 @@ public class MagicAdminController {
 		mode.setViewName("admin/viewItemDetail");
 		return mode;
 	}
-	@RequestMapping(value = "/showChoiceItem", method = RequestMethod.GET)
-	public ModelAndView showChoiceItem(HttpServletRequest request) {
-		String itemId = request.getParameter("itemId");
-		MagicSpaceRegionViewItem item = null;
-		System.out.println("itemId:"+itemId);
-		if(StringUtils.isNotEmpty(itemId))
-			item = service.getViewItemById(itemId);
-		else
-			item = new MagicSpaceRegionViewItem();
-		String spaceName = request.getParameter("spaceName");
-		String regionName = request.getParameter("regionName");
-		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, null, null, MagicDimension.Destination.FOR_DATA.getCode());
-		System.out.println("dimensions:"+dimensions);
-		request.setAttribute("dimensions", dimensions);
-		request.setAttribute("item", item);
-		request.setAttribute("spaceName",request.getParameter("spaceName") );
-		request.setAttribute("spaceId", request.getParameter("spaceId"));
-		request.setAttribute("regionId", request.getParameter("regionId"));
-		request.setAttribute("regionName", request.getParameter("regionName"));
-		request.setAttribute("viewId", request.getParameter("viewId"));
-		request.setAttribute("viewName", request.getParameter("viewName"));
-		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/viewItemDetail");
-		return mode;
-	}
 	@RequestMapping(value = "/listChoice", method = RequestMethod.GET)
 	public ModelAndView listChoice(HttpServletRequest request) {
 		String choiceName = request.getParameter("choiceName");
@@ -420,9 +428,12 @@ public class MagicAdminController {
 	public ModelAndView showChoice(HttpServletRequest request) {
 		String choiceId = request.getParameter("choiceId");
 		MagicChoice choice = null;
-		if(StringUtils.isNotEmpty(choiceId))
+		if(StringUtils.isNotEmpty(choiceId)) {
 			choice = service.getChoiceById(choiceId);
+			request.setAttribute("code", choice.getChoiceCode());
+		}
 		request.setAttribute("choice", choice);
+		listChoiceItem(request);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/choiceDetail");
 		return mode;
@@ -438,9 +449,56 @@ public class MagicAdminController {
 		choice.setChoiceName(request.getParameter("name"));
 		choice.setChoiceCode(request.getParameter("code"));
 		service.saveChoice(choice);
+		listChoiceItem(request);
 		request.setAttribute("choice", choice);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/choiceDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/listChoiceItem", method = RequestMethod.GET)
+	public ModelAndView listChoiceItem(HttpServletRequest request) {
+		String code = request.getParameter("code");
+		Object temp = request.getAttribute("code");
+		if(code==null&&temp!=null)
+			code = temp.toString();
+		List<MagicChoiceItem> items = service.listChoiceItem(null, code);
+		request.setAttribute("items", items);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceItemList");
+		return mode;
+	}
+	@RequestMapping(value = "/showChoiceItem", method = RequestMethod.GET)
+	public ModelAndView showChoiceItem(HttpServletRequest request) {
+		String itemId = request.getParameter("itemId");
+		String choiceId = request.getParameter("choiceId");
+		MagicChoiceItem item = null;
+		if(StringUtils.isNotEmpty(itemId))
+			item = service.getChoiceItemById(itemId);
+		request.setAttribute("item", item);
+		request.setAttribute("choiceId", choiceId);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceItemDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/saveChoiceItem", method = RequestMethod.GET)
+	public ModelAndView saveChoiceItem(HttpServletRequest request) {
+		String itemId = request.getParameter("itemId");
+		String choiceId = request.getParameter("choiceId");
+		MagicChoiceItem item = null;
+		MagicChoice choice = service.getChoiceById(choiceId);
+		if(StringUtils.isNotEmpty(itemId))
+			item = service.getChoiceItemById(itemId);
+		else
+			item = new MagicChoiceItem();
+		item.setChoiceName(choice.getChoiceName());
+		item.setChoiceCode(choice.getChoiceCode());
+		item.setValueCode(request.getParameter("valueCode"));
+		item.setValueName(request.getParameter("valueName"));
+		service.saveChoiceItem(item);
+		request.setAttribute("item", item);
+		request.setAttribute("choiceId", choiceId);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/choiceItemDetail");
 		return mode;
 	}
 }
