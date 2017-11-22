@@ -88,6 +88,8 @@ public class MagicController {
 		if(StringUtils.isBlank(objectId)) {
 			MagicObject magicObject = MagicSpaceHandler.createMagicObjectBySpace(space);
 			objectId = magicObject.getId();
+		}else {
+			MagicSpaceHandler.createSupplementMagicObject(objectId);
 		}
 		ModelAndView mode = new ModelAndView();
 		mode.addObject("space", space);

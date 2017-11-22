@@ -207,6 +207,9 @@ public class MagicTagUtil {
 			html.append("<table class=\"gridTable\" style=\"width: 100%\" id=\"gridTable\">");
 			html.append("<thead><tr id=\"title\"><th style=\"width: 10px;text-align: center;\"><input id=\"checkAll\"  type=\"checkbox\" onclick=\"checkAll()\" /></th>");
 			for (MagicDimension dimension : dimensions) {
+				if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+					continue;
+				}
 				String requiredStr = StringUtils.EMPTY;
 				if(dimension.getRequired()) {
 					requiredStr="<span style=\"color:red\">*</span>";
@@ -216,6 +219,9 @@ public class MagicTagUtil {
 			html.append("</tr>");
 			html.append("<tr id=\"hiddenTr\" class=\"hiddenTr_displayNone\"><td style=\"width: 10px;text-align: center;\"><input type=\"checkbox\" name=\"rowId\" value=\"\" /></td>");
 			for (MagicDimension dimension : dimensions) {
+				if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+					continue;
+				}
 				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
 				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
 				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
@@ -227,6 +233,9 @@ public class MagicTagUtil {
 				for (MagicRegionRow row : rows) {
 					html.append("<tr><td style=\"width: 10px;text-align: center;\"><input  type=\"checkbox\" name=\"rowId\" value=\""+row.getId()+"\" /></td>");
 					for (MagicDimension dimension : dimensions) {
+						if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+							continue;
+						}
 						String displayName = dimension.getDisplayName();
 						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
 						MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
