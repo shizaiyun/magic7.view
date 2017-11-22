@@ -205,7 +205,7 @@ public class MagicAdminController {
 		System.out.println("spaceName:"+spaceName);
 		System.out.println("regionName:"+regionName);
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
-		request.setAttribute("dimensions", dimensions);
+		request.setAttribute("dimensionsForQuery", dimensions);
 		String spaceId = request.getParameter("spaceId");
 		request.setAttribute("spaceName", spaceName);
 		request.setAttribute("spaceId", spaceId);
@@ -248,6 +248,7 @@ public class MagicAdminController {
 	@RequestMapping(value = "/showDimension", method = RequestMethod.GET)
 	public ModelAndView showDimension(HttpServletRequest request) {
 		String dimensionId = request.getParameter("dimensionId");
+		String command = request.getParameter("command");
 		MagicDimension dimension = null;
 		if(StringUtils.isNotEmpty(dimensionId))
 			dimension = service.getDimensionById(dimensionId);
@@ -257,7 +258,11 @@ public class MagicAdminController {
 		request.setAttribute("regionId", request.getParameter("regionId"));
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/dimensionDetail");
+		if(command==null)
+			mode.setViewName("admin/dimensionDetail");
+		else if("forQuery".equals(command))
+			mode.setViewName("admin/dimensionDetailForQuery");
+			
 		return mode;
 	}
 	
@@ -296,6 +301,40 @@ public class MagicAdminController {
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/dimensionDetail");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/saveDimensionForQuery", method = RequestMethod.GET)
+	public ModelAndView saveDimensionForQuery(HttpServletRequest request) {
+		String dimensionId = request.getParameter("dimensionId");
+		MagicDimension dimension = null;
+		if(StringUtils.isNotEmpty(dimensionId))
+			dimension = service.getDimensionById(dimensionId);
+		else 
+			dimension = new MagicDimension();
+		dimension.setName(request.getParameter("name"));
+		dimension.setDisplayName(request.getParameter("displayName"));
+		dimension.setDescription(request.getParameter("description"));
+		dimension.setSpaceId(request.getParameter("spaceId"));
+		dimension.setSpaceName(request.getParameter("spaceName"));
+		dimension.setSpaceRegionId(request.getParameter("regionId"));
+		dimension.setSpaceRegionName(request.getParameter("regionName"));
+		dimension.setSeq(Integer.parseInt(request.getParameter("seq")));
+		dimension.setDestination(MagicDimension.Destination.FOR_QUERY.getCode());
+		dimension.setPageType(Integer.parseInt(request.getParameter("pageType")));
+		dimension.setValueType(Integer.parseInt(request.getParameter("valueType")));
+		dimension.setLnk(Boolean.parseBoolean(request.getParameter("lnk")));
+		dimension.setVirtual(!dimension.getLnk());
+		dimension.setQueryType(Integer.parseInt(request.getParameter("queryType")));
+		
+		service.saveDimension(dimension);
+		request.setAttribute("dimension", dimension);
+		request.setAttribute("spaceName", request.getParameter("spaceName"));
+		request.setAttribute("spaceId", request.getParameter("spaceId"));
+		request.setAttribute("regionId", request.getParameter("regionId"));
+		request.setAttribute("regionName", request.getParameter("regionName"));
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/dimensionDetailForQuery");
 		return mode;
 	}
 	
@@ -494,6 +533,7 @@ public class MagicAdminController {
 		item.setChoiceCode(choice.getChoiceCode());
 		item.setValueCode(request.getParameter("valueCode"));
 		item.setValueName(request.getParameter("valueName"));
+		item.setSeq(Integer.parseInt(request.getParameter("seq")));
 		service.saveChoiceItem(item);
 		request.setAttribute("item", item);
 		request.setAttribute("choiceId", choiceId);
