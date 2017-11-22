@@ -98,6 +98,15 @@
         </attribute>
         
         <attribute>
+            <name>rows</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the view            	            	
+            </description>
+        </attribute>
+        
+        <attribute>
             <name>destination</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>

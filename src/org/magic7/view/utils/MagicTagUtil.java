@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.magic7.core.domain.MagicDimension;
-import org.magic7.core.domain.MagicRegionRow;
 import org.magic7.core.domain.MagicChoiceItem;
+import org.magic7.core.domain.MagicDimension;
+import org.magic7.core.domain.MagicDimension.Destination;
+import org.magic7.core.domain.MagicDimension.PageType;
+import org.magic7.core.domain.MagicDimension.QueryType;
+import org.magic7.core.domain.MagicRegionRow;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
 import org.magic7.core.domain.MagicSuperRowItem;
@@ -28,21 +31,51 @@ public class MagicTagUtil {
 				MagicSpace magicSpace = service.getSpaceByName(space);
 				html.append("<div class=\"queryArea_title\">"+magicSpace.getDescription()+"</div>");
 			}
-			html.append(assembleRegionSingle(dimensions,destination,null));
+				html.append(assembleRegionSingle(dimensions,MagicDimension.Destination.getDestination(destination),null));
 		}
 		return html.toString();
 	}
 	
 
-	public static String getMagicListView(String space, String region, String view, Integer destination) {
+	public static String getMagicListView(String space, String region, String view,List<MagicRegionRow> rows, Integer destination) {
 		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(dimensions)) {
-			html.append("<thead><tr id=\"title\"><th>操作</th>");
+			html.append("<thead><tr id=\"title\">");
 			for (MagicDimension dimension : dimensions) {
 				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+dimension.getDescription()+"</th>");
 			}
-			html.append("</tr></thead>");
+			html.append("<th>操作</th></tr></thead>");
+			
+			if(rows!=null) {
+				for (MagicRegionRow row : rows) {
+					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
+					List<MagicSuperRowItem> rowItems = row.getRowItems();
+					for (MagicDimension dimension : dimensions) {
+						for (MagicSuperRowItem rowItem : rowItems) {
+							if(dimension.getDisplayName().equals(rowItem.getDisplayName())) {
+								String value = rowItem.getStrValue()==null?StringUtils.EMPTY:rowItem.getStrValue();
+								MagicDimension.PageType  pageType =  MagicDimension.PageType.getPageType(dimension.getPageType());
+								if(StringUtils.isNotBlank(value)) {
+									if(pageType==PageType.DROP_DOWN_LIST) {
+										List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,dimension.getChoiceCode());
+										for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
+											if(value.equals(magicChoiceItem.getValueCode())) {
+												value=magicChoiceItem.getValueName();
+												break;
+											}
+										}
+									}
+									
+								}
+								html.append("<td id=\""+rowItem.getRowId()+"_"+rowItem.getDisplayName()+"\">"+value+"</td>");
+							}
+						}
+					}
+					html.append("<td><input type=\"button\" value=\"删除\" onclick=\"deleteItem("+row.getObjectId()+")\"></td></tr>");
+				}
+			}
+			
 		}
 		return html.toString();
 	}
@@ -75,9 +108,9 @@ public class MagicTagUtil {
 	}
 	
 	public static String getMagicRegion(String space, String region, String objectId) {
-		Integer destination = MagicDimension.Destination.FOR_DATA.getCode();
+		MagicDimension.Destination destination = MagicDimension.Destination.FOR_DATA;
 		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
-		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,destination);
+		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,destination.getCode());
 		StringBuffer html = new StringBuffer();
 		if(multiply) {
 			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
@@ -155,12 +188,12 @@ public class MagicTagUtil {
 	}
 	
 	
-	private static String assembleRegionSingle(List<MagicDimension> dimensions,Integer destination,MagicRegionRow row) {
+	private static String assembleRegionSingle(List<MagicDimension> dimensions,MagicDimension.Destination destination,MagicRegionRow row) {
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(dimensions)) {
 			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(dimensions.get(0).getSpaceName(), dimensions.get(0).getSpaceRegionName());
 			
-			if(destination==MagicDimension.Destination.FOR_DATA.getCode()) {
+			if(destination==MagicDimension.Destination.FOR_DATA) {
 				MagicSpaceRegion.RegionType regionType = MagicSpaceRegion.RegionType.getRegionType(magicSpaceRegion.getRegionType());
 				if(regionType == MagicSpaceRegion.RegionType.TAB)  {
 					html.append("<div  class=\"toolbar\"><span class=\"toobar_title\">"+magicSpaceRegion.getDescription()+"</span><span class=\"toobar_button\"><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveItem()\"/></span></div>");
@@ -178,14 +211,12 @@ public class MagicTagUtil {
 				}
 				String region = dimension.getSpaceRegionName();
 				String displayName = dimension.getDisplayName();
-				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
-				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
 				String input = StringUtils.EMPTY;
 				if(row!=null) {
 					MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-					input = getInput(pageType, region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
+					input = getInput(region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), dimension,destination);
 				}else {
-					input = getInput(pageType, region+"_"+displayName, displayName, null, valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
+					input = getInput(region+"_"+displayName, displayName, null, dimension,destination);
 				}
 				html.append("<div class=\"item\"><span class=\"title\">"+dimension.getDescription()+":</span><span class=\"content\">"+input+"</span></div>");
 				if(itemCount%lineItemCount==0 && itemCount != dimensions.size()) {
@@ -193,7 +224,7 @@ public class MagicTagUtil {
 				}
 				itemCount++;
 			}
-			if(destination==MagicDimension.Destination.FOR_DATA.getCode()) {
+			if(destination==MagicDimension.Destination.FOR_DATA) {
 				MagicSpaceRegion.RegionType regionType = MagicSpaceRegion.RegionType.getRegionType(magicSpaceRegion.getRegionType());
 				if(regionType == MagicSpaceRegion.RegionType.MAIN) {
 					html.append("<div style=\"text-align: center;padding-right: 10px\"><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveItem()\"/><input class=\"button\" type=\"button\" value=\"提交\" onclick=\"submitItem()\"/><input class=\"button\" type=\"button\" value=\"删除\" onclick=\"deleteItem()\"/><input class=\"button\" type=\"button\" value=\"返回\" onclick=\"closeDialog()\"/></div>");
@@ -204,6 +235,7 @@ public class MagicTagUtil {
 	}
 	
 	private static Object assembleRegionMultiply(List<MagicDimension> dimensions,List<MagicRegionRow> rows) {
+		MagicDimension.Destination destination=MagicDimension.Destination.FOR_DATA;
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(dimensions)) {
 			MagicSpaceRegion region = service.getSpaceRegion(dimensions.get(0).getSpaceName(), dimensions.get(0).getSpaceRegionName());
@@ -226,9 +258,7 @@ public class MagicTagUtil {
 				if(dimension.getVisible()!=null &&!dimension.getVisible()) {
 					continue;
 				}
-				MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
-				MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-				String input = getInput(pageType, dimension.getDisplayName(), dimension.getDisplayName(), null, valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
+				String input = getInput(dimension.getDisplayName(), dimension.getDisplayName(), null, dimension,destination);
 				html.append("<td  name=\""+dimension.getDisplayName()+"\">"+input+"</td>");
 			}
 			html.append("</tr></thead>");
@@ -242,9 +272,7 @@ public class MagicTagUtil {
 						}
 						String displayName = dimension.getDisplayName();
 						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-						MagicDimension.PageType  pageType =  MagicDimension.PageType.getQueryType(dimension.getPageType());
-						MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
-						String input = getInput(pageType, row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), valueType, dimension.getChoiceCode(), dimension.getUrl(),dimension.getRequired());
+						String input = getInput(row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), dimension,destination);
 						html.append("<td>"+input+"</td>");
 					}
 					html.append("</tr>");
@@ -256,7 +284,16 @@ public class MagicTagUtil {
 		return html.toString();
 	}
 	
-	private static String getInput(MagicDimension.PageType  pageType,String id,String name,String value,MagicDimension.ValueType valueType,String choiceCode,String url,Boolean required) {
+	
+	
+	private static String getInput(String id,String name,String value,MagicDimension dimension,MagicDimension.Destination destination) {
+		MagicDimension.PageType  pageType =  MagicDimension.PageType.getPageType(dimension.getPageType());
+		MagicDimension.ValueType valueType =  MagicDimension.ValueType.getValueType(dimension.getValueType());
+		MagicDimension.QueryType  queryType =  MagicDimension.QueryType.getQueryType(dimension.getQueryType());
+		String choiceCode = dimension.getChoiceCode();
+		String url = dimension.getUrl();
+		Boolean required = dimension.getRequired();
+		
 		String html =StringUtils.EMPTY;
 		String valueStr = StringUtils.EMPTY;
 		if(value==null) {
@@ -288,7 +325,11 @@ public class MagicTagUtil {
 				}
 				options.append("<option value=\""+magicChoiceItem.getValueCode()+"\">"+magicChoiceItem.getValueName()+"</option>");
 			}
-			html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" >"+options.toString()+"</select>";
+			if(destination==Destination.FOR_QUERY&&queryType==QueryType.IN) {
+				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" multiple=\"multiple\" size=\"2\" >"+options.toString()+"</select>";
+			}else {
+				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" >"+options.toString()+"</select>";
+			}
 			break;
 		case POP_UP:
 			html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" "+valueStr+"  onclick=\"openWin('"+url+"')\" readonly=\"readonly\"/>";
@@ -304,5 +345,5 @@ public class MagicTagUtil {
 		}
 		return html;
 	}
-	
+
 }

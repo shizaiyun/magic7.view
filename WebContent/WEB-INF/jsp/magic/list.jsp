@@ -89,54 +89,25 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-	loadGridTable(1);
+	var currentPage = '${currentPage}';
+	var totalCount = '${totalCount}';
+	var pageSize = '${pageSize}';
+	var currentpage = '${currentPage}';
+		initPagination(totalCount, pageSize,currentpage);
   });
 
 
 function loadGridTable(currentPage){
-	var baseData = { 
-			space:'${space }', 
-			region:'${region }', 
-			listView:'${listView }',
-			currentPage:currentPage
-			};
-	var criteriaData = $('#queryForm').serializeObject();
-	var postData = {
-			base:baseData,
-			criteria:criteriaData
-	}
-	$.ajax({
-		url : "${pageContext.request.contextPath}/magic/getList", 
-        type : 'post',
-        data : JSON.stringify(postData),
-        contentType : 'application/json;charset=utf-8',
-        dataType : 'json',
-        success : function(data) {
-            var info = eval(data);
-            if(info.code==0){
-            	var totalCount = info.data.totalCount;
-            	var pageSize = info.data.pageSize;
-            	var rows = info.data.data;
-            	assembleGridData(rows);
-            	if(currentPage == 1){
-            		initPagination(totalCount, pageSize);
-            	}
-            }else if(info.code==1){
-            	alert(info.msg);
-            }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-        	console.log("XMLHttpRequest.status:"+XMLHttpRequest.status);
-        	console.log("XMLHttpRequest.readyState:"+XMLHttpRequest.readyState);
-        	console.log("textStatus:"+textStatus);
-      }
-    });
+	document.getElementById("currentPage").value=currentPage;
+	document.getElementById("queryForm").submit();
 }
 
-function initPagination(totalCount, pageSize) {
+function initPagination(totalCount, pageSize,currentPage) {
     $('.M-box').pagination({
         totalData: totalCount,
         showData: pageSize,
+        current:currentPage,
+        pageCount:2,
         callback: function (index) {
         	 $('.now').text(index);
         	 loadGridTable(index);
@@ -144,6 +115,7 @@ function initPagination(totalCount, pageSize) {
     },function(api){
         $('.now').text(api.getCurrent());
     });
+    $('.now').text(currentPage);
 }
 
 function getTitles(){
@@ -160,7 +132,7 @@ function assembleGridData(datas){
 	  $(datas).each(function(){
 		  var row = this;
           var objectId = row.objectId;
-          var tr = "<tr id=\""+objectId+"\"><td><input type=\"radio\" name=\"objectId\" value=\""+objectId+"\" /></td>";
+          var tr = "<tr id=\""+objectId+"\">";
           var rowItems = row.rowItems;
 	          $(rowItems).each(function(){
 		        for (var i = 0; i < titles.length; i++) {
@@ -175,7 +147,7 @@ function assembleGridData(datas){
 		        	}
 				}
 		    });  
-          tr = tr +"</tr>";
+          tr = tr +"<td><input type=\"radio\" name=\"objectId\" value=\""+objectId+"\" /></td></tr>";
           $("#gridTable tbody").append(tr);
         });
 }
@@ -187,24 +159,14 @@ function addItem(){
       }
 }
 
-function modifyItem(){
-	var objectId = $("input[name='objectId']:checked").val();
-	if(objectId== undefined ){
-		alert("请选择需要修改的项");
-		return;
-	}
+function modifyItem(objectId){
 	var openNewLink = openWin('${pageContext.request.contextPath}'+'/magic/showDetail?space=${space}&objectId='+objectId, 'newwindow',1400,600);
 	if(window.focus) {
         openNewLink.focus();
       }
 }
 
-function deleteItem(){
-	var objectId = $("input[name='objectId']:checked").val();
-	if(objectId== undefined ){
-		alert("请选择需要删除的项");
-		return;
-	}
+function deleteItem(objectId){
 	var baseData = { 
 			objectId:objectId
 			};
@@ -216,7 +178,7 @@ function deleteItem(){
         dataType : 'json',
         success : function(data) {
         	var datas = eval(data);
-        	alert(datas.message);
+        	alert("删除成功");
         	loadGridTable(1);
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -226,12 +188,12 @@ function deleteItem(){
         }
     });
 }
-
 </script>
 </head>
 <body>
 <c:if test="${queryView !=null}">
-	<form action="" method="post" id="queryForm">
+	<form action="${pageContext.request.contextPath}/magic/showList?space=${space}&region=${region}&queryView=${queryView}&listView=${listView}" method="post" id="queryForm">
+		<input type="hidden" name="currentPage" id="currentPage" value="${currentPage}" />
 		<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1"></m:magicView>
 		<div style="text-align: center;">
 			<input class="button" type="button" value="查询" onclick="loadGridTable(1)">
@@ -240,14 +202,11 @@ function deleteItem(){
 	</form>
 	<hr>
 </c:if>
-
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
-	<input class="button" type="button" value="修改" onclick="modifyItem()">
-	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" id="gridTable">
-	<m:magicListView space="${space }" region="${region }" view="${listView }" destination="0"></m:magicListView>
+	<m:magicListView space="${space }" region="${region }" view="${listView }" rows="${rows }" destination="0"></m:magicListView>
 	<tbody></tbody>
 </table>
 <div class="M-box" align="center"></div>
