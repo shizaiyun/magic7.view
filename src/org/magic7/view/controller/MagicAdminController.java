@@ -494,7 +494,7 @@ public class MagicAdminController {
 		listChoiceItem(request);
 		request.setAttribute("choice", choice);
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/choiceDetail");
+		mode.setViewName("redirect:showChoice?choiceId="+choice.getId());
 		return mode;
 	}
 	@RequestMapping(value = "/listChoiceItem", method = RequestMethod.GET)
