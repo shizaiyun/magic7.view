@@ -26,6 +26,7 @@
 		<td>维度说明</td>
 		<td>数据类型</td>
 		<td>查询类型</td>
+		<td>顺序</td>
 	</tr>
 	<c:forEach var="dimension" items="${dimensionsForQuery }">
 		<tr>
@@ -34,6 +35,7 @@
 			<td>${dimension.description}</td>
 			<td>${dimension.valueTypeName}</td>
 			<td>${dimension.queryTypeName}</td>
+			<td>${dimension.seq}</td>
 		</tr>
 	</c:forEach>
 </table>
