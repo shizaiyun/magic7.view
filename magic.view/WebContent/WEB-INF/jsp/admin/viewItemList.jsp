@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
 	function addViewItem() {
-		window.open("showViewItem?spaceId=${spaceId}&spaceName=${spaceName}&regionName=${regionName}&regionId=${regionId}&viewId=${view.id}&viewName=${view.name}");
+		window.open("showViewItem?spaceId=${spaceId}&spaceName=${spaceName}&regionName=${regionName}&regionId=${regionId}&viewId=${view.id}&viewName=${view.name}&destination=${view.destination}");
 	}
 </script>
 <title>view item list</title>
@@ -29,7 +29,7 @@
 	</tr>
 	<c:forEach var="item" items="${items }">
 		<tr>
-			<td><a href="javascript:window.open('showViewItem?itemId=${item.id }')">${item.name}</a></td>
+			<td><a href="javascript:window.open('showViewItem?itemId=${item.id }&spaceId=${spaceId}&spaceName=${spaceName}&regionName=${regionName}&regionId=${regionId}&viewId=${view.id}&viewName=${view.name}&destination=${view.destination}')">${item.name}</a></td>
 			<td>${item.dimension.description}</td>
 			<td>${item.editable}</td>
 			<td>${item.required}</td>

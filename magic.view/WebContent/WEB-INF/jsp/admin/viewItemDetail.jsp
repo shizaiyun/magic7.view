@@ -45,13 +45,14 @@
 	<input type="hidden" name="spaceName" value="${spaceName}">
 	<input type="hidden" name="viewId" value="${viewId}">
 	<input type="hidden" name="viewName" value="${viewName}">
+	<input type="hidden" name="itemId" value="${item.id}">
 	<table style="width: 100%" border=1>
 		<tr>
 			<td width="33%">视图项名称：<input type="text" name="name" value="${item.name }"></input></td>
 			<td width="33%">视图项对应维度：
 				<select name="dimensionId">
 					<c:forEach var="dimension" items="${dimensions }">
-						<option value="${dimension.id }">${dimension.description }</option>
+						<option <c:if test="${item.dimensionId eq dimension.id }">selected</c:if> value="${dimension.id }">${dimension.description }</option>
 					</c:forEach>
 				</select>
 			</td>
