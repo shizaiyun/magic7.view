@@ -20,11 +20,13 @@
 </div>
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
-		<td>视图名称</td>
+		<td width="50%">视图名称</td>
+		<td>视图用途</td>
 	</tr>
 	<c:forEach var="view" items="${views }">
 		<tr>
 			<td><a href="javascript:window.open('showView?regionId=${view.spaceRegionId}&spaceName=${view.spaceName}&spaceId=${view.spaceId}&regionName=${view.spaceRegionName }&viewId=${view.id }')">${view.name}</a></td>
+			<td>${view.destinationName}</a></td>
 		</tr>
 	</c:forEach>
 </table>

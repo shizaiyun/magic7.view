@@ -47,6 +47,13 @@
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
+				<td>视图用途：
+					<select name="destination">
+						<option <c:if test="${view.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>
+						<option <c:if test="${view.destination eq forQuery.code}">selected</c:if> value ="${forQuery.code }">查询</option>
+						<option <c:if test="${view.destination eq forButton.code}">selected</c:if> value ="${forButton.code }">按钮</option>
+					</select>
+				</td>
 			</tr>
 		</table>
 		<div style="text-align: center;">
