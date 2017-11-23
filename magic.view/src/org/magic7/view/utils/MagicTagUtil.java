@@ -113,11 +113,11 @@ public class MagicTagUtil {
 		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,destination.getCode());
 		StringBuffer html = new StringBuffer();
 		if(multiply) {
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 			html.append(assembleRegionMultiply(dimensions,rows));
 			
 		}else {
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 			if(rows!=null && rows.size()>0) {
 				MagicRegionRow row= rows.get(0);
 				html.append(assembleRegionSingle(dimensions,destination,row));
