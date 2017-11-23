@@ -56,6 +56,16 @@
             	The value of the destination            	            	
             </description>
         </attribute> 
+        
+        <attribute>
+            <name>parmMap</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the destination            	            	
+            </description>
+        </attribute> 
+        
      </tag> 
      
      
