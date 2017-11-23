@@ -1,6 +1,7 @@
 package org.magic7.view.tag;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
@@ -23,10 +24,11 @@ public final class MagicViewTag extends TagSupport {
 	private String region = null;
 	private String view = null;
 	private Integer destination = 0;
+	private Map<String, Object> parmMap;
 
 	public int doEndTag() throws JspTagException {
 		try {
-			String html = MagicTagUtil.getMagicRegionView(space, region, view, destination);
+			String html = MagicTagUtil.getMagicRegionView(space, region, view, destination,parmMap);
 			pageContext.getOut().write(html);
 		} catch (IOException e) {
 			throw new JspTagException("MagicViewTag: " + e.getMessage());
@@ -68,6 +70,14 @@ public final class MagicViewTag extends TagSupport {
 
 	public void setDestination(Integer destination) {
 		this.destination = destination;
+	}
+
+	public Map<String, Object> getParmMap() {
+		return parmMap;
+	}
+
+	public void setParmMap(Map<String, Object> parmMap) {
+		this.parmMap = parmMap;
 	}
 
 

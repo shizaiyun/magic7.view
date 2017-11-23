@@ -1,7 +1,9 @@
 package org.magic7.view.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicChoiceItem;
@@ -12,6 +14,7 @@ import org.magic7.core.domain.MagicDimension.QueryType;
 import org.magic7.core.domain.MagicRegionRow;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
+import org.magic7.core.domain.MagicSpaceRegionViewItem;
 import org.magic7.core.domain.MagicSuperRowItem;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
@@ -20,62 +23,179 @@ import org.springframework.util.CollectionUtils;
 
 public class MagicTagUtil {
 	public static MagicService service = MagicServiceFactory.getMagicService();
-	public static String getMagicRegionView(String space, String region, String view, Integer destination) {
+	public static String getMagicRegionView(String space, String region, String view, Integer destination,Map<String, Object> parmMap) {
+		Destination dimensionDestination = MagicDimension.Destination.getDestination(destination);
 		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
-		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
 		StringBuffer html = new StringBuffer();
-		if(multiply) {
-			html.append(assembleRegionMultiply(dimensions,null));
-		}else {
+		MagicSpace magicSpace = service.getSpaceByName(space);
+		html.append("<div class=\"queryArea_title\">"+magicSpace.getDescription()+"</div>");
+		if(dimensionDestination == Destination.FOR_QUERY) {
 			if(StringUtils.isNotBlank(view)) {
-				MagicSpace magicSpace = service.getSpaceByName(space);
-				html.append("<div class=\"queryArea_title\">"+magicSpace.getDescription()+"</div>");
+				List<MagicSpaceRegionViewItem> items =service.listSpaceRegionViewItem(space, region, view, " seq ");
+				if(!multiply) {
+					html.append(assembleRegionSingleForQuery(items,parmMap));
+				}
+			}else {
+				List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,Destination.FOR_DATA.getCode());
+				if(!multiply) {
+					html.append(assembleRegionSingleWithoutViewForQuery(dimensions,parmMap));
+				}
 			}
-				html.append(assembleRegionSingle(dimensions,MagicDimension.Destination.getDestination(destination),null));
 		}
 		return html.toString();
 	}
 	
-
-	public static String getMagicListView(String space, String region, String view,List<MagicRegionRow> rows, Integer destination) {
-		List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
+	private static String assembleRegionSingleWithoutViewForQuery(List<MagicDimension> dimensions,Map<String, Object> parmMap) {
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(dimensions)) {
-			html.append("<thead><tr id=\"title\">");
+			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(dimensions.get(0).getSpaceName(), dimensions.get(0).getSpaceRegionName());
+			Integer lineItemCount = magicSpaceRegion.getDimensionNum()==null?3:magicSpaceRegion.getDimensionNum();
+			Integer itemCount = 1;
 			for (MagicDimension dimension : dimensions) {
-				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+dimension.getDescription()+"</th>");
+				if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+					continue;
+				}
+				String region = dimension.getSpaceRegionName();
+				String displayName = dimension.getDisplayName();
+				String value = null;
+				if(parmMap.get(displayName)!=null) {
+					value = parmMap.get(displayName).toString();
+				}
+				String input = getInput(region+"_"+displayName, displayName, value, dimension,Destination.FOR_QUERY);
+				html.append("<div class=\"item\"><span class=\"title\">"+dimension.getDescription()+":</span><span class=\"content\">"+input+"</span></div>");
+				if(itemCount%lineItemCount==0 && itemCount != dimensions.size()) {
+					html.append("<br>");
+				}
+				itemCount++;
 			}
-			html.append("<th>操作</th></tr></thead>");
-			
-			if(rows!=null) {
-				for (MagicRegionRow row : rows) {
-					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
-					List<MagicSuperRowItem> rowItems = row.getRowItems();
-					for (MagicDimension dimension : dimensions) {
-						for (MagicSuperRowItem rowItem : rowItems) {
-							if(dimension.getDisplayName().equals(rowItem.getDisplayName())) {
-								String value = rowItem.getStrValue()==null?StringUtils.EMPTY:rowItem.getStrValue();
-								MagicDimension.PageType  pageType =  MagicDimension.PageType.getPageType(dimension.getPageType());
-								if(StringUtils.isNotBlank(value)) {
-									if(pageType==PageType.DROP_DOWN_LIST) {
-										List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,dimension.getChoiceCode());
-										for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
-											if(value.equals(magicChoiceItem.getValueCode())) {
-												value=magicChoiceItem.getValueName();
-												break;
+		
+		}
+		return html.toString();
+	}
+	
+	private static String assembleRegionSingleForQuery(List<MagicSpaceRegionViewItem> viewItems, Map<String, Object> parmMap) {
+		StringBuffer html = new StringBuffer();
+		if(!CollectionUtils.isEmpty(viewItems)) {
+			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(viewItems.get(0).getSpaceName(), viewItems.get(0).getSpaceRegionName());
+			Integer lineItemCount = magicSpaceRegion.getDimensionNum()==null?3:magicSpaceRegion.getDimensionNum();
+			Integer itemCount = 1;
+			for (MagicSpaceRegionViewItem viewitem : viewItems) {
+				if(viewitem.getVisible()!=null &&!viewitem.getVisible()) {
+					continue;
+				}
+				String region = viewitem.getSpaceRegionName();
+				MagicDimension dimension = service.getDimensionById(viewitem.getDimensionId());
+				String displayName = dimension.getDisplayName();
+				String value = null;
+				if(parmMap.get(displayName)!=null) {
+					value = parmMap.get(displayName).toString();
+				}
+				String input =  getInput(region+"_"+displayName, displayName, value, dimension,Destination.FOR_QUERY);
+				html.append("<div class=\"item\"><span class=\"title\">"+viewitem.getName()+":</span><span class=\"content\">"+input+"</span></div>");
+				if(itemCount%lineItemCount==0 && itemCount != viewItems.size()) {
+					html.append("<br>");
+				}
+				itemCount++;
+			}
+		}
+		return html.toString();
+	}
+
+	
+
+	public static String getMagicListView(String space, String region, String view,List<MagicRegionRow> rows, Integer destination) {
+		StringBuffer html = new StringBuffer();
+		if(StringUtils.isNotBlank(view)) {
+			List<MagicSpaceRegionViewItem> viewItems =service.listSpaceRegionViewItem(space, region, view, " seq ");
+			if(!CollectionUtils.isEmpty(viewItems)) {
+				html.append("<thead><tr id=\"title\">");
+				for (MagicSpaceRegionViewItem viewItem : viewItems) {
+					if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
+						continue;
+					}
+					MagicDimension dimension = service.getDimensionById(viewItem.getDimensionId());
+					html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+viewItem.getName()+"</th>");
+				}
+				html.append("<th>操作</th></tr></thead>");
+				
+				if(rows!=null) {
+					for (MagicRegionRow row : rows) {
+						html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
+						List<MagicSuperRowItem> rowItems = row.getRowItems();
+						for (MagicSpaceRegionViewItem viewItem : viewItems) { 
+							if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
+								continue;
+							}
+							for (MagicSuperRowItem rowItem : rowItems) {
+								if(viewItem.getDimensionId().equals(rowItem.getDimensionId())) {
+									String value = getValue(rowItem);
+									MagicDimension dimension = service.getDimensionById(viewItem.getDimensionId());
+									MagicDimension.PageType  pageType =  MagicDimension.PageType.getPageType(dimension.getPageType());
+									if(StringUtils.isNotBlank(value)) {
+										if(pageType==PageType.DROP_DOWN_LIST) {
+											List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,dimension.getChoiceCode());
+											for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
+												if(value.equals(magicChoiceItem.getValueCode())) {
+													value=magicChoiceItem.getValueName();
+													break;
+												}
 											}
 										}
+										
 									}
-									
+									html.append("<td id=\""+rowItem.getRowId()+"_"+rowItem.getDisplayName()+"\">"+value+"</td>");
 								}
-								html.append("<td id=\""+rowItem.getRowId()+"_"+rowItem.getDisplayName()+"\">"+value+"</td>");
 							}
 						}
+						html.append("<td><input type=\"button\" value=\"删除\" onclick=\"deleteItem("+row.getObjectId()+")\"></td></tr>");
 					}
-					html.append("<td><input type=\"button\" value=\"删除\" onclick=\"deleteItem("+row.getObjectId()+")\"></td></tr>");
 				}
 			}
-			
+		}else {
+			List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, view,null,destination);
+			if(!CollectionUtils.isEmpty(dimensions)) {
+				html.append("<thead><tr id=\"title\">");
+				for (MagicDimension dimension : dimensions) {
+					if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+						continue;
+					}
+					html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+dimension.getDescription()+"</th>");
+				}
+				html.append("<th>操作</th></tr></thead>");
+				
+				if(rows!=null) {
+					for (MagicRegionRow row : rows) {
+						html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
+						List<MagicSuperRowItem> rowItems = row.getRowItems();
+						for (MagicDimension dimension : dimensions) {
+							if(dimension.getVisible()!=null &&!dimension.getVisible()) {
+								continue;
+							}
+							for (MagicSuperRowItem rowItem : rowItems) {
+								if(dimension.getDisplayName().equals(rowItem.getDisplayName())) {
+									String value = getValue(rowItem);
+									MagicDimension.PageType  pageType =  MagicDimension.PageType.getPageType(dimension.getPageType());
+									if(StringUtils.isNotBlank(value)) {
+										if(pageType==PageType.DROP_DOWN_LIST) {
+											List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,dimension.getChoiceCode());
+											for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
+												if(value.equals(magicChoiceItem.getValueCode())) {
+													value=magicChoiceItem.getValueName();
+													break;
+												}
+											}
+										}
+										
+									}
+									html.append("<td id=\""+rowItem.getRowId()+"_"+rowItem.getDisplayName()+"\">"+value+"</td>");
+								}
+							}
+						}
+						html.append("<td><input type=\"button\" value=\"删除\" onclick=\"deleteItem("+row.getObjectId()+")\"></td></tr>");
+					}
+				}
+				
+			}
 		}
 		return html.toString();
 	}
@@ -115,11 +235,17 @@ public class MagicTagUtil {
 		if(multiply) {
 			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 			html.append(assembleRegionMultiply(dimensions,rows));
-			
 		}else {
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
 			if(rows!=null && rows.size()>0) {
 				MagicRegionRow row= rows.get(0);
+				for (MagicRegionRow magicRegionRow : rows) {
+					if(magicRegionRow.getValid()) {
+						row = magicRegionRow;
+						break;
+					}
+				}
+				
 				html.append(assembleRegionSingle(dimensions,destination,row));
 			}else {
 				html.append(assembleRegionSingle(dimensions,destination,null));
@@ -214,7 +340,7 @@ public class MagicTagUtil {
 				String input = StringUtils.EMPTY;
 				if(row!=null) {
 					MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-					input = getInput(region+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), dimension,destination);
+					input = getInput(region+"_"+row.getId()+"_"+displayName, displayName, getValue(rowItem), dimension,destination);
 				}else {
 					input = getInput(region+"_"+displayName, displayName, null, dimension,destination);
 				}
@@ -232,6 +358,48 @@ public class MagicTagUtil {
 			}
 		}
 		return html.toString();
+	}
+
+
+	private static String getValue(MagicSuperRowItem rowItem) {
+		String value = StringUtils.EMPTY;
+		MagicDimension.ValueType valueType = MagicDimension.ValueType.getValueType(rowItem.getValueType());
+		switch (valueType) {
+		case STR_VALUE:
+			if(rowItem.getStrValue()!=null) {
+				value = rowItem.getStrValue();
+			}
+			break;
+		case DATE_VALUE:
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if(rowItem.getDateValue() !=null) {
+				value = sdf.format(rowItem.getDateValue());
+			}
+			break;
+		case NUM_VALUE:
+			if(rowItem.getNumValue()!=null) {
+				value = rowItem.getNumValue().toString();
+			}
+			break;
+		case BOOLEAN_VALUE:
+			if(rowItem.getBooleanValue()!=null) {
+				if(rowItem.getBooleanValue()) {
+					value="1";
+				}else {
+					value="0";
+				}
+			}
+			break;
+		case LIST_STR_VALUE:
+			if(rowItem.getListStrValue()!=null) {
+				value = rowItem.getListStrValue();
+			}
+			break;
+		default:
+			value = StringUtils.EMPTY;
+			break;
+		}
+		return value;
 	}
 	
 	private static Object assembleRegionMultiply(List<MagicDimension> dimensions,List<MagicRegionRow> rows) {
@@ -272,7 +440,7 @@ public class MagicTagUtil {
 						}
 						String displayName = dimension.getDisplayName();
 						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
-						String input = getInput(row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, rowItem.getStrValue(), dimension,destination);
+						String input = getInput(row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, getValue(rowItem), dimension,destination);
 						html.append("<td>"+input+"</td>");
 					}
 					html.append("</tr>");
@@ -293,7 +461,7 @@ public class MagicTagUtil {
 		String choiceCode = dimension.getChoiceCode();
 		String url = dimension.getUrl();
 		Boolean required = dimension.getRequired();
-		
+		Boolean editable = dimension.getEditable();
 		String html =StringUtils.EMPTY;
 		String valueStr = StringUtils.EMPTY;
 		if(value==null) {
@@ -304,16 +472,25 @@ public class MagicTagUtil {
 		}
 		String inputClass = StringUtils.EMPTY;
 		String requiredStr = StringUtils.EMPTY;
+		String readonly = "";
 		if(required) {
 			inputClass =inputClass+" required ";
 			requiredStr = "required";
 		}
+		if(editable!=null && !editable) {
+			inputClass =inputClass+" readonly ";
+			readonly = "readonly";
+		}
 		switch (pageType) {
 		case TEXT_EDITOR:
 			if(MagicDimension.ValueType.DATE_VALUE == valueType) {
-				html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\"Wdate "+inputClass+"\" "+requiredStr+" "+valueStr+" class=\"Wdate\" onclick=\"WdatePicker({readOnly:true})\"/>";
+				if(editable!=null && !editable) {
+					html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\"Wdate "+inputClass+" Wdate_readonly\" "+requiredStr+" "+readonly+" "+valueStr+" />";
+				}else {
+					html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\"Wdate "+inputClass+"\" "+requiredStr+" "+readonly+" "+valueStr+" onclick=\"WdatePicker({readOnly:true})\"/>";
+				}
 			}else {
-				html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" "+valueStr+" />";
+				html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" "+readonly+" "+valueStr+" />";
 			}
 			break;
 		case DROP_DOWN_LIST:
@@ -322,11 +499,12 @@ public class MagicTagUtil {
 			for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
 				if(StringUtils.isNotBlank(value) && value.equals(magicChoiceItem.getValueCode())) {
 					options.append("<option value=\""+magicChoiceItem.getValueCode()+"\" selected>"+magicChoiceItem.getValueName()+"</option>");
+				}else {
+					options.append("<option value=\""+magicChoiceItem.getValueCode()+"\">"+magicChoiceItem.getValueName()+"</option>");
 				}
-				options.append("<option value=\""+magicChoiceItem.getValueCode()+"\">"+magicChoiceItem.getValueName()+"</option>");
 			}
 			if(destination==Destination.FOR_QUERY&&queryType==QueryType.IN) {
-				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" multiple=\"multiple\" size=\"2\" >"+options.toString()+"</select>";
+				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" multiple=\"multiple\" size=\"1\" >"+options.toString()+"</select>";
 			}else {
 				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" >"+options.toString()+"</select>";
 			}

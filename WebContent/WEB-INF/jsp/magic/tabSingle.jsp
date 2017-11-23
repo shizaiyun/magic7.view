@@ -18,7 +18,7 @@
 <title>tabSingle</title>
 <style type="text/css">
 			span.title { 
-					width:80px; 
+					width:120px; 
 					display: inline-block; 
 					font-size:11px;
 					color:#333333;
@@ -37,8 +37,8 @@
 					display: inline-block; 
 					}
 			div.item{
-				margin-left:50px;
-				margin-right:50px;
+				margin-left:30px;
+				margin-right:20px;
 				margin-top:2px;
 				margin-bottom:3px;
 				display:inline-block; 
@@ -126,6 +126,9 @@
     margin-top: 2px;
  }
  
+ .Wdate_readonly{
+ 	background: #F7F7F7 url(../resources/js/My97DatePicker/skin/datePicker.gif) no-repeat right;;
+ }
 </style>
 
 <script type="text/javascript">
@@ -205,7 +208,7 @@ function submitItem(){
 	        success : function(data) {
 	        	var info = eval(data);
 	        	if(info.code==0){
-	        		alert("保存成功");
+	        		alert("提交成功");
 	            }else if(info.code==1){
 	            	alert(info.msg);
 	            }

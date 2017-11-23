@@ -16,7 +16,7 @@
 <title>magic list</title>
 <style type="text/css">
 			span.title { 
-					width:80px; 
+					width:120px; 
 					display: inline-block; 
 					font-size:11px;
 					color:#333333;
@@ -35,7 +35,7 @@
 					display: inline-block; 
 					}
 			div.item{
-				margin-left:50px;
+				margin-left:20px;
 				margin-right:50px;
 				margin-top:2px;
 				margin-bottom:3px;
@@ -188,20 +188,28 @@ function deleteItem(objectId){
         }
     });
 }
+function resetForm(){
+	$("#queryContent input").each(function(){
+		$(this).val("");
+	});
+	$("#queryContent select").each(function(){
+		$(this).val("");
+	});
+}
 </script>
 </head>
 <body>
-<c:if test="${queryView !=null}">
 	<form action="${pageContext.request.contextPath}/magic/showList?space=${space}&region=${region}&queryView=${queryView}&listView=${listView}" method="post" id="queryForm">
 		<input type="hidden" name="currentPage" id="currentPage" value="${currentPage}" />
-		<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1"></m:magicView>
+		<div id="queryContent">
+			<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1" parmMap="${parmMap }"></m:magicView>
+		</div>
 		<div style="text-align: center;">
 			<input class="button" type="button" value="查询" onclick="loadGridTable(1)">
-			<input class="button" type="reset" value="重置">
+			<input class="button" type="button" value="重置" onclick="resetForm()">
 		</div>
 	</form>
 	<hr>
-</c:if>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
 </div>
@@ -209,7 +217,7 @@ function deleteItem(objectId){
 	<m:magicListView space="${space }" region="${region }" view="${listView }" rows="${rows }" destination="0"></m:magicListView>
 	<tbody></tbody>
 </table>
-<div class="M-box" align="center"></div>
+<div style="margin-top: 5px" class="M-box" align="center"></div>
 
 </body>
 
