@@ -453,12 +453,10 @@ public class MagicAdminController {
 		item.setDimensionId(request.getParameter("dimensionId"));
 		item.setViewId(viewId);
 		item.setViewName(viewName);
+		item.setChoiceCode(request.getParameter("choiceCode"));
 		
 		service.saveSpaceRegionViewItem(item);
 		
-		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, null, null, MagicDimension.Destination.FOR_DATA.getCode());
-		System.out.println("dimensions:"+dimensions);
-		request.setAttribute("dimensions", dimensions);
 		request.setAttribute("item", item);
 		request.setAttribute("spaceName", spaceName);
 		request.setAttribute("spaceId", spaceId);
