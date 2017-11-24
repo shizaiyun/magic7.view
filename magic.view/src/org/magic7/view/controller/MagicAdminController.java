@@ -138,6 +138,8 @@ public class MagicAdminController {
 		region.setMultiply(Boolean.parseBoolean(request.getParameter("multiply")));
 		region.setSeq(Integer.parseInt(request.getParameter("seq")));
 		
+		service.saveSpaceRegion(region);
+		
 		for(String codeId:newLnks) {
 			MagicRegionCodeLnk lnk = new MagicRegionCodeLnk();
 			MagicCodeLib lib = service.getCodeLibById(codeId);
@@ -152,8 +154,6 @@ public class MagicAdminController {
 			service.saveReginCodeLnk(lnk);
 		}
 		
-		service.saveSpaceRegion(region);
-		
 		List<MagicCodeLib> javaCodesWithLnk = service.listCodeLibWithLnk(region.getSpaceName(), region.getName(), MagicCodeLib.CodeType.JAVA.getCode());
 		request.setAttribute("javaCodesWithLnk", javaCodesWithLnk);
 		List<MagicCodeLib> javaCodes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode(), null, 0, 1000);
@@ -166,6 +166,7 @@ public class MagicAdminController {
 		request.setAttribute("regionId", region.getId());
 		listDimension(request);
 		listDimensionForQuery(request);
+		listDimensionForButton(request);
 		listView(request);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("redirect:showRegion?regionId="+region.getId()+"&spaceName="+region.getSpaceName()+"&spaceId="+region.getSpaceId());
@@ -191,6 +192,7 @@ public class MagicAdminController {
 			request.setAttribute("regionId", region.getId());
 			listDimension(request);
 			listDimensionForQuery(request);
+			listDimensionForButton(request);
 			listView(request);
 		}
 		ModelAndView mode = new ModelAndView();
@@ -274,6 +276,37 @@ public class MagicAdminController {
 		return mode;
 	}
 	
+	@RequestMapping(value = "/listDimensionForButton", method = RequestMethod.GET)
+	public ModelAndView listDimensionForButton(HttpServletRequest request) {
+		Object temp = request.getAttribute("spaceName");
+		String spaceName = null;
+		if(temp!=null)
+			spaceName = temp.toString();
+		else
+			spaceName = request.getParameter("spaceName");
+		
+		String regionName = null;
+		temp = request.getAttribute("regionName");
+		if(temp!=null)
+			regionName = temp.toString();
+		else
+			regionName = request.getParameter("regionName");
+		
+		String viewName = request.getParameter("viewName");
+		String dimensionNames = request.getParameter("dimensionNames");
+		Integer destination = MagicDimension.Destination.FOR_BUTTON.getCode();
+		System.out.println("spaceName:"+spaceName);
+		System.out.println("regionName:"+regionName);
+		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
+		request.setAttribute("dimensionsForButton", dimensions);
+		String spaceId = request.getParameter("spaceId");
+		request.setAttribute("spaceName", spaceName);
+		request.setAttribute("spaceId", spaceId);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/dimensionListForQuery");
+		return mode;
+	}
+	
 	@RequestMapping(value = "/listViews", method = RequestMethod.GET)
 	public ModelAndView listView(HttpServletRequest request) {
 		Object temp = request.getAttribute("spaceName");
@@ -323,7 +356,8 @@ public class MagicAdminController {
 			mode.setViewName("admin/dimensionDetail");
 		else if("forQuery".equals(command))
 			mode.setViewName("admin/dimensionDetailForQuery");
-			
+		else if("forButton".equals(command))
+			mode.setViewName("admin/dimensionDetailForButton");
 		return mode;
 	}
 	
@@ -361,7 +395,8 @@ public class MagicAdminController {
 		request.setAttribute("regionId", request.getParameter("regionId"));
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/dimensionDetail");
+		mode.setViewName("redirect:showDimension?dimensionId="+dimension.getId()+"&spaceName="+dimension.getSpaceName()
+		+"&spaceId="+dimension.getSpaceId()+"&regionId="+dimension.getSpaceRegionId()+"&regionName="+dimension.getSpaceRegionName());
 		return mode;
 	}
 	
@@ -400,7 +435,47 @@ public class MagicAdminController {
 		request.setAttribute("regionId", request.getParameter("regionId"));
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/dimensionDetailForQuery");
+		mode.setViewName("redirect:showDimension?dimensionId="+dimension.getId()+"&spaceName="+dimension.getSpaceName()
+			+"&spaceId="+dimension.getSpaceId()+"&regionId="+dimension.getSpaceRegionId()+"&regionName="+dimension.getSpaceRegionName()+"&command=forQuery");
+		return mode;
+	}
+	
+	@RequestMapping(value = "/saveDimensionForButton", method = RequestMethod.GET)
+	public ModelAndView saveDimensionForButton(HttpServletRequest request) {
+		String dimensionId = request.getParameter("dimensionId");
+		MagicDimension dimension = null;
+		if(StringUtils.isNotEmpty(dimensionId))
+			dimension = service.getDimensionById(dimensionId);
+		else 
+			dimension = new MagicDimension();
+		dimension.setName(request.getParameter("name"));
+		dimension.setDisplayName(request.getParameter("displayName"));
+		dimension.setDescription(request.getParameter("description"));
+		dimension.setSpaceId(request.getParameter("spaceId"));
+		dimension.setSpaceName(request.getParameter("spaceName"));
+		dimension.setSpaceRegionId(request.getParameter("regionId"));
+		dimension.setSpaceRegionName(request.getParameter("regionName"));
+		dimension.setSeq(Integer.parseInt(request.getParameter("seq")));
+		dimension.setDestination(MagicDimension.Destination.FOR_BUTTON.getCode());
+		dimension.setButtonTrigger(request.getParameter("buttonTrigger"));
+		dimension.setLnk(false);
+		dimension.setVirtual(true);
+		dimension.setPageType(MagicDimension.PageType.BUTTON.getCode());
+		dimension.setValueType(MagicDimension.ValueType.STR_VALUE.getCode());
+		
+		dimension.setRequired(false);
+		dimension.setEditable(true);
+		dimension.setVisible(true);
+		
+		service.saveDimension(dimension);
+		request.setAttribute("dimension", dimension);
+		request.setAttribute("spaceName", request.getParameter("spaceName"));
+		request.setAttribute("spaceId", request.getParameter("spaceId"));
+		request.setAttribute("regionId", request.getParameter("regionId"));
+		request.setAttribute("regionName", request.getParameter("regionName"));
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("redirect:showDimension?dimensionId="+dimension.getId()+"&spaceName="+dimension.getSpaceName()
+			+"&spaceId="+dimension.getSpaceId()+"&regionId="+dimension.getSpaceRegionId()+"&regionName="+dimension.getSpaceRegionName()+"&command=forButton");
 		return mode;
 	}
 	
