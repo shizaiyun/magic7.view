@@ -16,6 +16,35 @@
 	request.setAttribute("main", MagicSpaceRegion.RegionType.MAIN);
 	request.setAttribute("tab", MagicSpaceRegion.RegionType.TAB);
 %>
+<script language="javascript" type="text/javascript">  
+//定义 城市 数据数组  
+cityArray = new Array();  
+cityArray[0] = new Array("河南省","郑州市|开封市|洛阳市|平顶山市|安阳市|鹤壁市|新乡市|焦作市|濮阳市|许昌市|漯河市|三门峡市|南阳市|商丘市|信阳市|周口市|驻马店市|济源市");  
+cityArray[1] = new Array("云南省","昆明市|大理市|曲靖市|玉溪市|昭通市|楚雄市|红河市|文山市|思茅市|西双版纳市|保山市|德宏市|丽江市|怒江市|迪庆市|临沧市");  
+
+function getCity(currProvince)  
+{  
+    //当前 所选择 的 省  
+    var currProvince = currProvince;  
+    var i,j,k;  
+    //清空 城市 下拉选单  
+    document.all.selCity.length = 0 ;  
+    for (i = 0 ;i <cityArray.length;i++)  
+    {  
+        //得到 当前省 在 城市数组中的位置  
+        if(cityArray[i][0]==currProvince)  
+        {  
+            //得到 当前省 所辖制的 地市  
+            var tmpcityArray = cityArray[i][1].split("|")  
+            for(j=0;j<tmpcityArray.length;j++)  
+            {  
+                //填充 城市 下拉选单  
+                document.all.selCity.options[document.all.selCity.length] = new Option(tmpcityArray[j],tmpcityArray[j]);  
+            }  
+        }  
+    }  
+}  
+</script>
 </head>
 <body>
 <div style="background-color: #11111;">编辑分区</div>
@@ -23,6 +52,8 @@
 	<input type="hidden" name="regionId" value="${region.id }">
 	<input type="hidden" name="spaceId" value="${spaceId }">
 	<input type="hidden" name="spaceName" value="${spaceName}">
+	<input type="hidden" id="codeIds" name="codeIds" value="${spaceName}">
+	
 	<table style="width: 100%" border=1>
 		<tr>
 			<td>分区名称：<input type="text" name="name" value="${region.name }"></input></td>
@@ -44,6 +75,20 @@
 				</select>
 			</td>
 		</tr>
+		<tr>
+			<td colspan="3" valign="middle">
+				<div style="float: left;width: 25%">
+				<div style="float:inherit ;"><div>可关联的JAVA代码:</div>
+				<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="javaCodeSelect" name="choiceCode" multiple="multiple" size="10">
+				</select>
+				</div>
+				<div style="float: right;padding-right: 5%;"><div>已关联的JAVA代码:</div>
+				<select style="width:200px;" ondblclick="changeJavaCodeLnkSelect(this.selectedIndex)" id="javaCodeLnkSelect" name="choiceCode" multiple="multiple" size="10">
+				</select>
+				</div>
+				</div>
+			</td>
+		</tr>
 	</table>
 	<div style="text-align: center;">
 		<input class="button" type="submit" value="保存" >
@@ -59,5 +104,49 @@
 <jsp:include page="viewList.jsp" flush="true" />
 </c:if>
 </body>
+<script>
+var javaCodeWithLnks = {};
+<c:forEach var="javaCodeWithLnk" items="${javaCodesWithLnk }">
+	javaCodeWithLnks[${javaCodeWithLnk.id}]="${javaCodeWithLnk.name}"+"|"+"${javaCodeWithLnk.description}";
+</c:forEach>
+var selectedCodeId = "";
 
+var javaCode = {};
+<c:forEach var="javaCode" items="${javaCodes }">
+	if(javaCodeWithLnks[${javaCode.id}]==null)
+	javaCode[${javaCode.id}]="${javaCode.name}"+"|"+"${javaCode.description}";
+</c:forEach>
+for (i = 0 ;i <Object.getOwnPropertyNames(javaCode).length;i++) {  
+	var tmpcityArray = javaCode[Object.getOwnPropertyNames(javaCode)[i]].split("|")  
+	document.all.javaCodeSelect.options[document.all.javaCodeSelect.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCode)[i]);
+	document.all.javaCodeSelect.options[document.all.javaCodeSelect.length-1].title=tmpcityArray[1]
+} 
+for (i = 0 ;i <Object.getOwnPropertyNames(javaCodeWithLnks).length;i++) {  
+	var tmpcityArray = javaCodeWithLnks[Object.getOwnPropertyNames(javaCodeWithLnks)[i]].split("|")  
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCodeWithLnks)[i]);  
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length-1].title=tmpcityArray[1]
+	selectedCodeId += Object.getOwnPropertyNames(javaCodeWithLnks)[i]+",";
+	codeIds.value=selectedCodeId;
+}
+
+function changeJavaCodeSelect(index) {
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length] = new Option(javaCodeSelect.options[index].text,javaCodeSelect.options[index].value);  
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length-1].title=javaCodeSelect.options[index].title;
+	javaCodeSelect.options.remove(index) 
+	for (i = 0 ;i <javaCodeLnkSelect.length;i++) { 
+		selectedCodeId+=javaCodeLnkSelect.options[i].value+",";
+	}
+	codeIds.value=selectedCodeId;
+}
+function changeJavaCodeLnkSelect(index) {
+	javaCodeSelect.options[javaCodeSelect.length] = new Option(javaCodeLnkSelect.options[index].text,javaCodeLnkSelect.options[index].value);  
+	javaCodeSelect.options[javaCodeSelect.length-1].title=javaCodeLnkSelect.options[index].title;
+	javaCodeLnkSelect.options.remove(index);
+	selectedCodeId = "";
+	for (i = 0 ;i <javaCodeLnkSelect.length;i++) { 
+		selectedCodeId+=javaCodeLnkSelect.options[i].value+",";
+	}
+	codeIds.value=selectedCodeId;
+}
+</script>
 </html>
