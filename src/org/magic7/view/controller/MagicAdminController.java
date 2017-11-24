@@ -17,6 +17,7 @@ import org.magic7.core.domain.MagicSpaceRegionViewItem;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
+import org.magic7.dynamic.loader.MagicLoaderUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -559,7 +560,7 @@ public class MagicAdminController {
 	}
 	@RequestMapping(value = "/listCode", method = RequestMethod.GET)
 	public ModelAndView listCode(HttpServletRequest request) {
-		List<MagicCodeLib> codes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode());
+		List<MagicCodeLib> codes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode(),null,0,1000);
 		request.setAttribute("codes", codes);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/codeList");
@@ -574,6 +575,26 @@ public class MagicAdminController {
 		request.setAttribute("code", code);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/codeDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/saveCode", method = RequestMethod.GET)
+	public ModelAndView saveCode(HttpServletRequest request) {
+		String codeId = request.getParameter("codeId");
+		MagicCodeLib code = null;
+		if(StringUtils.isNotEmpty(codeId))
+			code = service.getCodeLibById(codeId);
+		else
+			code = new MagicCodeLib();
+		code.setName(request.getParameter("name"));
+		code.setDescription(request.getParameter("description"));
+		code.setCode(request.getParameter("code"));
+		code.setParameterNames(request.getParameter("parameterNames"));
+		code.setSignature(MagicLoaderUtils.generateSignatur("test", "test", code));
+		code.setCodeType(Integer.parseInt(request.getParameter("codeType")));
+		service.saveCodeLib(code);
+		request.setAttribute("code", code);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("redirect:showCode?codeId="+code.getId());
 		return mode;
 	}
 }

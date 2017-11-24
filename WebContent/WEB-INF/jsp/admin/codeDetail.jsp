@@ -35,12 +35,13 @@
 	<div style="background-color: #11111;">编辑代码</div>
 	<form action="saveCode" method="get" id="queryForm">
 		<input type="hidden" name="codeId" value="${code.id}">
+		<input type="hidden" size=40 name="codeType" value="${java }">
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>代码名称：<input type="text" size=40 name="name" value="${code.name }"></input></td>
-				<td>代码类型：<input type="text" size=40 name="name" value="${java }"></input></td>
+				<td>代码类型：<input type="text" disabled size=40 value="${code.codeTypeName }"></input></td>
 				<td>使用说明：<input type="text" size=40 name="description" value="${code.description }"></input></td>
-				<td>参数名及顺序：<input type="text" size=40 name="seq" value="${code.parameterNames }"></input></td>
+				<td>参数名及顺序：<input type="text" size=40 name="parameterNames" value="${code.parameterNames }"></input></td>
 			</tr>
 			<tr>
 				<td colspan=4><div id="textDiv">代码内容：<textarea id="java-code" name="code" rows="100">${code.code }</textarea></div></td>
@@ -65,7 +66,7 @@
       $('.CodeMirror-scroll').css('width',"1800");
       $('.CodeMirror').css('height',"600");
       $('.CodeMirror').css('width',"1800");
-      $('#textDiv').css('height',"600");
+      $('#textDiv').css('height',"650");
     </script>
 </body>
 </html>
