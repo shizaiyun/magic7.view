@@ -101,6 +101,8 @@ function getCity(currProvince)
 <hr>
 <jsp:include page="dimensionListForQuery.jsp" flush="true" />
 <hr>
+<jsp:include page="dimensionListForButton.jsp" flush="true" />
+<hr>
 <jsp:include page="viewList.jsp" flush="true" />
 </c:if>
 </body>
