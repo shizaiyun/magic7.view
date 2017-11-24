@@ -1,6 +1,8 @@
 package org.magic7.view.controller;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import org.magic7.core.domain.MagicChoice;
 import org.magic7.core.domain.MagicChoiceItem;
 import org.magic7.core.domain.MagicCodeLib;
 import org.magic7.core.domain.MagicDimension;
+import org.magic7.core.domain.MagicRegionCodeLnk;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
 import org.magic7.core.domain.MagicSpaceRegionView;
@@ -94,10 +97,37 @@ public class MagicAdminController {
 	@RequestMapping(value = "/saveRegion", method = RequestMethod.GET)
 	public ModelAndView saveRegion(HttpServletRequest request) {
 		String regionId = request.getParameter("regionId");
+		String codeIds = request.getParameter("codeIds");
+		String codeIdArray[] = null;
+		if(StringUtils.isNotEmpty(codeIds)) {
+			codeIdArray = codeIds.replaceAll("\\,$", "").split(",");
+		}
 		MagicSpaceRegion region = null;
-		if(StringUtils.isNotEmpty(regionId))
+		HashSet<String> newLnks = new HashSet<>();
+		if(StringUtils.isNotEmpty(regionId)) {
 			region = service.getSpaceRegionById(regionId);
-		else 
+			List<MagicCodeLib> javaCodesWithLnk = service.listCodeLibWithLnk(region.getSpaceName(), region.getName(), MagicCodeLib.CodeType.JAVA.getCode());
+			HashMap<String,MagicCodeLib> deleteLnks = new HashMap<>();
+			if(codeIdArray!=null) {
+				for(MagicCodeLib lnk:javaCodesWithLnk) {
+					deleteLnks.put(lnk.getId(),lnk);
+				}
+				for(String codeId:codeIdArray) {
+					System.out.println(codeIds);
+					System.out.println("process:"+codeId);
+					if(deleteLnks.get(codeId)!=null) {
+						deleteLnks.remove(codeId);
+						System.out.println("keep:"+codeId);
+					} else {
+						newLnks.add(codeId);
+						System.out.println("add:"+codeId);
+					}
+				}
+				for(String codeId:deleteLnks.keySet())
+					service.deleteCodeLnk(codeId, region.getSpaceName(), region.getName());
+				
+			}
+		} else 
 			region = new MagicSpaceRegion();
 		region.setName(request.getParameter("name"));
 		region.setDescription(request.getParameter("description"));
@@ -108,7 +138,27 @@ public class MagicAdminController {
 		region.setMultiply(Boolean.parseBoolean(request.getParameter("multiply")));
 		region.setSeq(Integer.parseInt(request.getParameter("seq")));
 		
+		for(String codeId:newLnks) {
+			MagicRegionCodeLnk lnk = new MagicRegionCodeLnk();
+			MagicCodeLib lib = service.getCodeLibById(codeId);
+			lnk.setCodeLidId(codeId);
+			lnk.setCodeName(lib.getName());
+			lnk.setParameterNames(lib.getParameterNames());
+			lnk.setRegionId(region.getId());
+			lnk.setRegionName(region.getName());
+			lnk.setSignature(lib.getSignature());
+			lnk.setSpaceId(region.getSpaceId());
+			lnk.setSpaceName(region.getSpaceName());
+			service.saveReginCodeLnk(lnk);
+		}
+		
 		service.saveSpaceRegion(region);
+		
+		List<MagicCodeLib> javaCodesWithLnk = service.listCodeLibWithLnk(region.getSpaceName(), region.getName(), MagicCodeLib.CodeType.JAVA.getCode());
+		request.setAttribute("javaCodesWithLnk", javaCodesWithLnk);
+		List<MagicCodeLib> javaCodes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode(), null, 0, 1000);
+		request.setAttribute("javaCodes", javaCodes);
+		
 		request.setAttribute("region", region);
 		request.setAttribute("spaceName", request.getParameter("spaceName"));
 		request.setAttribute("spaceId", request.getParameter("spaceId"));
@@ -118,7 +168,7 @@ public class MagicAdminController {
 		listDimensionForQuery(request);
 		listView(request);
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/regionDetail");
+		mode.setViewName("redirect:showRegion?regionId="+region.getId()+"&spaceName="+region.getSpaceName()+"&spaceId="+region.getSpaceId());
 		return mode;
 	}
 	
@@ -126,8 +176,13 @@ public class MagicAdminController {
 	public ModelAndView showRegion(HttpServletRequest request) {
 		String regionId = request.getParameter("regionId");
 		MagicSpaceRegion region = null;
-		if(StringUtils.isNotEmpty(regionId))
+		if(StringUtils.isNotEmpty(regionId)) {
 			region = service.getSpaceRegionById(regionId);
+			List<MagicCodeLib> javaCodesWithLnk = service.listCodeLibWithLnk(region.getSpaceName(), region.getName(), MagicCodeLib.CodeType.JAVA.getCode());
+			request.setAttribute("javaCodesWithLnk", javaCodesWithLnk);
+		}
+		List<MagicCodeLib> javaCodes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode(), null, 0, 1000);
+		request.setAttribute("javaCodes", javaCodes);
 		request.setAttribute("region", region);
 		request.setAttribute("spaceName", request.getParameter("spaceName"));
 		request.setAttribute("spaceId", request.getParameter("spaceId"));
@@ -255,8 +310,9 @@ public class MagicAdminController {
 		String dimensionId = request.getParameter("dimensionId");
 		String command = request.getParameter("command");
 		MagicDimension dimension = null;
-		if(StringUtils.isNotEmpty(dimensionId))
+		if(StringUtils.isNotEmpty(dimensionId)) {
 			dimension = service.getDimensionById(dimensionId);
+		}
 		request.setAttribute("dimension", dimension);
 		request.setAttribute("spaceName", request.getParameter("spaceName"));
 		request.setAttribute("spaceId", request.getParameter("spaceId"));
