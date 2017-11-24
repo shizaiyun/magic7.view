@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script>
-	function addView() {
+	function addCode() {
 		window.open('showCode');
 	}
 </script>
@@ -21,14 +21,17 @@
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
 		<td>代码名称</td>
-		<td>代码签名</td>
-		<td>代码内容</td>
+		<td>代码描述</td>
+		<td>代码类型</td>
+		<td>代码参数及顺序</td>
 	</tr>
+	${codes }
 	<c:forEach var="code" items="${codes }">
 		<tr>
 			<td><a href="javascript:window.open('showCode?codeId=${code.id }')">${code.name}</a></td>
-			<td>${code.signature}</td>
-			<td>${code.code}</td>
+			<td>${code.description}</td>
+			<td>${code.codeTypeName}</td>
+			<td>${code.parameterNames}</td>
 		</tr>
 	</c:forEach>
 </table>
