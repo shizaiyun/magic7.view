@@ -25,7 +25,6 @@
 		<td>代码类型</td>
 		<td>代码参数及顺序</td>
 	</tr>
-	${codes }
 	<c:forEach var="code" items="${codes }">
 		<tr>
 			<td><a href="javascript:window.open('showCode?codeId=${code.id }')">${code.name}</a></td>
