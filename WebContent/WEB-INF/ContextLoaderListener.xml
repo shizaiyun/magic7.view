@@ -17,9 +17,9 @@
      http://www.springframework.org/schema/context/spring-context-3.0.xsd">  
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/risk?useUnicode=true&amp;characterEncoding=UTF-8" />
-		<property name="username" value="root" />
-		<property name="password" value="123456" />
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/risk?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="username" value="risk" />
+		<property name="password" value="risk" />
 		<!-- <property name="minIdle" value="${jdbc.pool_size_min}" />
 		<property name="maxActive" value="${jdbc.pool_size_max}" /> -->
 	</bean> 
@@ -150,6 +150,4 @@
 		<tx:method name="*" read-only="true" />
 		</tx:attributes>
 	</tx:advice>
-	
-	
 </beans>
