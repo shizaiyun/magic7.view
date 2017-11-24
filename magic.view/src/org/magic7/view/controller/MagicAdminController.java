@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicChoice;
 import org.magic7.core.domain.MagicChoiceItem;
+import org.magic7.core.domain.MagicCodeLib;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
@@ -554,6 +555,25 @@ public class MagicAdminController {
 		request.setAttribute("choiceId", choiceId);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/choiceItemDetail");
+		return mode;
+	}
+	@RequestMapping(value = "/listCode", method = RequestMethod.GET)
+	public ModelAndView listCode(HttpServletRequest request) {
+		List<MagicCodeLib> codes = service.listCodeLib(null, null, MagicCodeLib.CodeType.JAVA.getCode());
+		request.setAttribute("codes", codes);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/codeList");
+		return mode;
+	}
+	@RequestMapping(value = "/showCode", method = RequestMethod.GET)
+	public ModelAndView showCode(HttpServletRequest request) {
+		String codeId = request.getParameter("codeId");
+		MagicCodeLib code = null;
+		if(StringUtils.isNotEmpty(codeId))
+			code = service.getCodeLibById(codeId);
+		request.setAttribute("code", code);
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("admin/codeDetail");
 		return mode;
 	}
 }
