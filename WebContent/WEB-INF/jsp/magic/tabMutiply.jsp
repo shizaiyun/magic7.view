@@ -295,6 +295,7 @@ function saveRows(){
 	        	 var info = eval(data);
 	             if(info.code==0){
 	            	 alert("保存成功");
+	            	 window.location.href = window.location.href;
 	             }else if(info.code==1){
 	             	alert(info.msg);
 	             }

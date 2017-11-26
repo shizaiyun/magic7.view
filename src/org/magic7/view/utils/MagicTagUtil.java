@@ -2,6 +2,7 @@ package org.magic7.view.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -258,13 +259,13 @@ public class MagicTagUtil {
 	private static String assembleRegionTabHorizontal(List<MagicSpaceRegion> tabRegions,String  contextPath,String objectId) {
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(tabRegions)) {
-			html.append("<div class=\"tab-head\">");
+			html.append("<div  class=\"tab-head\">");
 			Boolean firstTab = true;
 			for (MagicSpaceRegion magicSpaceRegion : tabRegions) {
 				if(firstTab) {
-					html.append("<h2 onclick=\"changeTab(this)\" class=\"selected\">"+magicSpaceRegion.getDescription()+"</h2>");
+					html.append("<h2 id=\"tab_"+magicSpaceRegion.getName()+"\" onclick=\"changeTab(this,'"+magicSpaceRegion.getSpaceName()+"','"+magicSpaceRegion.getName()+"',"+objectId+")\" class=\"selected\">"+magicSpaceRegion.getDescription()+"</h2>");
 				}else {
-					html.append("<h2 onclick=\"changeTab(this)\">"+magicSpaceRegion.getDescription()+"</h2>");
+					html.append("<h2 id=\"tab_"+magicSpaceRegion.getName()+"\" onclick=\"changeTab(this,'"+magicSpaceRegion.getSpaceName()+"','"+magicSpaceRegion.getName()+"',"+objectId+")\">"+magicSpaceRegion.getDescription()+"</h2>");
 				}
 				firstTab = false;
 			}
@@ -273,9 +274,9 @@ public class MagicTagUtil {
 			Boolean firsContent = true;
 			for (MagicSpaceRegion tabRegion : tabRegions) {
 				if(firsContent) {
-					html.append("<div class=\"show\"><iframe src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
+					html.append("<div class=\"show\"><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}else {
-					html.append("<div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
+					html.append("<div><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}
 				firsContent = false;
 			}
@@ -292,9 +293,9 @@ public class MagicTagUtil {
 			Boolean firstTab = true;
 			for (MagicSpaceRegion magicSpaceRegion : tabRegions) {
 				if(firstTab) {
-					html.append("<li  onclick=\"changeVerticalTab(this)\" class=\"hover\">"+magicSpaceRegion.getDescription()+"</li>");
+					html.append("<li  onclick=\"changeVerticalTab(this,'"+magicSpaceRegion.getSpaceName()+"','"+magicSpaceRegion.getName()+"',"+objectId+")\" class=\"hover\">"+magicSpaceRegion.getDescription()+"</li>");
 				}else {
-					html.append("<li  onclick=\"changeVerticalTab(this)\">"+magicSpaceRegion.getDescription()+"</li>");
+					html.append("<li  onclick=\"changeVerticalTab(this,'"+magicSpaceRegion.getSpaceName()+"','"+magicSpaceRegion.getName()+"',"+objectId+")\">"+magicSpaceRegion.getDescription()+"</li>");
 				}
 				firstTab = false;
 			}
@@ -302,9 +303,9 @@ public class MagicTagUtil {
 			Boolean firsContent = true;
 			for (MagicSpaceRegion tabRegion : tabRegions) {
 				if(firsContent) {
-					html.append("<div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
+					html.append("<div><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}else {
-					html.append("<div style=\"display:none\"><iframe src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
+					html.append("<div  style=\"display:none\"><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}
 				firsContent = false;
 			}
@@ -493,20 +494,24 @@ public class MagicTagUtil {
 				html = "<input type=\"text\" id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" "+readonly+" "+valueStr+" />";
 			}
 			break;
-		case DROP_DOWN_LIST:
-			StringBuffer options = new StringBuffer("<option></option>");
+		case DROP_DOWN_LIST: 
+			StringBuffer options = new StringBuffer("");
 			List<MagicChoiceItem> magicChoiceItems =  service.listChoiceItem(null,choiceCode);
+			List<String> values = new ArrayList<>();
+			if(StringUtils.isNotBlank(value)) {
+				values = Arrays.asList(StringUtils.split(value, ","));
+			}
 			for (MagicChoiceItem magicChoiceItem : magicChoiceItems) {
-				if(StringUtils.isNotBlank(value) && value.equals(magicChoiceItem.getValueCode())) {
+				if(values.contains(magicChoiceItem.getValueCode())) {
 					options.append("<option value=\""+magicChoiceItem.getValueCode()+"\" selected>"+magicChoiceItem.getValueName()+"</option>");
 				}else {
 					options.append("<option value=\""+magicChoiceItem.getValueCode()+"\">"+magicChoiceItem.getValueName()+"</option>");
 				}
 			}
 			if(destination==Destination.FOR_QUERY&&queryType==QueryType.IN) {
-				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" multiple=\"multiple\" size=\"1\" >"+options.toString()+"</select>";
+				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" multiple=\"multiple\" >"+options.toString()+"</select>";
 			}else {
-				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" >"+options.toString()+"</select>";
+				html= "<select id=\""+id+"\" name=\""+name+"\" class=\""+inputClass+"\" "+requiredStr+" ><option></option>"+options.toString()+"</select>";
 			}
 			break;
 		case POP_UP:

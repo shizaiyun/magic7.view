@@ -13,6 +13,10 @@
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/normalize.css'/>">
 <link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/pagination.css'/>">
 
+<script type="text/javascript" src="<c:url value='/resources/js/bootstrap-3.3.2.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/resources/js/bootstrap-multiselect.js'/>"></script>
+<link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/bootstrap-3.3.2.min.css'/>">
+<link rel="stylesheet" type="text/css" href="<c:url value='/resources/style/bootstrap-multiselect.css'/>">
 <title>magic list</title>
 <style type="text/css">
 			span.title { 
@@ -26,7 +30,7 @@
 					display: inline-block;
 					font-size:11px;
 					}
-			span.content input{ 
+			span.content + input{ 
 					width:150px; 
 					display: inline-block;
 					}
@@ -93,7 +97,14 @@ $(document).ready(function() {
 	var totalCount = '${totalCount}';
 	var pageSize = '${pageSize}';
 	var currentpage = '${currentPage}';
-		initPagination(totalCount, pageSize,currentpage);
+	initPagination(totalCount, pageSize,currentpage);
+		 
+	 $("#queryContent select").each(function(){
+		 if($(this).attr("multiple")=="multiple"){
+			 $(this).multiselect({
+			 });
+		 };
+		});
   });
 
 
@@ -192,9 +203,16 @@ function resetForm(){
 	$("#queryContent input").each(function(){
 		$(this).val("");
 	});
-	$("#queryContent select").each(function(){
-		$(this).val("");
+	$("#queryContent select option:selected").each(function(){
+		$(this).attr("selected",false);
 	});
+	
+	$("#queryContent select").each(function(){
+		 if($(this).attr("multiple")=="multiple"){
+			 $(this).multiselect("destroy");
+			 $(this).multiselect().val([]).multiselect("refresh")
+		 };
+		});
 }
 </script>
 </head>
