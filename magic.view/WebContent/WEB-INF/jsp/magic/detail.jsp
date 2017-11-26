@@ -134,13 +134,15 @@ function openWin(url){
 	window.open('${pageContext.request.contextPath}/'+url, 'newwindow', 'height=100, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
 }
 
-function changeTab(tab) {
+
+function changeTab(tab,space,region,objectId) {
 	var tabs = document.getElementsByClassName('tab-head')[0].getElementsByTagName('h2');
 	var contents = document.getElementsByClassName('tab-content')[0].getElementsByTagName('div');
         for(var i = 0, len = tabs.length; i < len; i++) {
             if(tabs[i] === tab) {
                 tabs[i].className = 'selected';
                 contents[i].className = 'show';
+                $("#tabContent_"+region).attr("src", "${pageContext.request.contextPath}/magic/showTabDetail?space="+space+"&region="+region+"&objectId="+objectId);
             } else {
                 tabs[i].className = '';
                 contents[i].className = '';
@@ -148,11 +150,12 @@ function changeTab(tab) {
         }
     }
 
-function changeVerticalTab(tab) {
+function changeVerticalTab(tab,space,region,objectId) {
 	var tabs = document.getElementById('lib_Tab').getElementsByTagName('li');
 	var contents = document.getElementsByClassName('lib_Content')[0].getElementsByTagName('div');
         for(var i = 0, len = tabs.length; i < len; i++) {
             if(tabs[i] === tab) {
+                $("#tabContent_"+region).attr("src", "${pageContext.request.contextPath}/magic/showTabDetail?space="+space+"&region="+region+"&objectId="+objectId);
                 tabs[i].className = 'hover';
                 contents[i].style.display = 'block';
             } else {
