@@ -78,6 +78,56 @@
 				</select>
 			</td>
 		</tr>
+		<c:if test="${destination eq forButton.code}">
+		<tr>
+			<td colspan="3">编辑触发器：
+				<table border=1 width="100%">
+					<tr>
+						<td width="30%">触发器名称</td>
+						<td width="50%">触发器执行序列</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="text" name="triggerName"></input>
+						</td>
+						<td>
+							<table border=1>
+								<tr>
+									<td align="center">
+										字段名称
+									</td>
+									<td align="center">
+										绑定行为
+									</td>
+									<td align="center">
+										执行顺序
+									</td>
+									<td align="center">
+										操作
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="targetDimension" name="targetDimension" ></select>
+									</td>
+									<td>
+										<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="javaCodeLnkSelect" name="choiceCode" ></select>
+									</td>
+									<td>
+										<input type="text" name="seq" ></input>
+									</td>
+									<td>
+										<input type="button" name="save" value="保存"></input>
+										<input type="button" name="delete" ></input>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		</c:if>
 	</table>
 	<div style="text-align: center;">
 		<input class="button" type="submit" value="保存" >
@@ -86,5 +136,25 @@
 </form>
 <hr>
 </body>
+<script>
+var dataDimensions = {};
+<c:forEach var="dataDimension" items="${dataDimensions }">
+	dataDimensions[${dataDimension.id}]="${dataDimension.name}"+"|"+"${dataDimension.description}";
+</c:forEach>
+for (i = 0 ;i <Object.getOwnPropertyNames(dataDimensions).length;i++) {  
+	var tmpcityArray = dataDimensions[Object.getOwnPropertyNames(dataDimensions)[i]].split("|")  
+	document.all.targetDimension.options[document.all.targetDimension.length] = new Option(tmpcityArray[1],Object.getOwnPropertyNames(dataDimensions)[i]);
+	document.all.targetDimension.options[document.all.targetDimension.length-1].title=tmpcityArray[0]
+} 
 
+var javaCodeWithLnks = {};
+<c:forEach var="javaCodeWithLnk" items="${javaCodesWithLnk }">
+	javaCodeWithLnks[${javaCodeWithLnk.id}]="${javaCodeWithLnk.name}"+"|"+"${javaCodeWithLnk.description}";
+</c:forEach>
+for (i = 0 ;i <Object.getOwnPropertyNames(javaCodeWithLnks).length;i++) {  
+	var tmpcityArray = javaCodeWithLnks[Object.getOwnPropertyNames(javaCodeWithLnks)[i]].split("|")  
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCodeWithLnks)[i]);  
+	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length-1].title=tmpcityArray[1]
+}
+</script>
 </html>

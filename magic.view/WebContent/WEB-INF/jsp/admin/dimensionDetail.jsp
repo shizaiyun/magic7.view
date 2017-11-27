@@ -123,9 +123,6 @@
 					<option <c:if test="${dimension.lnk eq false}">selected</c:if> selected value ="false">否</option>
 				</select>
 			</td>
-			<td>绑定触发器：
-				<textArea rows="4" cols="70" name="businessTriggers">${dimension.businessTriggers }</textArea>
-			</td>
 		</tr>
 	</table>
 	<div style="text-align: center;">
