@@ -16,35 +16,6 @@
 	request.setAttribute("main", MagicSpaceRegion.RegionType.MAIN);
 	request.setAttribute("tab", MagicSpaceRegion.RegionType.TAB);
 %>
-<script language="javascript" type="text/javascript">  
-//定义 城市 数据数组  
-cityArray = new Array();  
-cityArray[0] = new Array("河南省","郑州市|开封市|洛阳市|平顶山市|安阳市|鹤壁市|新乡市|焦作市|濮阳市|许昌市|漯河市|三门峡市|南阳市|商丘市|信阳市|周口市|驻马店市|济源市");  
-cityArray[1] = new Array("云南省","昆明市|大理市|曲靖市|玉溪市|昭通市|楚雄市|红河市|文山市|思茅市|西双版纳市|保山市|德宏市|丽江市|怒江市|迪庆市|临沧市");  
-
-function getCity(currProvince)  
-{  
-    //当前 所选择 的 省  
-    var currProvince = currProvince;  
-    var i,j,k;  
-    //清空 城市 下拉选单  
-    document.all.selCity.length = 0 ;  
-    for (i = 0 ;i <cityArray.length;i++)  
-    {  
-        //得到 当前省 在 城市数组中的位置  
-        if(cityArray[i][0]==currProvince)  
-        {  
-            //得到 当前省 所辖制的 地市  
-            var tmpcityArray = cityArray[i][1].split("|")  
-            for(j=0;j<tmpcityArray.length;j++)  
-            {  
-                //填充 城市 下拉选单  
-                document.all.selCity.options[document.all.selCity.length] = new Option(tmpcityArray[j],tmpcityArray[j]);  
-            }  
-        }  
-    }  
-}  
-</script>
 </head>
 <body>
 <div style="background-color: #11111;">编辑分区</div>
