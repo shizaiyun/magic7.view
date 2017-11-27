@@ -3,6 +3,8 @@
 <%@ page import="org.magic7.core.domain.MagicSpace"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<script type="text/javascript" src="<c:url value='/resources/js/jquery-3.2.1.min.js'/>"></script>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -88,38 +90,94 @@
 					</tr>
 					<tr>
 						<td>
-							<input type="text" name="triggerName"></input>
+							<input type="text" name="businessTrigger" value="${item.businessTrigger}"></input>
 						</td>
 						<td>
-							<table border=1>
+							<table border=1 id="assemblers"  width="100%">
 								<tr>
-									<td align="center">
+									<td width="25%" align="center">
 										字段名称
 									</td>
-									<td align="center">
+									<td width="25%" align="center">
 										绑定行为
 									</td>
-									<td align="center">
+									<td width="25%" align="center">
 										执行顺序
 									</td>
-									<td align="center">
+									<td width="25%" align="center">
 										操作
 									</td>
 								</tr>
 								<tr>
-									<td>
-										<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="targetDimension" name="targetDimension" ></select>
-									</td>
-									<td>
-										<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="javaCodeLnkSelect" name="choiceCode" ></select>
-									</td>
-									<td>
-										<input type="text" name="seq" ></input>
-									</td>
-									<td>
-										<input type="button" name="save" value="保存"></input>
-										<input type="button" name="delete" ></input>
-									</td>
+									<script>
+										var dataDimensions = {};
+										var javaCodeWithLnks = {};
+										var targetDimensionHolder = null;
+										var javaCodeLnkSelectHolder = null;
+										
+									</script>
+									<c:forEach var="assembler" items="${assemblers }">
+										<form action="saveAssembler${assembler.id }" method="get" id="saveAssembler${assembler.id }">
+											<input type="hidden" value="save" name="command"/>
+											<td>
+												<select style="width:200px;" id="targetDimension${assembler.id }" name="targetDimension${assembler.id }" ></select>
+											</td>
+											<td>
+												<select style="width:200px;" id="javaCodeLnkSelect${assembler.id }" name="choiceCode${assembler.id }" ></select>
+											</td>
+											<td>
+												<input type="text" name="seq" ></input>
+											</td>
+											<td>
+												<input type="button" name="save" value="保存" onclick="saveAssembler(saveAssembler${assembler.id })"></input>
+												<input type="button" name="delete" value="删除" onclick="deleteAssembler(saveAssembler${assembler.id })"></input>
+											</td>
+											<script>
+												dataDimensions = {};
+												<c:forEach var="dataDimension" items="${dataDimensions }">
+													dataDimensions[${dataDimension.id}]="${dataDimension.name}"+"|"+"${dataDimension.description}";
+												</c:forEach>
+												targetDimensionHolder = $("#targetDimension${assembler.id }");
+												targetDimensionHolder.options[targetDimensionHolder.length] = new Option("","");
+												for (i = 0 ;i <Object.getOwnPropertyNames(dataDimensions).length;i++) {  
+													var tmpcityArray = dataDimensions[Object.getOwnPropertyNames(dataDimensions)[i]].split("|")  
+													targetDimensionHolder.options[targetDimensionHolder.length] = new Option(tmpcityArray[1],Object.getOwnPropertyNames(dataDimensions)[i]);
+													targetDimensionHolder.options[targetDimensionHolder.length-1].title=tmpcityArray[0]
+												} 
+												
+												javaCodeWithLnks = {};
+												javaCodeLnkSelectHolder = $("#javaCodeLnkSelect${assembler.id }");
+												<c:forEach var="javaCodeWithLnk" items="${javaCodesWithLnk }">
+													javaCodeWithLnks[${javaCodeWithLnk.id}]="${javaCodeWithLnk.name}"+"|"+"${javaCodeWithLnk.description}";
+												</c:forEach>
+												javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length] = new Option("","");
+												for (i = 0 ;i <Object.getOwnPropertyNames(javaCodeWithLnks).length;i++) {  
+													var tmpcityArray = javaCodeWithLnks[Object.getOwnPropertyNames(javaCodeWithLnks)[i]].split("|")  
+													javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCodeWithLnks)[i]);  
+													javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length-1].title=tmpcityArray[1]
+												}
+												var clone = $("#assemblers tr:gt(0)").clone();
+												$("#assemblers").append();
+											</script>
+										</form>
+									</c:forEach>
+									<form action="saveAssembler" method="get" id="saveAssembler">
+										<input type="hidden" value="save" name="command"/>
+										<td>
+											<select style="width:200px;" id="targetDimension" name="targetDimension" ></select>
+										</td>
+										<td>
+											<select style="width:200px;" id="javaCodeLnkSelect" name="choiceCode" ></select>
+										</td>
+										<td>
+											<input type="text" name="seq" ></input>
+										</td>
+										<td>
+											<input type="button" name="add" value="新增" onclick="addLine()"></input>
+											<input type="button" name="save" value="保存" onclick="saveAssembler(saveAssembler)"></input>
+											<input type="button" name="delete" value="删除" onclick="deleteAssembler(saveAssembler)"></input>
+										</td>
+									</form>
 								</tr>
 							</table>
 						</td>
@@ -137,10 +195,12 @@
 <hr>
 </body>
 <script>
+
 var dataDimensions = {};
 <c:forEach var="dataDimension" items="${dataDimensions }">
 	dataDimensions[${dataDimension.id}]="${dataDimension.name}"+"|"+"${dataDimension.description}";
 </c:forEach>
+document.all.targetDimension.options[document.all.targetDimension.length] = new Option("","");
 for (i = 0 ;i <Object.getOwnPropertyNames(dataDimensions).length;i++) {  
 	var tmpcityArray = dataDimensions[Object.getOwnPropertyNames(dataDimensions)[i]].split("|")  
 	document.all.targetDimension.options[document.all.targetDimension.length] = new Option(tmpcityArray[1],Object.getOwnPropertyNames(dataDimensions)[i]);
@@ -151,10 +211,19 @@ var javaCodeWithLnks = {};
 <c:forEach var="javaCodeWithLnk" items="${javaCodesWithLnk }">
 	javaCodeWithLnks[${javaCodeWithLnk.id}]="${javaCodeWithLnk.name}"+"|"+"${javaCodeWithLnk.description}";
 </c:forEach>
+document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length] = new Option("","");
 for (i = 0 ;i <Object.getOwnPropertyNames(javaCodeWithLnks).length;i++) {  
 	var tmpcityArray = javaCodeWithLnks[Object.getOwnPropertyNames(javaCodeWithLnks)[i]].split("|")  
 	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCodeWithLnks)[i]);  
 	document.all.javaCodeLnkSelect.options[document.all.javaCodeLnkSelect.length-1].title=tmpcityArray[1]
+}
+var clone = $("#assemblers tr:last").clone();
+function addLine() {
+	$("#assemblers tbody:last").append(clone);
+}
+
+function saveAssembler(formId) {
+	
 }
 </script>
 </html>
