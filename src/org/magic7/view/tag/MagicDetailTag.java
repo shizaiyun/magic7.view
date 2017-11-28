@@ -22,12 +22,15 @@ public final class MagicDetailTag extends TagSupport {
 	HttpSession session;
 	private String space = null;
 	private String objectId = null;
+	private String mainlistView = null;
+	private String mainViewAndMainButtonView = null;
+	private String regionViewAndRegionButtonView = null;
 	
 	public int doEndTag() throws JspTagException {
 		try {
 			HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
 			String  contextPath =  request.getContextPath();
-			String html = MagicTagUtil.getMagicDetail(space,contextPath,objectId);
+			String html = MagicTagUtil.getMagicDetail(contextPath,space,objectId,mainlistView,mainViewAndMainButtonView,regionViewAndRegionButtonView);
 			pageContext.getOut().write(html);
 		} catch (IOException e) {
 			throw new JspTagException("MagicViewTag: " + e.getMessage());
@@ -54,6 +57,34 @@ public final class MagicDetailTag extends TagSupport {
 
 	public void setObjectId(String objectId) {
 		this.objectId = objectId;
+	}
+
+	public String getMainlistView() {
+		return mainlistView;
+	}
+
+	public void setMainlistView(String mainlistView) {
+		this.mainlistView = mainlistView;
+	}
+
+	public String getMainViewAndMainButtonView() {
+		return mainViewAndMainButtonView;
+	}
+
+	public void setMainViewAndMainButtonView(String mainViewAndMainButtonView) {
+		this.mainViewAndMainButtonView = mainViewAndMainButtonView;
+	}
+
+	public String getRegionViewAndRegionButtonView() {
+		return regionViewAndRegionButtonView;
+	}
+
+	public void setRegionViewAndRegionButtonView(String regionViewAndRegionButtonView) {
+		this.regionViewAndRegionButtonView = regionViewAndRegionButtonView;
+	}
+
+	public String getSpace() {
+		return space;
 	}
 
 }

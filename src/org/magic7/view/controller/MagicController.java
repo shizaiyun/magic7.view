@@ -16,14 +16,17 @@ import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicObject;
 import org.magic7.core.domain.MagicRegionRow;
+import org.magic7.core.domain.MagicSpaceRegionView;
 import org.magic7.core.domain.MagicSuperRowItem;
+import org.magic7.core.service.MagicService;
+import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
 import org.magic7.view.module.ResultBean;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,6 +36,7 @@ import net.sf.json.JSONObject;
 @Controller
 @RequestMapping(value = "/magic")
 public class MagicController {
+	public static MagicService service = MagicServiceFactory.getMagicService();
 	private static final Integer PAGE_SIZE = 10;
 
 	/**
@@ -48,35 +52,41 @@ public class MagicController {
 	@RequestMapping(value = "/showList")
 	public ModelAndView showList(HttpServletRequest request) {
 		String space = request.getParameter("space");
-		String region = request.getParameter("region");
+		Assert.notNull(space);
 		String queryView = request.getParameter("queryView");
-		String listView = request.getParameter("listView");
-
-		Integer currentPage = 1;
-		String page = request.getParameter("currentPage");
-		if (page != null) {
-			currentPage = Integer.parseInt(page);
-		}
-		String size = request.getParameter("pageSize");
-		Integer pageSize = PAGE_SIZE;
-		if (size != null) {
-			pageSize = Integer.parseInt(size);
-		}
+		String mainlistView = request.getParameter("mainlistView");
 		Map<String, Object> parmMap = assembleParmMap(request);
-		List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region,queryView, parmMap);
-		List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, listView, null, null, true,
-				searchCriterias, " id ", (currentPage - 1) * pageSize, pageSize);
-		Integer totalCount = MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
 
 		ModelAndView mode = new ModelAndView();
+		if(StringUtils.isNotBlank(mainlistView)) {
+			MagicSpaceRegionView  listRegion= service.getSpaceRegionView(space, null, mainlistView);
+			Assert.notNull(listRegion," can not find region by mainlistView,please check!!");
+			String region = listRegion.getSpaceRegionName();
+			Integer currentPage = 1;
+			String page = request.getParameter("currentPage");
+			if (page != null) {
+				currentPage = Integer.parseInt(page);
+			}
+			String size = request.getParameter("pageSize");
+			Integer pageSize = PAGE_SIZE;
+			if (size != null) {
+				pageSize = Integer.parseInt(size);
+			}
+			List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region,queryView, parmMap);
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, mainlistView, null, null, true,
+					searchCriterias, " id ", (currentPage - 1) * pageSize, pageSize);
+			Integer totalCount = MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
+			
+			mode.addObject("rows", rows);
+			mode.addObject("currentPage", currentPage);
+			mode.addObject("pageSize", pageSize);
+			mode.addObject("totalCount", totalCount);
+		}
+		
+		mode.addObject("queryString", request.getQueryString());
 		mode.addObject("space", space);
-		mode.addObject("region", region);
 		mode.addObject("queryView", queryView);
-		mode.addObject("listView", listView);
-		mode.addObject("rows", rows);
-		mode.addObject("currentPage", currentPage);
-		mode.addObject("pageSize", pageSize);
-		mode.addObject("totalCount", totalCount);
+		mode.addObject("mainlistView", mainlistView);
 		mode.addObject("parmMap",parmMap);
 		mode.setViewName("magic/list");
 		return mode;
@@ -88,8 +98,8 @@ public class MagicController {
 		Map<String, Object> requestMap = request.getParameterMap();
 		Set<Entry<String, Object>> entrySet = requestMap.entrySet();
 		for (Entry<String, Object> entry : entrySet) {
-			if (!entry.getKey().equals("space") && !entry.getKey().equals("region")
-					&& !entry.getKey().equals("queryView") && !entry.getKey().equals("listView")
+			if (!entry.getKey().equals("space") 
+					&& !entry.getKey().equals("queryView") && !entry.getKey().equals("mainlistView")
 					&& !entry.getKey().equals("currentPage") && !entry.getKey().equals("pageSize")) {
 				List<String> parms = new ArrayList<>();
 				String[] parameterValues = request.getParameterValues(entry.getKey());
@@ -112,8 +122,9 @@ public class MagicController {
 	 * @return 详细页面
 	 */
 	@RequestMapping(value = "/showDetail", method = RequestMethod.GET)
-	public ModelAndView showDetail(@RequestParam(value = "space") String space,
-			@RequestParam(value = "objectId") String objectId) {
+	public ModelAndView showDetail(HttpServletRequest request) {
+		String space = request.getParameter("space");
+		String objectId = request.getParameter("objectId");
 		if (StringUtils.isBlank(objectId)) {
 			MagicObject magicObject = MagicSpaceHandler.createMagicObjectBySpace(space);
 			objectId = magicObject.getId();
@@ -123,6 +134,9 @@ public class MagicController {
 		ModelAndView mode = new ModelAndView();
 		mode.addObject("space", space);
 		mode.addObject("objectId", objectId);
+		mode.addObject("mainlistView", request.getParameter("mainlistView"));
+		mode.addObject("mainViewAndMainButtonView", request.getParameter("mainViewAndMainButtonView"));
+		mode.addObject("regionViewAndRegionButtonView", request.getParameter("regionViewAndRegionButtonView"));
 		mode.setViewName("magic/detail");
 		return mode;
 	}
@@ -136,12 +150,18 @@ public class MagicController {
 	 * @return tab页面
 	 */
 	@RequestMapping(value = "/showTabDetail", method = RequestMethod.GET)
-	public ModelAndView showTabDetail(@RequestParam(value = "space") String space,
-			@RequestParam(value = "region") String region, @RequestParam(value = "objectId") String objectId) {
+	public ModelAndView showTabDetail(HttpServletRequest request) {
+		String space = request.getParameter("space");
+		String region = request.getParameter("region");
+		String objectId = request.getParameter("objectId");
+		String view = request.getParameter("view");
+		String buttonView = request.getParameter("buttonView");
 		ModelAndView mode = new ModelAndView();
 		mode.addObject("space", space);
 		mode.addObject("region", region);
 		mode.addObject("objectId", objectId);
+		mode.addObject("view", view);
+		mode.addObject("buttonView", buttonView);
 		mode.addObject("destination", MagicDimension.Destination.FOR_DATA.getCode());
 		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
 		if (multiply) {

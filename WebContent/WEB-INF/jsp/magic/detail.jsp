@@ -135,14 +135,14 @@ function openWin(url){
 }
 
 
-function changeTab(tab,space,region,objectId) {
+function changeTab(tab,space,region,view,buttonView,objectId) {
 	var tabs = document.getElementsByClassName('tab-head')[0].getElementsByTagName('h2');
 	var contents = document.getElementsByClassName('tab-content')[0].getElementsByTagName('div');
         for(var i = 0, len = tabs.length; i < len; i++) {
             if(tabs[i] === tab) {
                 tabs[i].className = 'selected';
                 contents[i].className = 'show';
-                $("#tabContent_"+region).attr("src", "${pageContext.request.contextPath}/magic/showTabDetail?space="+space+"&region="+region+"&objectId="+objectId);
+                $("#tabContent_"+region).attr("src", "${pageContext.request.contextPath}/magic/showTabDetail?space="+space+"&region="+region+"&view="+view+"&buttonView="+buttonView+"&objectId="+objectId);
             } else {
                 tabs[i].className = '';
                 contents[i].className = '';
@@ -168,7 +168,7 @@ function changeVerticalTab(tab,space,region,objectId) {
 </script>
 </head>
 <body>
-<m:magicDetail space="${space }" objectId="${objectId }"></m:magicDetail>
+<m:magicDetail space="${space }" objectId="${objectId }" mainlistView="${mainlistView}" mainViewAndMainButtonView="${mainViewAndMainButtonView }" regionViewAndRegionButtonView="${regionViewAndRegionButtonView }"></m:magicDetail>
 <hr>
 
 </html>

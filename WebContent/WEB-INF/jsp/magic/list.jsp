@@ -90,7 +90,6 @@
  background-color: #555555;
 }
 </style>
-
 <script type="text/javascript">
 $(document).ready(function() {
 	var currentPage = '${currentPage}';
@@ -164,14 +163,14 @@ function assembleGridData(datas){
 }
 
 function addItem(){
-	var openNewLink = openWin('${pageContext.request.contextPath}'+'/magic/showDetail?space=${space}&objectId=', 'newwindow',1400,600);
+	var openNewLink = openWin('${pageContext.request.contextPath}'+'/magic/showDetail?objectId=&${queryString}', 'newwindow',1400,600);
 	if(window.focus) {
         openNewLink.focus();
       }
 }
 
 function modifyItem(objectId){
-	var openNewLink = openWin('${pageContext.request.contextPath}'+'/magic/showDetail?space=${space}&objectId='+objectId, 'newwindow',1400,600);
+	var openNewLink = openWin('${pageContext.request.contextPath}'+'/magic/showDetail?objectId='+objectId+"&${queryString}", 'newwindow',1400,600);
 	if(window.focus) {
         openNewLink.focus();
       }
@@ -217,26 +216,17 @@ function resetForm(){
 </script>
 </head>
 <body>
-	<form action="${pageContext.request.contextPath}/magic/showList?space=${space}&region=${region}&queryView=${queryView}&listView=${listView}" method="post" id="queryForm">
+	<form action="${pageContext.request.contextPath}/magic/showList?${queryString}" method="post" id="queryForm">
 		<input type="hidden" name="currentPage" id="currentPage" value="${currentPage}" />
-		<div id="queryContent">
-			<m:magicView space="${space }" region="${region }" view="${queryView }" destination="1" parmMap="${parmMap }"></m:magicView>
-		</div>
-		<div style="text-align: center;">
-			<input class="button" type="button" value="查询" onclick="loadGridTable(1)">
-			<input class="button" type="button" value="重置" onclick="resetForm()">
-		</div>
+			<m:magicQueryView space="${space }"  view="${queryView }"  parmMap="${parmMap }"></m:magicQueryView>
 	</form>
 	<hr>
-<div style="text-align: right;padding-right: 10px;padding-bottom:5px">
-	<input class="button" type="button" value="新增" onclick="addItem()">
-</div>
-<table class="gridTable" style="width: 100%" id="gridTable">
-	<m:magicListView space="${space }" region="${region }" view="${listView }" rows="${rows }" destination="0"></m:magicListView>
-	<tbody></tbody>
-</table>
-<div style="margin-top: 5px" class="M-box" align="center"></div>
-
+<c:if test="${mainlistView != null }">
+		<m:magicListView space="${space }" view="${mainlistView }" rows="${rows }" destination="0"></m:magicListView>
+</c:if>
+<c:if test="${mainlistView == null }">
+	请配置mainlistView!!!
+</c:if>
 </body>
 
 </html>

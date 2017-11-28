@@ -14,8 +14,8 @@
     <!--             magicView Tag                  -->
     <!--**********************************************-->
 	<tag>
-		<name>magicView</name>
-		<tag-class>org.magic7.view.tag.MagicViewTag</tag-class>
+		<name>magicQueryView</name>
+		<tag-class>org.magic7.view.tag.MagicQueryViewTag</tag-class>
 		<body-content>JSP</body-content>
 		<description>
 			The tag is to create magicView on jsp
@@ -31,15 +31,6 @@
         </attribute> 
         
         <attribute>
-            <name>region</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-            	The value of the region            	            	
-            </description>
-        </attribute> 
-        
-        <attribute>
             <name>view</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
@@ -49,20 +40,11 @@
         </attribute>
         
         <attribute>
-            <name>destination</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-            	The value of the destination            	            	
-            </description>
-        </attribute> 
-        
-        <attribute>
             <name>parmMap</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-            	The value of the destination            	            	
+            	The value of the parmMap            	            	
             </description>
         </attribute> 
         
@@ -86,15 +68,6 @@
             <rtexprvalue>true</rtexprvalue>
             <description>
             	The value of the space            	            	
-            </description>
-        </attribute> 
-        
-        <attribute>
-            <name>region</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>
-            	The value of the region            	            	
             </description>
         </attribute> 
         
@@ -154,6 +127,33 @@
             	The value of the objectId            	            	
             </description>
         </attribute>
+        
+        <attribute>
+            <name>mainlistView</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the mainlistView            	            	
+            </description>
+        </attribute>
+        
+        <attribute>
+            <name>mainViewAndMainButtonView</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the mainViewAndMainButtonView            	            	
+            </description>
+        </attribute>
+        
+        <attribute>
+            <name>regionViewAndRegionButtonView</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the regionViewAndRegionButtonView            	            	
+            </description>
+        </attribute>
      </tag>
      
     <!--**********************************************-->
@@ -182,6 +182,24 @@
             <rtexprvalue>true</rtexprvalue>
             <description>
             	The value of the region            	            	
+            </description>
+        </attribute> 
+        
+        <attribute>
+            <name>view</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the view            	            	
+            </description>
+        </attribute> 
+        
+         <attribute>
+            <name>buttonView</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+            	The value of the buttonView            	            	
             </description>
         </attribute> 
         

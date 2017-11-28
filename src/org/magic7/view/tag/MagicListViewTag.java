@@ -18,14 +18,13 @@ public final class MagicListViewTag extends TagSupport {
 	private static final long serialVersionUID = -137059850317165619L;
 	HttpSession session;
 	private String space = null;
-	private String region = null;
 	private String view = null;
 	private List<MagicRegionRow> rows = null;
 	private Integer destination = 0;
 	
 	public int doEndTag() throws JspTagException {
 		try {
-			String html = MagicTagUtil.getMagicListView(space,region,view,rows,destination);
+			String html = MagicTagUtil.getMagicListView(space,view,rows,destination);
 			pageContext.getOut().write(html); 
 		} catch (IOException e) {
 			throw new JspTagException("MagicViewTag: " + e.getMessage());
@@ -39,14 +38,6 @@ public final class MagicListViewTag extends TagSupport {
 
 	public void setSpace(String space) {
 		this.space = space;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
 	}
 
 	public String getView() {
