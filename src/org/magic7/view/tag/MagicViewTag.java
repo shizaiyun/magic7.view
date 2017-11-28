@@ -28,7 +28,7 @@ public final class MagicViewTag extends TagSupport {
 
 	public int doEndTag() throws JspTagException {
 		try {
-			String html = MagicTagUtil.getMagicRegionView(space, region, view, destination,parmMap);
+			String html = MagicTagUtil.getMagicRegionView(space, view,parmMap);
 			pageContext.getOut().write(html);
 		} catch (IOException e) {
 			throw new JspTagException("MagicViewTag: " + e.getMessage());
