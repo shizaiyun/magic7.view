@@ -22,6 +22,7 @@ import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
 import org.magic7.dynamic.loader.MagicLoaderUtils;
+import org.magic7.utils.MagicUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -599,6 +600,7 @@ public class MagicAdminController {
 		item.setViewId(viewId);
 		item.setViewName(viewName);
 		item.setChoiceCode(request.getParameter("choiceCode"));
+		item.setBusinessTrigger(request.getParameter("businessTrigger"));
 		
 		service.saveSpaceRegionViewItem(item);
 		
@@ -740,4 +742,24 @@ public class MagicAdminController {
 		mode.setViewName("redirect:showCode?codeId="+code.getId());
 		return mode;
 	}
+	@RequestMapping(value = "/saveAssembler", method = RequestMethod.GET)
+	public ModelAndView saveAssembler(HttpServletRequest request) {
+		String dimensionId = request.getParameter("dimensionId");
+		String codeId = request.getParameter("codeId");
+		String itemId = request.getParameter("itemId");
+		String seqStr = request.getParameter("seq");
+		Integer seq = 0;
+		if(StringUtils.isNotEmpty(seqStr))
+			seq = Integer.parseInt(seqStr);
+		MagicDimension dimension = service.getDimensionById(dimensionId);
+		MagicCodeLib lib = service.getCodeLibById(codeId);
+		MagicSpaceRegionViewItem item = service.getViewItemById(itemId);
+		String assemblerId = request.getParameter("assemblerId");
+			MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), lib, dimension, seq);
+		
+		ModelAndView mode = new ModelAndView();
+		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
+		return mode;
+	}
+	
 }
