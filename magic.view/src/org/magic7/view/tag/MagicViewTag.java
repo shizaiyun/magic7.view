@@ -21,9 +21,7 @@ public final class MagicViewTag extends TagSupport {
 	public static MagicService service = MagicServiceFactory.getMagicService();
 	HttpSession session;
 	private String space = null;
-	private String region = null;
 	private String view = null;
-	private Integer destination = 0;
 	private Map<String, Object> parmMap;
 
 	public int doEndTag() throws JspTagException {
@@ -44,14 +42,6 @@ public final class MagicViewTag extends TagSupport {
 		this.space = space;
 	}
 
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
-
 	public String getView() {
 		return view;
 	}
@@ -64,13 +54,6 @@ public final class MagicViewTag extends TagSupport {
 		this.session = null;
 	}
 
-	public Integer getDestination() {
-		return destination;
-	}
-
-	public void setDestination(Integer destination) {
-		this.destination = destination;
-	}
 
 	public Map<String, Object> getParmMap() {
 		return parmMap;
