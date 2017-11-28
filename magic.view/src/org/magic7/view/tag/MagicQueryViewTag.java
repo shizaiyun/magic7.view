@@ -1,6 +1,7 @@
 package org.magic7.view.tag;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspTagException;
@@ -11,7 +12,7 @@ import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.view.utils.MagicTagUtil;
 
 
-public final class MagicRegionTag extends TagSupport {
+public final class MagicQueryViewTag extends TagSupport {
 	
 	/**
 	 * 序列化
@@ -20,14 +21,12 @@ public final class MagicRegionTag extends TagSupport {
 	public static MagicService service = MagicServiceFactory.getMagicService();
 	HttpSession session;
 	private String space = null;
-	private String region = null;
-	private String objectId = null;
 	private String view = null;
-	private String buttonView = null;
+	private Map<String, Object> parmMap;
 
 	public int doEndTag() throws JspTagException {
 		try {
-			String html = MagicTagUtil.getMagicRegion(space, region,view,buttonView,objectId);
+			String html = MagicTagUtil.getMagicRegionView(space, view,parmMap);
 			pageContext.getOut().write(html);
 		} catch (IOException e) {
 			throw new JspTagException("MagicViewTag: " + e.getMessage());
@@ -43,27 +42,6 @@ public final class MagicRegionTag extends TagSupport {
 		this.space = space;
 	}
 
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
-
-	
-	public MagicRegionTag() {
-		this.session = null;
-	}
-
-	public String getObjectId() {
-		return objectId;
-	}
-
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
-
 	public String getView() {
 		return view;
 	}
@@ -71,15 +49,18 @@ public final class MagicRegionTag extends TagSupport {
 	public void setView(String view) {
 		this.view = view;
 	}
-
-	public String getButtonView() {
-		return buttonView;
+	
+	public MagicQueryViewTag() {
+		this.session = null;
 	}
 
-	public void setButtonView(String buttonView) {
-		this.buttonView = buttonView;
+	public Map<String, Object> getParmMap() {
+		return parmMap;
 	}
 
+	public void setParmMap(Map<String, Object> parmMap) {
+		this.parmMap = parmMap;
+	}
 
 
 }

@@ -329,5 +329,5 @@ function checkAll() {
 </script>
 </head>
 <body>
-	<m:magicRegion space="${space }" region="${region }" objectId="${objectId }"></m:magicRegion>
+	<m:magicRegion space="${space }" region="${region }" objectId="${objectId }" view="${view }" buttonView="${buttonView }"></m:magicRegion>
 </html>

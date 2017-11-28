@@ -257,7 +257,7 @@ function closeDialog(){
 </head>
 <body>
 <form action="" method="post" id="${region }_Form">
-	<m:magicRegion space="${space }" region="${region }" objectId="${objectId }"></m:magicRegion>
+	<m:magicRegion space="${space }" region="${region }" objectId="${objectId }" view="${view }" buttonView="${buttonView }" ></m:magicRegion>
 </form>
 <hr>
 </html>
