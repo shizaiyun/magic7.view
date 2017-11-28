@@ -95,37 +95,38 @@
 						<td>
 							<table border=1 id="assemblers"  width="100%">
 								<tr>
-									<td width="25%" align="center">
+									<td width="20%" align="center">
 										字段名称
 									</td>
-									<td width="25%" align="center">
+									<td width="40%" align="center">
 										绑定行为
 									</td>
-									<td width="25%" align="center">
+									<td width="20%" align="center">
 										执行顺序
 									</td>
-									<td width="25%" align="center">
+									<td width="20%" align="center">
 										操作
 									</td>
 								</tr>
-								<tr>
-									<script>
-										var dataDimensions = {};
-										var javaCodeWithLnks = {};
-										var targetDimensionHolder = null;
-										var javaCodeLnkSelectHolder = null;
-										
-									</script>
-									<c:forEach var="assembler" items="${assemblers }">
-										<form action="saveAssembler${assembler.id }" method="get" id="saveAssembler${assembler.id }">
-											<input type="hidden" value="save" name="command"/>
-											<td>
+								<script>
+									var dataDimensions = {};
+									var javaCodeWithLnks = {};
+									var targetDimensionHolder = null;
+									var javaCodeLnkSelectHolder = null;
+									
+								</script>
+								<c:forEach var="assembler" items="${assemblers }">
+									<form action="saveAssembler${assembler.id }" method="get" id="saveAssembler${assembler.id }">
+										<tr>
+											<input type="hidden" value="save" name="command" />
+											<td align="center">
 												<select style="width:200px;" id="targetDimension${assembler.id }" name="targetDimension${assembler.id }" ></select>
 											</td>
 											<td>
 												<select style="width:200px;" id="javaCodeLnkSelect${assembler.id }" name="choiceCode${assembler.id }" ></select>
+												<label id="assemblerLabel${assembler.id }"></label>
 											</td>
-											<td>
+											<td align="center">
 												<input type="text" name="seq" ></input>
 											</td>
 											<td>
@@ -137,16 +138,17 @@
 												<c:forEach var="dataDimension" items="${dataDimensions }">
 													dataDimensions[${dataDimension.id}]="${dataDimension.name}"+"|"+"${dataDimension.description}";
 												</c:forEach>
-												targetDimensionHolder = $("#targetDimension${assembler.id }");
+												targetDimensionHolder = document.getElementById("targetDimension${assembler.id }");
 												targetDimensionHolder.options[targetDimensionHolder.length] = new Option("","");
 												for (i = 0 ;i <Object.getOwnPropertyNames(dataDimensions).length;i++) {  
 													var tmpcityArray = dataDimensions[Object.getOwnPropertyNames(dataDimensions)[i]].split("|")  
 													targetDimensionHolder.options[targetDimensionHolder.length] = new Option(tmpcityArray[1],Object.getOwnPropertyNames(dataDimensions)[i]);
 													targetDimensionHolder.options[targetDimensionHolder.length-1].title=tmpcityArray[0]
+													if('${assembler.dimensionId}'==Object.getOwnPropertyNames(dataDimensions)[i]) 
+														targetDimensionHolder.options[targetDimensionHolder.length-1].selected=true;
 												} 
-												
 												javaCodeWithLnks = {};
-												javaCodeLnkSelectHolder = $("#javaCodeLnkSelect${assembler.id }");
+												javaCodeLnkSelectHolder = document.getElementById("javaCodeLnkSelect${assembler.id }");
 												<c:forEach var="javaCodeWithLnk" items="${javaCodesWithLnk }">
 													javaCodeWithLnks[${javaCodeWithLnk.id}]="${javaCodeWithLnk.name}"+"|"+"${javaCodeWithLnk.description}";
 												</c:forEach>
@@ -154,31 +156,34 @@
 												for (i = 0 ;i <Object.getOwnPropertyNames(javaCodeWithLnks).length;i++) {  
 													var tmpcityArray = javaCodeWithLnks[Object.getOwnPropertyNames(javaCodeWithLnks)[i]].split("|")  
 													javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length] = new Option(tmpcityArray[0],Object.getOwnPropertyNames(javaCodeWithLnks)[i]);  
-													javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length-1].title=tmpcityArray[1]
+													javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length-1].title=tmpcityArray[1];
+													if('${assembler.codeLibId}'==Object.getOwnPropertyNames(javaCodeWithLnks)[i]) {
+														javaCodeLnkSelectHolder.options[javaCodeLnkSelectHolder.length-1].selected=true;
+														document.getElementById("assemblerLabel${assembler.id }").innerHTML=tmpcityArray[1];
+													}
 												}
-												var clone = $("#assemblers tr:gt(0)").clone();
-												$("#assemblers").append();
 											</script>
-										</form>
-									</c:forEach>
-									<form action="saveAssembler" method="get" id="saveAssembler">
-										<input type="hidden" value="save" name="command"/>
-										<td>
+										</tr>
+									</form>
+								</c:forEach>
+								<form action="saveAssembler" method="get" id="saveAssembler">
+									<tr>
+										<input type="hidden" value="save" id='command' name="command"/>
+										<td align="center">
 											<select style="width:200px;" id="targetDimension" name="targetDimension" ></select>
 										</td>
 										<td>
-											<select style="width:200px;" id="javaCodeLnkSelect" name="choiceCode" ></select>
+											<select style="width:200px;" id="javaCodeLnkSelect" name="choiceCode" ></select><label id="assemblerLabel"></label>
 										</td>
-										<td>
+										<td align="center">
 											<input type="text" name="seq" ></input>
 										</td>
 										<td>
-											<input type="button" name="add" value="新增" onclick="addLine()"></input>
-											<input type="button" name="save" value="保存" onclick="saveAssembler(saveAssembler)"></input>
+											<input type="button" name="save" value="新增" onclick="saveAssembler('')"></input>
 											<input type="button" name="delete" value="删除" onclick="deleteAssembler(saveAssembler)"></input>
 										</td>
-									</form>
-								</tr>
+									</tr>
+								</form>
 							</table>
 						</td>
 					</tr>
@@ -222,8 +227,9 @@ function addLine() {
 	$("#assemblers tbody:last").append(clone);
 }
 
-function saveAssembler(formId) {
-	
+function saveAssembler(id) {
+	alert('command'+id)
+	alert(document.getElementById("command"+id))
 }
 </script>
 </html>
