@@ -10,7 +10,7 @@
 		window.open('showChoice');
 	}
 </script>
-<title>view list</title>
+<title>选择项列表</title>
 </head>
 <body>
 <div style="background-color: #11111;">编辑选择项</div>
