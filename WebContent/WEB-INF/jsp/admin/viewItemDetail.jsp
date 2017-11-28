@@ -120,7 +120,7 @@
 					<c:forEach var="assembler" items="${assemblers }">
 						<form action="saveAssembler" method="get" id='saveAssembler${assembler.id }'>
 							<input type="hidden" value="save" id="command${assembler.id }" name="command" />
-							<input type="hidden" value="${assembler.id }"  name="assemblerId" />
+							<input type="hidden" value="${assembler.id }" name="assemblerId" />
 							<input type="hidden" value="${item.id }"  name="itemId" />
 							<tr>
 								<td align="center">
@@ -228,6 +228,18 @@ function addLine() {
 }
 
 function saveAssembler(id) {
+	if(document.getElementById("targetDimension"+id).value==null||document.getElementById("targetDimension"+id).value=='') {
+		alert('请选择字段')
+		return;
+	}
+	if(document.getElementById("javaCodeLnkSelect"+id).value==null||document.getElementById("javaCodeLnkSelect"+id).value=='') {
+		alert('请选择行为')
+		return;
+	}
+	document.getElementById("saveAssembler"+id).submit();
+}
+function deleteAssembler(id) {
+	document.getElementById("saveAssembler"+id).action='deleteAssembler'
 	document.getElementById("saveAssembler"+id).submit();
 }
 </script>
