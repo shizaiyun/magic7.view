@@ -17,6 +17,7 @@ import org.magic7.core.domain.MagicSpace;
 import org.magic7.core.domain.MagicSpaceRegion;
 import org.magic7.core.domain.MagicSpaceRegionView;
 import org.magic7.core.domain.MagicSpaceRegionViewItem;
+import org.magic7.core.domain.MagicTriggerAssembler;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
@@ -535,7 +536,6 @@ public class MagicAdminController {
 	public ModelAndView showViewItem(HttpServletRequest request) {
 		String itemId = request.getParameter("itemId");
 		MagicSpaceRegionViewItem item = null;
-		System.out.println("itemId:"+itemId);
 		if(StringUtils.isNotEmpty(itemId))
 			item = service.getViewItemById(itemId);
 		else
@@ -544,7 +544,18 @@ public class MagicAdminController {
 		String regionName = request.getParameter("regionName");
 		Integer destination = Integer.parseInt(request.getParameter("destination"));
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, null, null, destination);
-		System.out.println("dimensions:"+dimensions);
+		
+		if(MagicDimension.Destination.FOR_BUTTON.getCode().equals(destination)) {
+			List<MagicDimension> dataDimensions = MagicSpaceHandler.listDimension(spaceName, regionName, null, null, MagicDimension.Destination.FOR_DATA.getCode());
+			List<MagicCodeLib> javaCodesWithLnk = service.listCodeLibWithLnk(spaceName, regionName, MagicCodeLib.CodeType.JAVA.getCode());
+			request.setAttribute("javaCodesWithLnk", javaCodesWithLnk);
+			request.setAttribute("dataDimensions", dataDimensions);
+			if(StringUtils.isNotEmpty(itemId)) {
+				List<MagicTriggerAssembler> assemblers = service.listTriggerAssembler(item.getBusinessTrigger(), spaceName, regionName, " seq ");
+				request.setAttribute("assemblers", assemblers);
+			}
+		}
+		
 		request.setAttribute("dimensions", dimensions);
 		request.setAttribute("item", item);
 		request.setAttribute("spaceName",request.getParameter("spaceName") );
@@ -553,6 +564,7 @@ public class MagicAdminController {
 		request.setAttribute("regionName", request.getParameter("regionName"));
 		request.setAttribute("viewId", request.getParameter("viewId"));
 		request.setAttribute("viewName", request.getParameter("viewName"));
+		request.setAttribute("destination", destination);
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("admin/viewItemDetail");
 		return mode;
