@@ -755,11 +755,22 @@ public class MagicAdminController {
 		MagicCodeLib lib = service.getCodeLibById(codeId);
 		MagicSpaceRegionViewItem item = service.getViewItemById(itemId);
 		String assemblerId = request.getParameter("assemblerId");
-			MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), lib, dimension, seq);
-		
+		MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), lib, dimension, seq);
+			
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
 		return mode;
 	}
-	
+	@RequestMapping(value = "/deleteAssembler", method = RequestMethod.GET)
+	public ModelAndView deleteAssembler(HttpServletRequest request) {
+		String assemblerId = request.getParameter("assemblerId");
+		MagicTriggerAssembler assembler = service.getAssemblerById(assemblerId);
+		String itemId = request.getParameter("itemId");
+		ModelAndView mode = new ModelAndView();
+		MagicDimension dimension = service.getDimensionById(assembler.getDimensionId());
+		MagicSpaceRegionViewItem item = service.getViewItemById(itemId);
+		service.deleteAssembler(assembler);
+		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
+		return mode;
+	}
 }
