@@ -524,12 +524,12 @@ public class MagicAdminController {
 		List<MagicSpaceRegionViewItem> items = service.listSpaceRegionViewItem(view.getSpaceName(), view.getSpaceRegionName(), view.getName(), " seq ");
 		request.setAttribute("view", view);
 		request.setAttribute("items", items);
-		request.setAttribute("spaceName", request.getParameter("spaceName"));
-		request.setAttribute("spaceId", request.getParameter("spaceId"));
-		request.setAttribute("regionId", request.getParameter("regionId"));
-		request.setAttribute("regionName", request.getParameter("regionName"));
+		String spaceName = request.getParameter("spaceName");
+		String spaceId = request.getParameter("spaceId");
+		String regionId = request.getParameter("regionId");
+		String regionName = request.getParameter("regionName");
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("admin/viewDetail");
+		mode.setViewName("redirect:showView?viewId="+viewId+"&spaceName="+spaceName+"&spaceId="+spaceId+"&regionId="+regionId+"&regionName="+regionName);
 		return mode;
 	}
 	
@@ -756,7 +756,7 @@ public class MagicAdminController {
 		MagicSpaceRegionViewItem item = service.getViewItemById(itemId);
 		String assemblerId = request.getParameter("assemblerId");
 		MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), lib, dimension, seq);
-			
+		
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
 		return mode;
