@@ -493,8 +493,11 @@ public class MagicAdminController {
 			request.setAttribute("items", items);
 		} else
 			view = new MagicSpaceRegionView();
+		String spaceName = request.getParameter("spaceName");
+		List<MagicSpaceRegion> regions = service.listSpaceRegion(spaceName, null, " seq ", 0, 1000);
 		
 		request.setAttribute("view", view);
+		request.setAttribute("regions", regions);
 		request.setAttribute("spaceName", request.getParameter("spaceName"));
 		request.setAttribute("spaceId", request.getParameter("spaceId"));
 		request.setAttribute("regionId", request.getParameter("regionId"));
@@ -510,15 +513,22 @@ public class MagicAdminController {
 		MagicSpaceRegionView view = null;
 		if(StringUtils.isNotEmpty(viewId))
 			view = service.getViewById(viewId);
-		else {
+		else 
 			view = new MagicSpaceRegionView();
-			view.setSpaceId(request.getParameter("spaceId"));
-			view.setSpaceRegionId(request.getParameter("regionId"));
-			view.setSpaceName(request.getParameter("spaceName"));
-			view.setSpaceRegionName(request.getParameter("regionName"));
-		}
 		view.setName(request.getParameter("name"));
 		view.setDestination(Integer.parseInt(request.getParameter("destination")));
+		
+		view.setSpaceId(request.getParameter("spaceId"));
+		view.setSpaceName(request.getParameter("spaceName"));
+		String regionId = request.getParameter("regionId");
+		String regionName = request.getParameter("regionName");
+		if(StringUtils.isNotEmpty(regionId)) {
+			MagicSpaceRegion region = service.getSpaceRegionById(regionId);
+			regionName = region.getName();
+			view.setSpaceRegionId(request.getParameter("regionId"));
+			view.setSpaceRegionName(regionName);
+		}
+		
 		service.saveSpaceRegionView(view);
 		
 		List<MagicSpaceRegionViewItem> items = service.listSpaceRegionViewItem(view.getSpaceName(), view.getSpaceRegionName(), view.getName(), " seq ");
@@ -526,8 +536,6 @@ public class MagicAdminController {
 		request.setAttribute("items", items);
 		String spaceName = request.getParameter("spaceName");
 		String spaceId = request.getParameter("spaceId");
-		String regionId = request.getParameter("regionId");
-		String regionName = request.getParameter("regionName");
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("redirect:showView?viewId="+viewId+"&spaceName="+spaceName+"&spaceId="+spaceId+"&regionId="+regionId+"&regionName="+regionName);
 		return mode;
