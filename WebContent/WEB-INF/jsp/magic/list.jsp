@@ -87,7 +87,7 @@
  background-color: yellow;
 }
 .queryArea_title {
- background-color: #555555;
+ background-color: #fffff;
 }
 </style>
 <script type="text/javascript">

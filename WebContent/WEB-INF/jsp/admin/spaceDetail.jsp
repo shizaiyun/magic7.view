@@ -10,24 +10,24 @@
 		window.location="listSpaces";
 	}
 </script>
-<title>添加空间</title>
+<title>编辑核心</title>
 <%
 	request.setAttribute("horizontal", MagicSpace.TabLayout.HORIZONTAL);
 	request.setAttribute("vertical", MagicSpace.TabLayout.VERTICAL);
 %>
 </head>
 <body>
-<div style="background-color: #11111;">编辑空间</div>
+<div style="background-color: #11111;">编辑核心</div>
 <form action="saveSpace" method="get" id="queryForm">
 	<input type="hidden" name="spaceId" value="${space.id }">
 	<table style="width: 100%" border=1>
 		<tr>
-			<td>空间名称：<input type="text" name="name" value="${space.name }"></input></td>
-			<td>空间说明：<input type="text" name="description" value="${space.description }"></input></td>
-			<td>空间分隔符：<input type="text" name="partition" value="${space.partition }"></input></td>
+			<td>核心概念名称：<input type="text" name="name" value="${space.name }"></input></td>
+			<td>核心概念说明：<input type="text" name="description" value="${space.description }"></input></td>
+			<td>核心概念分隔符：<input type="text" name="partition" value="${space.partition }"></input></td>
 		</tr>
 		<tr>
-			<td>空间布局：
+			<td>核心概念布局：
 				<select name="tabLayout">
 					<option <c:if test="${space.tabLayout eq horizontal.name }">selected</c:if> value ="${horizontal.name }">水平分布</option>
 					<option <c:if test="${space.tabLayout eq vertical.name }">selected</c:if> value ="${vertical.name }">垂直分布</option>
@@ -47,8 +47,9 @@
 	</div>
 </form>
 <hr>
+<c:if test="${not empty space }">
 <jsp:include page="regionList.jsp" flush="true"></jsp:include>
-
+</c:if>
 </body>
 
 </html>

@@ -11,24 +11,24 @@
 		window.location="showDimension?spaceId=${spaceId}&spaceName=${spaceName}&regionId=${regionId}&regionName=${regionName}";
 	}
 </script>
-<title>space list</title>
+<title>微观结构列表t</title>
 </head>
 <body>
-<div style="background-color: #11111;">编辑维度</div>
+<div style="background-color: #11111;">编辑微观结构</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addDimension()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
-		<td>维度名称</td>
-		<td>维度显示名</td>
-		<td>维度说明</td>
+		<td>结构名称</td>
+		<td>结构显示名</td>
+		<td>结构说明</td>
 		<td>数据类型</td>
 		<td>是否可见</td>
 		<td>是否可编辑</td>
 		<td>是否必填</td>
-		<td>维度顺序</td>
+		<td>显示顺序</td>
 	</tr>
 	<c:forEach var="dimension" items="${dimensions }">
 		<tr>

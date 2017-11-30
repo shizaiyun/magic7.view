@@ -39,7 +39,6 @@
 <body>
 	<div style="background-color: #11111;">编辑维度</div>
 	<form action="saveView" method="get" id="queryForm">
-		<input type="hidden" name="regionId" value="${regionId }">
 		<input type="hidden" name="regionName" value="${regionName }">
 		<input type="hidden" name="spaceId" value="${spaceId }">
 		<input type="hidden" name="spaceName" value="${spaceName}">
@@ -47,6 +46,14 @@
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
+				<td>
+					业务内涵：
+					<select name="regionId">
+						<c:forEach var="region" items="${regions }">
+							<option <c:if test="${view.spaceRegionId eq region.id}">selected</c:if> value ="${region.id }">${region.description }</option>
+						</c:forEach>
+					</select>
+				</td>
 				<td>视图用途：
 					<select name="destination">
 						<option <c:if test="${view.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>

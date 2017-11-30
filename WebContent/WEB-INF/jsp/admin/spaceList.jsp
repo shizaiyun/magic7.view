@@ -6,7 +6,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<title>space list</title>
+<title>核心概念列表</title>
 <script>
 	function addItem() {
 		window.location="showSpace";
@@ -29,9 +29,9 @@
 </div>
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
-		<td>空间名称</td>
-		<td>空间说明</td>
-		<td>空间分隔符</td>
+		<td>核心概念名称</td>
+		<td>核心概念说明</td>
+		<td>核心概念分隔符</td>
 		<td>是否有效</td>
 	</tr>
 	<c:forEach var="space" items="${spaces }">
