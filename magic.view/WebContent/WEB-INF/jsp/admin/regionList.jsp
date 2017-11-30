@@ -10,19 +10,19 @@
 		window.location="showRegion?spaceId=${spaceId}&spaceName=${spaceName}";
 	}
 </script>
-<title>space list</title>
+<title>业务内涵列表</title>
 </head>
 <body>
-<div style="background-color: #11111;">编辑空间分区</div>
+<div style="background-color: #11111;">编辑业务内涵</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addItem()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
-		<td>分区名称</td>
-		<td>分区说明</td>
-		<td>是否多行</td>
+		<td>内涵名称</td>
+		<td>内涵说明</td>
+		<td>是否多条数据</td>
 		<td>显示顺序</td>
 	</tr>
 	<c:forEach var="region" items="${spaceRegions }">

@@ -11,14 +11,14 @@
 		window.location="showSpace?spaceId=${spaceId}";
 	}
 </script>
-<title>编辑分区</title>
+<title>编辑业务内涵</title>
 <%
 	request.setAttribute("main", MagicSpaceRegion.RegionType.MAIN);
 	request.setAttribute("tab", MagicSpaceRegion.RegionType.TAB);
 %>
 </head>
 <body>
-<div style="background-color: #11111;">编辑分区</div>
+<div style="background-color: #11111;">编辑业务内涵</div>
 <form action="saveRegion" method="get" id="queryForm">
 	<input type="hidden" name="regionId" value="${region.id }">
 	<input type="hidden" name="spaceId" value="${spaceId }">
@@ -27,19 +27,19 @@
 	
 	<table style="width: 100%" border=1>
 		<tr>
-			<td>分区名称：<input type="text" name="name" value="${region.name }"></input></td>
-			<td>分区说明：<input type="text" name="description" value="${region.description }"></input></td>
-			<td>分区分隔符：<input type="text" name="partition" value="${region.partition }"></input></td>
+			<td>业务内涵名称：<input type="text" name="name" value="${region.name }"></input></td>
+			<td>业务内涵说明：<input type="text" name="description" value="${region.description }"></input></td>
+			<td>业务内涵分隔符：<input type="text" name="partition" value="${region.partition }"></input></td>
 		</tr>
 		<tr>
-			<td>分区顺序：<input type="text" name="seq" value="${region.seq }"></input></td>
+			<td>显示顺序：<input type="text" name="seq" value="${region.seq }"></input></td>
 			<td>是否多行数据：
 				<select name="multiply">
 					<option <c:if test="${region.multiply eq true}">selected</c:if> value ="true">是</option>
 					<option <c:if test="${region.multiply eq false}">selected</c:if> value ="false">否</option>
 				</select>
 			</td>
-			<td>分区类型：
+			<td>页面类型：
 				<select name="regionType">
 					<option <c:if test="${region.regionType eq main.code}">selected</c:if> value ="${main.code}">主页面</option>
 					<option <c:if test="${region.regionType eq tab.code}">selected</c:if> value ="${tab.code }">TAB页面</option>

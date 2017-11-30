@@ -10,20 +10,20 @@
 		window.open('showCode');
 	}
 </script>
-<title>代码列表</title>
+<title>微观关系列表</title>
 </head>
 <body>
-<div style="background-color: #11111;">编辑选择项</div>
+<div style="background-color: #11111;">编辑微观关系</div>
 <div style="text-align: right;padding-right: 10px;padding-bottom:5px">
 	<input class="button" type="button" value="新增" onclick="addCode()">
 	<input class="button" type="button" value="删除" onclick="deleteItem()">
 </div>
 <table class="gridTable" style="width: 100%" border=1>
 	<tr>
-		<td>代码名称</td>
-		<td>代码描述</td>
-		<td>代码类型</td>
-		<td>代码参数及顺序</td>
+		<td>关系名称</td>
+		<td>关系描述</td>
+		<td>关系代码类型</td>
+		<td>参数及顺序</td>
 	</tr>
 	<c:forEach var="code" items="${codes }">
 		<tr>

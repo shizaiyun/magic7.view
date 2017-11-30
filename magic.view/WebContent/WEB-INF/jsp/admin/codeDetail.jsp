@@ -29,19 +29,19 @@
 	request.setAttribute("java", MagicCodeLib.CodeType.JAVA.getCode());
 	request.setAttribute("js", MagicCodeLib.CodeType.JS.getCode());
 %>
-<title>编辑代码</title>
+<title>编辑微观关系</title>
 </head>
 <body>
-	<div style="background-color: #11111;">编辑代码</div>
+	<div style="background-color: #11111;">编辑微观关系</div>
 	<form action="saveCode" method="get" id="queryForm">
 		<input type="hidden" name="codeId" value="${code.id}">
 		<input type="hidden" size=40 name="codeType" value="${java }">
 		<table style="width: 100%" border=1>
 			<tr>
-				<td>代码名称：<input type="text" size=40 name="name" value="${code.name }"></input></td>
-				<td>代码类型：<input type="text" disabled size=40 value="${code.codeTypeName }"></input></td>
+				<td>关系名称：<input type="text" size=40 name="name" value="${code.name }"></input></td>
+				<td>关系代码类型：<input type="text" disabled size=40 value="${code.codeTypeName }"></input></td>
 				<td>使用说明：<input type="text" size=40 name="description" value="${code.description }"></input></td>
-				<td>参数名及顺序：<input type="text" size=40 name="parameterNames" value="${code.parameterNames }"></input></td>
+				<td>参数及顺序：<input type="text" size=40 name="parameterNames" value="${code.parameterNames }"></input></td>
 			</tr>
 			<tr>
 				<td colspan=4><div id="textDiv">代码内容：<textarea id="java-code" name="code" rows="100">${code.code }</textarea></div></td>

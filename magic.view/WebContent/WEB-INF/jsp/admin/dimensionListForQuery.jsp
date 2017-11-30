@@ -11,7 +11,7 @@
 		window.location="showDimension?spaceId=${spaceId}&spaceName=${spaceName}&regionId=${regionId}&regionName=${regionName}&command=forQuery";
 	}
 </script>
-<title>space list</title>
+<title>查询维度列表</title>
 </head>
 <body>
 <div style="background-color: #11111;">编辑查询维度</div>
