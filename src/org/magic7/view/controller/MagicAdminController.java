@@ -520,6 +520,7 @@ public class MagicAdminController {
 		
 		view.setSpaceId(request.getParameter("spaceId"));
 		view.setSpaceName(request.getParameter("spaceName"));
+		view.setDisplayName(request.getParameter("displayName"));
 		String regionId = request.getParameter("regionId");
 		String regionName = request.getParameter("regionName");
 		if(StringUtils.isNotEmpty(regionId)) {
