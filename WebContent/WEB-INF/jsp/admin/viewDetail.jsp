@@ -46,6 +46,7 @@
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
+				<td>视图显示名称：<input type="text" size=40 name="displayName" value="${view.displayName }"></input></td>
 				<td>
 					业务内涵：
 					<select name="regionId">
