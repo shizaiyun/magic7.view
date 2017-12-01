@@ -150,4 +150,5 @@
 		<tx:method name="*" read-only="true" />
 		</tx:attributes>
 	</tx:advice>
+	<mvc:default-servlet-handler/> 
 </beans>
