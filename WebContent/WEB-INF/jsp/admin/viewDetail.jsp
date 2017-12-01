@@ -77,7 +77,7 @@
 					</select>
 				</td>
 				<td>
-					上传用户自定义页面：<input type="file" id="file" name="upFile">
+					用户自定义页面名称：<a href="<%=request.getContextPath() %>/uploadFile/${view.cutomerPageName }">${view.cutomerPageName }</a>
 				</td>
 				</c:if>
 			</tr>
@@ -86,6 +86,11 @@
 			<input class="button" type="submit" value="保存" >
 			<input class="button" type="button" onClick="back()" value="返回">
 		</div>
+	</form>
+	<form action="uploadCustomerPage.do" method="post" enctype="multipart/form-data">
+		<div>上传用户自定义页面：<input type="file" id="file" name="uploadFile"></div>
+		<input type="hidden" name="viewId" value="${view.id}">
+		<div><input type="submit"  name="提交"></div>
 	</form>
 </body>
 <hr>
