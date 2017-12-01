@@ -77,7 +77,7 @@
 					</select>
 				</td>
 				<td>
-					用户自定义页面名称：<a href="<%=request.getContextPath() %>/uploadFile/${view.cutomerPageName }">${view.cutomerPageName }</a>
+					用户自定义页面名称：<a target="_blank" href="<%=request.getContextPath() %>/uploadFile/${view.cutomerPageName }">${view.cutomerPageName }</a>
 				</td>
 				</c:if>
 			</tr>
