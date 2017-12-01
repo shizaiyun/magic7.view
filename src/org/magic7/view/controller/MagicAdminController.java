@@ -1,11 +1,19 @@
 package org.magic7.view.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicChoice;
@@ -23,6 +31,8 @@ import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
 import org.magic7.dynamic.loader.MagicLoaderUtils;
 import org.magic7.utils.MagicUtil;
+import org.magic7.utils.MhtToHtml;
+import org.magic7.utils.ServiceUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -517,6 +527,7 @@ public class MagicAdminController {
 			view = new MagicSpaceRegionView();
 		view.setName(request.getParameter("name"));
 		view.setDestination(Integer.parseInt(request.getParameter("destination")));
+		view.setViewType(Integer.parseInt(request.getParameter("viewType")));
 		
 		view.setSpaceId(request.getParameter("spaceId"));
 		view.setSpaceName(request.getParameter("spaceName"));
@@ -782,4 +793,111 @@ public class MagicAdminController {
 		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
 		return mode;
 	}
+	@RequestMapping(value = "/uploadCustomerPage", method = RequestMethod.GET)
+	protected void uploadCustomerPage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			String viewId = request.getParameter("viewId");
+			MagicSpaceRegionView view = service.getViewById(viewId);
+			ServiceUtil.notNull(viewId, "viewId is null");
+			request.setCharacterEncoding("utf-8");
+	        response.setCharacterEncoding("utf-8");
+	        List<String> fileList = new ArrayList<String>();
+	        //存储路径
+	        String savePath = request.getServletContext().getRealPath("uploadFile");
+	        File file = new File(savePath);
+	        if(!file.exists()){
+	        	file.mkdir();
+	        	
+	        }
+	        //获取上传的文件集合
+	        Collection<Part> parts = request.getParts();
+	        System.out.println("parts.size():"+parts.size());
+			// 一次性上传多个文件
+	        String text = "";
+	        String fileName = null;
+			for (Part part : parts) {// 循环处理上传的文件
+				// 获取请求头，请求头的格式：form-data; name="file"; filename="snmp4j--api.zip"
+				String header = part.getHeader("content-disposition");
+				String content = part.getContentType();
+				// 获取文件名
+				fileName = getFileName(header);
+				System.out.println(fileName);
+				System.out.println(content);
+				// 把文件写到指定路径
+				if (fileName != null && !"".equals(fileName)) {
+					part.write(savePath + File.separator + fileName);
+					fileList.add("uploadFile" + File.separator + fileName);
+					text = MhtToHtml.mht2html(savePath+ File.separator +fileName,
+							savePath+ File.separator +fileName.replaceAll("mht", "html"),fileName.replaceAll("mht", "html")); 
+				}
+			}
+			if(StringUtils.isNotEmpty(fileName)) {
+				view.setCutomerPageName(fileName);
+				service.saveSpaceRegionView(view);
+			}
+	        PrintWriter out = response.getWriter();
+	        out.write(text);
+	        out.flush();
+	        out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	 /**
+     * 根据请求头解析出文件名
+     * 请求头的格式：火狐和google浏览器下：form-data; name="file"; filename="snmp4j--api.zip"
+     *                 IE浏览器下：form-data; name="file"; filename="E:\snmp4j--api.zip"
+     * @param header 请求头
+     * @return 文件名
+     */
+    public String getFileName(String header) {
+        /**
+         * String[] tempArr1 = header.split(";");代码执行完之后，在不同的浏览器下，tempArr1数组里面的内容稍有区别
+         * 火狐或者google浏览器下：tempArr1={form-data,name="file",filename="snmp4j--api.zip"}
+         * IE浏览器下：tempArr1={form-data,name="file",filename="E:\snmp4j--api.zip"}
+         */
+    	if(!header.contains("filename")){
+    		return null;
+    	}
+    	
+        String tempArr1 = ("\u0000"+header.replaceAll("filename=", "\u0001")).replaceAll("\u0000[a-zA-Z\\\"\\;\\-= ]{1,}\u0001", "");
+		tempArr1=tempArr1.replaceAll("\"", "").replaceAll("\\&\\#", "");
+		tempArr1=tempArr1.replaceAll(" ", "");
+        
+        
+        System.out.println("tempArr1:"+tempArr1);
+        String fileName = tempArr1;
+        if ((fileName == null || "".equals(fileName))) {  
+        	return null;  
+        }
+        System.out.println("fileName:"+fileName);
+        return fileName+".mht";
+    }
+    
+    public String getRealName(String header) {
+        /**
+         * String[] tempArr1 = header.split(";");代码执行完之后，在不同的浏览器下，tempArr1数组里面的内容稍有区别
+         * 火狐或者google浏览器下：tempArr1={form-data,name="file",filename="snmp4j--api.zip"}
+         * IE浏览器下：tempArr1={form-data,name="file",filename="E:\snmp4j--api.zip"}
+         */
+    	if(!header.contains("filename")){
+    		return null;
+    	}
+    	
+        String tempArr1 = ("\u0000"+header.replaceAll("filename=", "\u0001")).replaceAll("\u0000[a-zA-Z\\\"\\;\\-= ]{1,}\u0001", "");
+		tempArr1=tempArr1.replaceAll("\"", "").replaceAll("\\&\\#", "\\u");
+		tempArr1=tempArr1.replaceAll(" ", "").replaceAll("\\.mht", "");
+        
+        
+        System.out.println("getRealName:"+tempArr1);
+        String fileName = tempArr1;
+        if ((fileName == null || "".equals(fileName))) {  
+        	return null;  
+        }
+        System.out.println("fileName:"+fileName);
+        return fileName;
+    }
 }

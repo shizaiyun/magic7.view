@@ -3,12 +3,11 @@ package org.magic7.view.controller;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -92,23 +91,22 @@ public class MagicController {
 		return mode;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Map<String, Object> assembleParmMap(HttpServletRequest request) {
 		Map<String, Object> parmMap = new HashMap<>();
-		Map<String, Object> requestMap = request.getParameterMap();
-		Set<Entry<String, Object>> entrySet = requestMap.entrySet();
-		for (Entry<String, Object> entry : entrySet) {
-			if (!entry.getKey().equals("space") 
-					&& !entry.getKey().equals("queryView") && !entry.getKey().equals("mainlistView")
-					&& !entry.getKey().equals("currentPage") && !entry.getKey().equals("pageSize")) {
+		Enumeration<String> keys = request.getParameterNames();
+		while ( keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			if (!request.getParameter(key).equals("space") 
+					&& !request.getParameter(key).equals("queryView") && !request.getParameter(key).equals("mainlistView")
+					&& !request.getParameter(key).equals("currentPage") && !request.getParameter(key).equals("pageSize")) {
 				List<String> parms = new ArrayList<>();
-				String[] parameterValues = request.getParameterValues(entry.getKey());
+				String[] parameterValues = request.getParameterValues(key);
 				for (String parmeterValue : parameterValues) {
 					if(parmeterValue!=null && StringUtils.isNotBlank(parmeterValue)) {
 						parms.add(parmeterValue);
 					}
 				}
-				parmMap.put(entry.getKey(), StringUtils.join(parms, ","));
+				parmMap.put(key, StringUtils.join(parms, ","));
 			}
 		}
 		return parmMap;
