@@ -31,7 +31,7 @@ import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
 import org.magic7.dynamic.loader.MagicLoaderUtils;
 import org.magic7.utils.MagicUtil;
-import org.magic7.utils.MhtToHtml;
+import org.magic7.utils.ConvertMhtToHtml;
 import org.magic7.utils.ServiceUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -828,7 +828,7 @@ public class MagicAdminController {
 				if (fileName != null && !"".equals(fileName)) {
 					part.write(savePath + File.separator + fileName);
 					fileList.add("uploadFile" + File.separator + fileName);
-					text = MhtToHtml.mht2html(savePath+ File.separator +fileName,
+					text = ConvertMhtToHtml.mht2html(savePath+ File.separator +fileName,
 							savePath+ File.separator +fileName.replaceAll("mht", "html"),fileName.replaceAll("mht", "html")); 
 				}
 			}
