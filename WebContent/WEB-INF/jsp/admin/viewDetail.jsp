@@ -1,3 +1,4 @@
+<%@page import="org.magic7.core.domain.MagicSpaceRegionView"%>
 <%@page import="org.magic7.core.domain.MagicDimension"%>
 <%@page import="org.magic7.core.domain.MagicSpaceRegion"%>
 <%@ page import="org.magic7.core.domain.MagicSpace"%>
@@ -34,6 +35,9 @@
 	request.setAttribute("numValue", MagicDimension.ValueType.NUM_VALUE);
 	request.setAttribute("listStr", MagicDimension.ValueType.LIST_STR_VALUE);
 	request.setAttribute("attachment", MagicDimension.ValueType.ATTACHMENT_VALUE);
+	
+	request.setAttribute("sys_default", MagicSpaceRegionView.ViewType.DEFAULT);
+	request.setAttribute("customer_define", MagicSpaceRegionView.ViewType.CUSTOMER_DEFINE);
 %>
 </head>
 <body>
@@ -55,6 +59,9 @@
 						</c:forEach>
 					</select>
 				</td>
+				
+			</tr>
+			<tr>
 				<td>视图用途：
 					<select name="destination">
 						<option <c:if test="${view.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>
@@ -62,6 +69,17 @@
 						<option <c:if test="${view.destination eq forButton.code}">selected</c:if> value ="${forButton.code }">按钮</option>
 					</select>
 				</td>
+				<c:if test="${view.destination eq forData.code }">
+				<td>视图类型：
+					<select name="viewType">
+						<option <c:if test="${view.viewType eq sys_default.code}">selected</c:if> value ="${sys_default.code }">系统默认</option>
+						<option <c:if test="${view.viewType eq customer_define.code}">selected</c:if> value ="${customer_define.code }">用户自定义</option>
+					</select>
+				</td>
+				<td>
+					上传用户自定义页面：<input type="file" id="file" name="upFile">
+				</td>
+				</c:if>
 			</tr>
 		</table>
 		<div style="text-align: center;">
