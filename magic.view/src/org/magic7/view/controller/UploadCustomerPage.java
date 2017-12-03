@@ -48,8 +48,6 @@ public class UploadCustomerPage extends HttpServlet {
 				String header = part.getHeader("content-disposition");
 				String content = part.getContentType();
 				fileName = getFileName(header);
-				System.out.println(fileName);
-				System.out.println(content);
 				if (fileName != null && !"".equals(fileName)) {
 					part.write(savePath + File.separator + fileName);
 					fileList.add("uploadFile" + File.separator + fileName);
