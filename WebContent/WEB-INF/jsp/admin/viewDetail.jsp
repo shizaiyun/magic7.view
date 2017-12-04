@@ -47,6 +47,10 @@
 		<input type="hidden" name="spaceId" value="${spaceId }">
 		<input type="hidden" name="spaceName" value="${spaceName}">
 		<input type="hidden" name="viewId" value="${view.id}">
+		<c:if test="${view.destination ne forData.code }">
+		<input type="hidden" name="viewType" value="${view.viewType}">
+		
+		</c:if>
 		<table style="width: 100%" border=1>
 			<tr>
 				<td>视图名称：<input type="text" size=40 name="name" value="${view.name }"></input></td>
