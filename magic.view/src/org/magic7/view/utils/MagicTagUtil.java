@@ -240,6 +240,7 @@ public class MagicTagUtil {
 		MagicDimension.Destination destination = MagicDimension.Destination.FOR_DATA;
 		Boolean multiply = MagicSpaceHandler.isMultiply(space, region);
 		List<MagicSpaceRegionViewItem> items =service.listSpaceRegionViewItem(space, region, view, " seq ");
+		List<MagicSpaceRegionViewItem> buttonItems =service.listSpaceRegionViewItem(space, region, buttonView, " seq ");
 		StringBuffer html = new StringBuffer();
 		if(multiply) {
 			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
@@ -256,7 +257,7 @@ public class MagicTagUtil {
 					row= rows.get(0);
 				}
 			}
-			html.append(assembleRegionSingle(items,destination,row));
+			html.append(assembleRegionSingle(items,buttonItems,destination,row));
 		}
 		return html.toString();
 	}
@@ -333,7 +334,7 @@ public class MagicTagUtil {
 	}
 	
 	
-	private static String assembleRegionSingle(List<MagicSpaceRegionViewItem> items,MagicDimension.Destination destination,MagicRegionRow row) {
+	private static String assembleRegionSingle(List<MagicSpaceRegionViewItem> items,List<MagicSpaceRegionViewItem> buttonItems,MagicDimension.Destination destination,MagicRegionRow row) {
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(items)) {
 			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(items.get(0).getSpaceName(), items.get(0).getSpaceRegionName());
@@ -341,14 +342,20 @@ public class MagicTagUtil {
 			if(destination==MagicDimension.Destination.FOR_DATA) {
 				MagicSpaceRegion.RegionType regionType = MagicSpaceRegion.RegionType.getRegionType(magicSpaceRegion.getRegionType());
 				if(regionType == MagicSpaceRegion.RegionType.TAB)  {
-					html.append("<div  class=\"toolbar\"><span class=\"toobar_title\">"+magicSpaceRegion.getDescription()+"</span><span class=\"toobar_button\"><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveItem()\"/></span></div>");
+					html.append("<div  class=\"toolbar\"><span class=\"toobar_title\">"+magicSpaceRegion.getDescription()+"</span><span class=\"toobar_button\">");
+					for (MagicSpaceRegionViewItem buttonItem : buttonItems) {
+						if(buttonItem.getVisible()!=null && buttonItem.getVisible()) {
+							html.append("<input class=\"button\" type=\"button\" value=\""+buttonItem.getName()+"\" trigger=\""+buttonItem.getBusinessTrigger()+"\"  onclick=\"disposeItem(this)\"/>");
+						}
+					}
+					html.append("</span></div>");
 				}
 			}
 			
 			Integer lineItemCount = magicSpaceRegion.getDimensionNum()==null?3:magicSpaceRegion.getDimensionNum();
 			Integer itemCount = 1;
 			if(row!=null) {
-				html.append("<input type=\"hidden\" id=\""+items.get(0).getSpaceRegionName()+"_rowId\" name=\"rowId\" value=\""+row.getId()+"\" >");
+				html.append("<input type=\"hidden\" id=\""+items.get(0).getSpaceRegionName()+"_rowId\" name=\"rowId\" value=\""+row.getId()+"\" ><input type=\"hidden\" id=\""+items.get(0).getSpaceRegionName()+"_trigger\" name=\"trigger\" >");
 			}
 			for (MagicSpaceRegionViewItem viewItem : items) {
 				if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
@@ -360,6 +367,12 @@ public class MagicTagUtil {
 				String input = StringUtils.EMPTY;
 				if(row!=null) {
 					MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
+					if(rowItem == null) {
+						rowItem = MagicSpaceHandler.createRowItem(row.getSpaceName(), row.getRegionName(), dimension, row.getObjectId(), row.getId());
+						List<MagicSuperRowItem> rowItems = row.getRowItems();
+						rowItems.add(rowItem);
+						MagicSpaceHandler.saveRow(row);
+					}
 					input = getInput(region+"_"+row.getId()+"_"+displayName, displayName, getValue(rowItem), viewItem,dimension,destination);
 				}else {
 					input = getInput(region+"_"+displayName, displayName, null, viewItem,dimension,destination);
@@ -373,7 +386,15 @@ public class MagicTagUtil {
 			if(destination==MagicDimension.Destination.FOR_DATA) {
 				MagicSpaceRegion.RegionType regionType = MagicSpaceRegion.RegionType.getRegionType(magicSpaceRegion.getRegionType());
 				if(regionType == MagicSpaceRegion.RegionType.MAIN) {
-					html.append("<div style=\"text-align: center;padding-right: 10px\"><input class=\"button\" type=\"button\" value=\"保存\" onclick=\"saveItem()\"/><input class=\"button\" type=\"button\" value=\"提交\" onclick=\"submitItem()\"/><input class=\"button\" type=\"button\" value=\"删除\" onclick=\"deleteItem()\"/><input class=\"button\" type=\"button\" value=\"返回\" onclick=\"closeDialog()\"/></div>");
+					if(buttonItems!=null && buttonItems.size()>0) {
+						html.append("<div style=\"text-align: center;padding-right: 10px\">");
+						for (MagicSpaceRegionViewItem buttonItem : buttonItems) {
+							if(buttonItem.getVisible()!=null && buttonItem.getVisible()) {
+								html.append("<input class=\"button\" type=\"button\" value=\""+buttonItem.getName()+"\" trigger=\""+buttonItem.getBusinessTrigger()+"\"  onclick=\"disposeItem(this)\"/>");
+							}
+						}
+						html.append("</div>");
+					}
 				}
 			}
 		}
@@ -463,6 +484,12 @@ public class MagicTagUtil {
 						MagicDimension dimension = service.getDimensionById(viewItem.getDimensionId());
 						String displayName = dimension.getDisplayName();
 						MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
+						if(rowItem == null) {
+							rowItem = MagicSpaceHandler.createRowItem(row.getSpaceName(), row.getRegionName(), dimension, row.getObjectId(), row.getId());
+							List<MagicSuperRowItem> rowItems = row.getRowItems();
+							rowItems.add(rowItem);
+							MagicSpaceHandler.saveRow(row);
+						}
 						String input = getInput(row.getRegionName()+"_"+row.getId()+"_"+displayName, displayName, getValue(rowItem),viewItem, dimension,destination);
 						html.append("<td>"+input+"</td>");
 					}

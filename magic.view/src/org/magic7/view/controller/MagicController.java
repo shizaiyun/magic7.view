@@ -113,7 +113,9 @@ public class MagicController {
 		}
 		return parmMap;
 	}
-
+	
+	
+	
 	/**
 	 * 初始化详细页面 没有objct就根据space创建一个，有object就直接加载
 	 * 
@@ -189,29 +191,6 @@ public class MagicController {
 		return new ResultBean<Boolean>(true);
 	}
 
-	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/submitRow")
-	@ResponseBody
-	public ResultBean<Boolean> submitRow(@RequestBody String parm) throws Exception {
-		JSONObject rowData = JSONObject.fromObject(parm);
-		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"));
-		Iterator<String> iterator = rowData.keys();
-		while (iterator.hasNext()) {
-			String key = iterator.next();
-			if (key.equals("rowId")) {
-				continue;
-			}
-			String value = rowData.getString(key);
-			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);
-			item.setStrValue(value);
-		}
-		row.setValid(true);
-		MagicSpaceHandler.saveRow(row);
-		HashMap<String, Object> params = new HashMap<>();
-		params.put("status", "Submitted");
-		MagicSpaceHandler.executeTrigger(row, "onSubmit", params);
-		return new ResultBean<Boolean>(true);
-	}
 
 	/**
 	 * 删除整个object
@@ -295,10 +274,11 @@ public class MagicController {
 	@SuppressWarnings("unchecked")
 	private void saveRow(JSONObject rowData) throws Exception {
 		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"));
+		String trigger = rowData.getString("trigger");
 		Iterator<String> iterator = rowData.keys();
 		while (iterator.hasNext()) {
 			String key = iterator.next();
-			if (key.equals("rowId")) {
+			if (key.equals("rowId")||key.equals("trigger")) {
 				continue;
 			}
 			Object value = null;
@@ -338,7 +318,9 @@ public class MagicController {
 		}
 		row.setValid(true);
 		MagicSpaceHandler.saveRow(row);
-		MagicSpaceHandler.executeTrigger(row, "onSave", null);
+		if(StringUtils.isNotBlank(trigger)) {
+			MagicSpaceHandler.executeTrigger(row, trigger, rowData);
+		}
 	}
 	
 	public static void main(String[] args) {
