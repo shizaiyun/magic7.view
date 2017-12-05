@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.magic7.core.domain.MagicDimension;
@@ -17,6 +18,7 @@ import org.magic7.core.domain.MagicObject;
 import org.magic7.core.domain.MagicRegionRow;
 import org.magic7.core.domain.MagicSpaceRegionView;
 import org.magic7.core.domain.MagicSuperRowItem;
+import org.magic7.core.service.MagicRegionShell;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
@@ -343,5 +345,22 @@ public class MagicController {
 		BigDecimal a = new BigDecimal("1");
 		System.out.println(a.toString());
 	}
-
+	@RequestMapping(value = "getOutPutStream")
+	@ResponseBody
+	public ModelAndView getOutPutStream(HttpServletRequest request,HttpServletResponse response) {
+		try {
+			String key = request.getParameter("key");
+			String type = request.getParameter("type");
+			byte[] out = null;
+			if("image".equals(type))
+				out = MagicRegionShell.getCacheImage(key);
+			else if("file".equals(type))
+				out = MagicRegionShell.getCacheFile(key);
+			out.toString();
+			response.getOutputStream().write(out, 0, out.length);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
