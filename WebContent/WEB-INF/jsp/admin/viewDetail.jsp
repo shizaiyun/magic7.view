@@ -19,7 +19,6 @@
 	request.setAttribute("forQuery", MagicDimension.Destination.FOR_QUERY);
 	request.setAttribute("forData", MagicDimension.Destination.FOR_DATA);
 	request.setAttribute("forButton", MagicDimension.Destination.FOR_BUTTON);
-	request.setAttribute("forTemp", MagicDimension.Destination.FOR_TEMP);
 	
 	request.setAttribute("button", MagicDimension.PageType.BUTTON);
 	request.setAttribute("checkBox", MagicDimension.PageType.CHECK_BOX);

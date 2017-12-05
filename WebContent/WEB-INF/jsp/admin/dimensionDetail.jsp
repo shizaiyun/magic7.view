@@ -1,3 +1,7 @@
+<%@page import="org.magic7.core.domain.MagicDimension.PersistenceType"%>
+<%@page import="org.magic7.core.domain.MagicDimension.ValueType"%>
+<%@page import="org.magic7.core.domain.MagicDimension.PageType"%>
+<%@page import="org.magic7.core.domain.MagicDimension.Destination"%>
 <%@page import="org.magic7.core.service.MagicServiceFactory"%>
 <%@page import="org.magic7.core.service.MagicService"%>
 <%@page import="org.magic7.core.domain.MagicDimension"%>
@@ -16,25 +20,26 @@
 </script>
 <title>编辑维度</title>
 <%
-	request.setAttribute("forQuery", MagicDimension.Destination.FOR_QUERY);
-	request.setAttribute("forData", MagicDimension.Destination.FOR_DATA);
-	request.setAttribute("forButton", MagicDimension.Destination.FOR_BUTTON);
-	request.setAttribute("forTemp", MagicDimension.Destination.FOR_TEMP);
+	Destination[] destionations = MagicDimension.Destination.values();
+	for(Destination dest:destionations)
+		request.setAttribute(dest.getName(), dest);
+	request.setAttribute("destionations", destionations);
 	
-	request.setAttribute("button", MagicDimension.PageType.BUTTON);
-	request.setAttribute("checkBox", MagicDimension.PageType.CHECK_BOX);
-	request.setAttribute("dropDownList", MagicDimension.PageType.DROP_DOWN_LIST);
-	request.setAttribute("popUp", MagicDimension.PageType.POP_UP);
-	request.setAttribute("radio", MagicDimension.PageType.RADIO);
-	request.setAttribute("textArea", MagicDimension.PageType.TEXT_AREA);
-	request.setAttribute("textEditor", MagicDimension.PageType.TEXT_EDITOR);
+	PageType[] pageTypes = MagicDimension.PageType.values();
+	for(PageType pageType:pageTypes)
+		request.setAttribute(pageType.getName(), pageType);
+	request.setAttribute("pageTypes", pageTypes);
 	
-	request.setAttribute("strValue", MagicDimension.ValueType.STR_VALUE);
-	request.setAttribute("dateValue", MagicDimension.ValueType.DATE_VALUE);
-	request.setAttribute("booleanValue", MagicDimension.ValueType.BOOLEAN_VALUE);
-	request.setAttribute("numValue", MagicDimension.ValueType.NUM_VALUE);
-	request.setAttribute("listStr", MagicDimension.ValueType.LIST_STR_VALUE);
-	request.setAttribute("attachment", MagicDimension.ValueType.ATTACHMENT_VALUE);
+	ValueType[] valueTypes = MagicDimension.ValueType.values();
+	for(ValueType valueType:valueTypes)
+		request.setAttribute(valueType.getName(), valueType);
+	request.setAttribute("valueTypes", valueTypes);
+	
+	PersistenceType[] persistenceTypes = MagicDimension.PersistenceType.values();
+	for(PersistenceType persistenceType:persistenceTypes)
+		request.setAttribute(persistenceType.getName(), persistenceType);
+	request.setAttribute("persistenceTypes", persistenceTypes);
+	
 	MagicService service = MagicServiceFactory.getMagicService();
 	request.setAttribute("choices", service.listChoice(null, null));
 %>
@@ -57,22 +62,17 @@
 			<td>分区顺序：<input type="text" name="seq" value="${dimension.seq }"></input></td>
 			<td>用途：
 				<select name="destination">
-					<option <c:if test="${dimension.destination eq forData.code}">selected</c:if> value ="${forData.code }">存储</option>
-					<option <c:if test="${dimension.destination eq forQuery.code}">selected</c:if> value ="${forQuery.code }">查询</option>
-					<option <c:if test="${dimension.destination eq forButton.code}">selected</c:if> value ="${forButton.code }">按钮</option>
-					<option <c:if test="${dimension.destination eq forTemp.code}">selected</c:if> value ="${forButton.code }">临时变量</option>
+					<c:forEach var="dest" items="${destionations }">
+						<option <c:if test="${dimension.destination eq dest.code}">selected</c:if> value ="${dest.code }">${dest.name }</option>
+					</c:forEach>
 				</select>
 			</td>
 			<td valign="middle" nowrap="nowrap">页面元素类型：
 				<select name="pageType" style="vertical-align: middle;" 
 				onchange="choiceDiv.style.display='None';urlDive.style.display='None';if(this.selectedIndex==1) choiceDiv.style.display='Inline'; else if(this.selectedIndex==2) urlDive.style.display='Inline'; ">
-					<option <c:if test="${dimension.pageType eq textEditor.code}">selected</c:if> value ="${textEditor.code }">文本框</option>
-					<option <c:if test="${dimension.pageType eq dropDownList.code}">selected</c:if> value ="${dropDownList.code }" >下拉列表</option>
-					<option <c:if test="${dimension.pageType eq popUp.code}">selected</c:if> value ="${popUp.code }">弹出框</option>
-					<option <c:if test="${dimension.pageType eq textArea.code}">selected</c:if> value ="${textArea.code }">文本域</option>
-					<option <c:if test="${dimension.pageType eq checkBox.code}">selected</c:if> value ="${checkBox.code }">复选框</option>
-					<option <c:if test="${dimension.pageType eq radio.code}">selected</c:if> value ="${radio.code }">单选框</option>
-					<option <c:if test="${dimension.pageType eq button.code}">selected</c:if> value ="${button.code}">按钮</option>
+					<c:forEach var="pageType" items="${pageTypes }">
+						<option <c:if test="${dimension.pageType eq pageType.code}">selected</c:if> value ="${pageType.code }">${pageType.name }</option>
+					</c:forEach>
 				</select>
 				<div id="choiceDiv" style="display: none;">请输入选择项：
 					<select name="choiceCode">
@@ -89,12 +89,9 @@
 		<tr>
 			<td>数据类型：
 				<select name="valueType">
-					<option <c:if test="${dimension.valueType eq strValue.code}">selected</c:if> value ="${strValue.code}">字符串</option>
-					<option <c:if test="${dimension.valueType eq dateValue.code}">selected</c:if> value ="${dateValue.code }">日期</option>
-					<option <c:if test="${dimension.valueType eq booleanValue.code}">selected</c:if> value ="${booleanValue.code }">布尔值</option>
-					<option <c:if test="${dimension.valueType eq numValue.code}">selected</c:if> value ="${numValue.code }">数字</option>
-					<option <c:if test="${dimension.valueType eq listStr.code}">selected</c:if> value ="${listStr.code }">字符数组</option>
-					<option <c:if test="${dimension.valueType eq attachment.code}">selected</c:if> value ="${attachment.code }">附件</option>
+					<c:forEach var="valueType" items="${valueTypes }">
+						<option <c:if test="${dimension.valueType eq valueType.code}">selected</c:if> value ="${valueType.code}">${valueType.name }</option>
+					</c:forEach>
 				</select>
 			</td>
 			<td>是否必填：
@@ -121,6 +118,13 @@
 				<select name="lnk" disabled>
 					<option <c:if test="${dimension.lnk eq true}">selected</c:if> value ="true">是</option>
 					<option <c:if test="${dimension.lnk eq false}">selected</c:if> selected value ="false">否</option>
+				</select>
+			</td>
+			<td>存储类型：
+				<select name="persistenceType">
+					<c:forEach var="persistenceType" items="${persistenceTypes }">
+						<option <c:if test="${dimension.persistenceType eq persistenceType.code}">selected</c:if> value ="${persistenceType.code }">${persistenceType.name }</option>
+					</c:forEach>
 				</select>
 			</td>
 		</tr>
