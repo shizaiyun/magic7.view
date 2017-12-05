@@ -83,14 +83,6 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	<aop:config proxy-target-class="true">
-		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.ling2..*.service..*.*(..))"/>
-		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.ling2..*.context..*.*(..))"/>
-		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.magic7..*.service..*.*(..))"/>
-		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.magic7..*.context..*.*(..))"/>
-		<aop:advisor advice-ref="txAdvice" pointcut="execution(* velox.service..*.*(..))"/>
-	</aop:config>
-	
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
 		<tx:method name="recycle*" propagation="REQUIRED" rollback-for="BusinessException" />
