@@ -246,14 +246,14 @@ public class MagicTagUtil {
 			html.append(assembleRegionMultiply(items,rows));
 		}else {
 			MagicRegionRow row = null;
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
+			List<MagicRegionRow> rows = new ArrayList<>();
+			rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 			if(rows!=null && rows.size()>0) {
 				row= rows.get(0);
-				for (MagicRegionRow magicRegionRow : rows) {
-					if(magicRegionRow.getValid()) {
-						row = magicRegionRow;
-						break;
-					}
+			}else {
+				rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, false, null, null, 0, 1000);
+				if(rows!=null && rows.size()>0) {
+					row= rows.get(0);
 				}
 			}
 			html.append(assembleRegionSingle(items,destination,row));
