@@ -389,6 +389,7 @@ public class MagicAdminController {
 		dimension.setVirtual(!dimension.getLnk());
 		dimension.setUrl(request.getParameter("popUpUrl"));
 		dimension.setChoiceCode(request.getParameter("choiceCode"));
+		dimension.setPersistenceType(Integer.parseInt(request.getParameter("persistenceType")));
 		
 		service.saveDimension(dimension);
 		request.setAttribute("dimension", dimension);
