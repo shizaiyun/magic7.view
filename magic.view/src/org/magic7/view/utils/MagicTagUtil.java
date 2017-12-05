@@ -133,8 +133,11 @@ public class MagicTagUtil {
 			
 			if(rows!=null) {
 				for (MagicRegionRow row : rows) {
-					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
 					List<MagicSuperRowItem> rowItems = row.getRowItems();
+					if(rowItems == null || rowItems.size()==0) {
+						continue;
+					}
+					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
 					for (MagicSpaceRegionViewItem viewItem : viewItems) { 
 						if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
 							continue;
@@ -243,7 +246,7 @@ public class MagicTagUtil {
 			html.append(assembleRegionMultiply(items,rows));
 		}else {
 			MagicRegionRow row = null;
-			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, null, null, null, 0, 1000);
+			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 			if(rows!=null && rows.size()>0) {
 				row= rows.get(0);
 				for (MagicRegionRow magicRegionRow : rows) {
