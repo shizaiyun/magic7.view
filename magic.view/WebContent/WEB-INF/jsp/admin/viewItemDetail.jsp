@@ -110,9 +110,12 @@
 							绑定行为
 						</td>
 						<td width="20%" align="center">
+							自定义参数
+						</td>
+						<td width="10%" align="center">
 							执行顺序
 						</td>
-						<td width="20%" align="center">
+						<td width="10%" align="center">
 							操作
 						</td>
 					</tr>
@@ -128,6 +131,9 @@
 								<td>
 									<select style="width:200px;" id="javaCodeLnkSelect${assembler.id }" name="codeId" ></select>
 									<label id="assemblerLabel${assembler.id }"></label>
+								</td>
+								<td align="center">
+									<textarea name="assemblerParameter" cols="49" rows="4">${assembler.assemblerParameter }</textarea>
 								</td>
 								<td align="center">
 									<input type="text" name="seq" value="${assembler.seq }"></input>
@@ -180,6 +186,9 @@
 							</td>
 							<td>
 								<select style="width:200px;" id="javaCodeLnkSelect" name="codeId" ></select><label id="assemblerLabel"></label>
+							</td>
+							<td align="center">
+								<textarea name="assemblerParameter" cols="49" rows="4">${assembler.assemblerParameter }</textarea>
 							</td>
 							<td align="center">
 								<input type="text" name="seq" ></input>
