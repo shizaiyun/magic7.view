@@ -766,7 +766,7 @@ public class MagicAdminController {
 		MagicCodeLib lib = service.getCodeLibById(codeId);
 		MagicSpaceRegionViewItem item = service.getViewItemById(itemId);
 		String assemblerId = request.getParameter("assemblerId");
-		MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), lib, dimension, seq);
+		MagicUtil.bindTrigger(assemblerId, item.getBusinessTrigger(), request.getParameter("assemblerParameter"), lib, dimension, seq);
 		
 		ModelAndView mode = new ModelAndView();
 		mode.setViewName("redirect:showViewItem?itemId="+itemId+"&spaceId="+dimension.getSpaceId()+"&spaceName="+dimension.getSpaceName()+"&regionName="+dimension.getSpaceRegionName()+"&regionId="+dimension.getSpaceRegionId()+"&viewId="+item.getViewId()+"&viewName="+item.getViewName()+"&destination="+MagicDimension.Destination.FOR_BUTTON.getCode());
