@@ -178,7 +178,7 @@ public class MagicController {
 		String objectId = rowData.getString("objectId");
 		String rowId = rowData.getString("rowId");
 		if(StringUtils.isBlank(objectId)) {
-			MagicObject object  = MagicSpaceHandler.createMagicObject(spaceName,regionName);
+			MagicObject object  = MagicSpaceHandler.createMagicObject(spaceName);
 			objectId = object.getId();
 		}
 		if(StringUtils.isBlank(rowId)) {
@@ -293,7 +293,7 @@ public class MagicController {
 		String region = requestParm.getString("region");
 		String objectId = requestParm.getString("objectId");
 		if(StringUtils.isBlank(objectId)) {
-			MagicObject object  = MagicSpaceHandler.createMagicObject(space,objectId);
+			MagicObject object  = MagicSpaceHandler.createMagicObject(space);
 			objectId = object.getId();
 		}
 		MagicRegionRow row  = MagicSpaceHandler.createMagicRegionRow(space,region,objectId,false);
