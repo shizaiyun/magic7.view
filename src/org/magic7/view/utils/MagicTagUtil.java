@@ -3,6 +3,7 @@ package org.magic7.view.utils;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.magic7.core.domain.MagicSuperRowItem;
 import org.magic7.core.service.MagicService;
 import org.magic7.core.service.MagicServiceFactory;
 import org.magic7.core.service.MagicSpaceHandler;
+import org.magic7.utils.Dates;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -224,7 +226,7 @@ public class MagicTagUtil {
 					buttonView = mainAttrs[1];
 				}
 			}
-			html.append("<div class=\"mainArea_title\">"+mainRegion.getDescription()+"</div><div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+mainRegion.getSpaceName()+"&region="+mainRegion.getName()+"&objectId="+objectId+"&view="+view+"&buttonView="+buttonView+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 200px;width:100%\"  ></iframe></div>");
+			html.append("<div><input type=\"hidden\" id=\"objectId\" name=\"objectId\" value=\""+objectId+"\"></div><div class=\"mainArea_title\">"+mainRegion.getDescription()+"</div><div><iframe src=\""+contextPath+"/magic/showTabDetail?space="+mainRegion.getSpaceName()+"&region="+mainRegion.getName()+"&objectId="+objectId+"&view="+view+"&buttonView="+buttonView+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 200px;width:100%\"  ></iframe></div>");
 		}
 		
 		MagicSpace.TabLayout layout = MagicSpace.TabLayout.getTabLayout(magicSpace.getTabLayout());
@@ -247,17 +249,19 @@ public class MagicTagUtil {
 			html.append(assembleRegionMultiply(items,rows));
 		}else {
 			MagicRegionRow row = null;
-			List<MagicRegionRow> rows = new ArrayList<>();
-			rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
-			if(rows!=null && rows.size()>0) {
-				row= rows.get(0);
-			}else {
-				rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, false, null, null, 0, 1000);
+			if(StringUtils.isNotBlank(objectId)) {
+				List<MagicRegionRow> rows = new ArrayList<>();
+				rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, true, null, null, 0, 1000);
 				if(rows!=null && rows.size()>0) {
 					row= rows.get(0);
+				}else {
+					rows = MagicSpaceHandler.listRow(space, region, null, null, objectId, false, null, null, 0, 1000);
+					if(rows!=null && rows.size()>0) {
+						row= rows.get(0);
+					}
 				}
 			}
-			html.append(assembleRegionSingle(items,buttonItems,destination,row));
+			html.append(assembleRegionSingle(objectId,items,buttonItems,destination,row));
 		}
 		return html.toString();
 	}
@@ -287,7 +291,7 @@ public class MagicTagUtil {
 				String view = map.get("view").toString();
 				String buttonView = map.get("buttonView").toString();
 				if(firsContent) {
-					html.append("<div class=\"show\"><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&view="+view+"&buttonView="+buttonView+"&objectId="+objectId+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
+					html.append("<div class=\"show\"><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\""+contextPath+"/magic/showTabDetail?space="+tabRegion.getSpaceName()+"&region="+tabRegion.getName()+"&objectId="+objectId+"&view="+view+"&buttonView="+buttonView+"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}else {
 					html.append("<div><iframe id=\"tabContent_"+tabRegion.getName()+"\" src=\"\" frameborder=\"0\" scrolling=\"yes\" style=\"height: 300px;width:100%\"  ></iframe></div>");
 				}
@@ -334,11 +338,13 @@ public class MagicTagUtil {
 	}
 	
 	
-	private static String assembleRegionSingle(List<MagicSpaceRegionViewItem> items,List<MagicSpaceRegionViewItem> buttonItems,MagicDimension.Destination destination,MagicRegionRow row) {
+	private static String assembleRegionSingle(String objectId,List<MagicSpaceRegionViewItem> items,List<MagicSpaceRegionViewItem> buttonItems,MagicDimension.Destination destination,MagicRegionRow row) {
 		StringBuffer html = new StringBuffer();
 		if(!CollectionUtils.isEmpty(items)) {
-			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(items.get(0).getSpaceName(), items.get(0).getSpaceRegionName());
-			
+			String rowId = row!=null?row.getId():StringUtils.EMPTY;
+			String spaceName = items.get(0).getSpaceName();
+			String regionName = items.get(0).getSpaceRegionName();
+			MagicSpaceRegion magicSpaceRegion  = service.getSpaceRegion(spaceName, regionName);
 			if(destination==MagicDimension.Destination.FOR_DATA) {
 				MagicSpaceRegion.RegionType regionType = MagicSpaceRegion.RegionType.getRegionType(magicSpaceRegion.getRegionType());
 				if(regionType == MagicSpaceRegion.RegionType.TAB)  {
@@ -354,28 +360,35 @@ public class MagicTagUtil {
 			
 			Integer lineItemCount = magicSpaceRegion.getDimensionNum()==null?3:magicSpaceRegion.getDimensionNum();
 			Integer itemCount = 1;
-			if(row!=null) {
-				html.append("<input type=\"hidden\" id=\""+items.get(0).getSpaceRegionName()+"_rowId\" name=\"rowId\" value=\""+row.getId()+"\" ><input type=\"hidden\" id=\""+items.get(0).getSpaceRegionName()+"_trigger\" name=\"trigger\" >");
-			}
+			html.append("<input type=\"hidden\"  name=\"spaceName\" value=\""+spaceName+"\" >");
+			html.append("<input type=\"hidden\"  name=\"regionName\" value=\""+regionName+"\" >");
+			html.append("<input type=\"hidden\"  name=\"objectId\" value=\""+objectId+"\" >");
+			html.append("<input type=\"hidden\" id=\""+regionName+"_rowId\" name=\"rowId\" value=\""+rowId+"\" >");
+			html.append("<input type=\"hidden\" id=\""+regionName+"_trigger\" name=\"trigger\" >");
 			for (MagicSpaceRegionViewItem viewItem : items) {
 				if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
 					continue;
 				}
 				MagicDimension dimension = service.getDimensionById(viewItem.getDimensionId());
-				String region = dimension.getSpaceRegionName();
 				String displayName = dimension.getDisplayName();
 				String input = StringUtils.EMPTY;
 				if(row!=null) {
 					MagicSuperRowItem rowItem = MagicSpaceHandler.getRowItemFromRow(row, displayName);
 					if(rowItem == null) {
-						rowItem = MagicSpaceHandler.createRowItem(row.getSpaceName(), row.getRegionName(), dimension, row.getObjectId(), row.getId());
+						rowItem = MagicSpaceHandler.createRowItem(row.getSpaceName(), row.getRegionName(), dimension, row.getObjectId(), rowId);
 						List<MagicSuperRowItem> rowItems = row.getRowItems();
 						rowItems.add(rowItem);
 						MagicSpaceHandler.saveRow(row);
 					}
-					input = getInput(region+"_"+row.getId()+"_"+displayName, displayName, getValue(rowItem), viewItem,dimension,destination);
+					input = getInput(regionName+"_"+rowId+"_"+displayName, displayName, getValue(rowItem), viewItem,dimension,destination);
 				}else {
-					input = getInput(region+"_"+displayName, displayName, null, viewItem,dimension,destination);
+					String value = StringUtils.EMPTY;
+					if(MagicDimension.DefaultValue.CURRENT_DATE.getName().equals(dimension.getDefaultValue())) {
+						value = Dates.format(new Date(), Dates.DATE_FORMAT);
+					}  else if(dimension.getDefaultValue()!=null) {
+						value = dimension.getDefaultValue();
+					}
+					input = getInput(regionName+"_"+displayName, displayName, value, viewItem,dimension,destination);
 				}
 				html.append("<div class=\"item\"><span class=\"title\">"+viewItem.getName()+":</span><span class=\"content\">"+input+"</span></div>");
 				if(itemCount%lineItemCount==0 && itemCount != items.size()) {
