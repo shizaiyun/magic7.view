@@ -203,6 +203,7 @@ function deleteRow(){
 	
 	if(rowIds.length==0){
 		alert("请选择需要删除的项");
+		return;
 	}
 	
 	var postData = {
