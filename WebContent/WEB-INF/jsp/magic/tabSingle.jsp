@@ -172,9 +172,10 @@ function validForm(){
 	});
 	return valid;
 }   
-function saveItem(){
+function disposeItem(e){
 	/* if($("#${region }_Form").valid()) {
 	} */
+    $("input[name='trigger']")[0].value = $(e).attr("trigger");
 	if(validForm()){
 		var rowData = $('#${region }_Form').serializeObject();
 		$.ajax({
@@ -186,7 +187,7 @@ function saveItem(){
 	        success : function(data) {
 	        	var info = eval(data);
 	        	if(info.code==0){
-	        		alert("保存成功");
+	        		alert("操作成功");
 	        		window.location.href = window.location.href;
 	            }else if(info.code==1){
 	            	alert(info.msg);
@@ -197,28 +198,6 @@ function saveItem(){
 	
 }
 
-function submitItem(){
-	if(validForm()){
-		var rowData = $('#${region }_Form').serializeObject();
-		$.ajax({
-			url : "${pageContext.request.contextPath}/magic/submitRow", 
-	        type : 'post',
-	        data : JSON.stringify(rowData),
-	        contentType : 'application/json;charset=utf-8',
-	        dataType : 'json',
-	        success : function(data) {
-	        	var info = eval(data);
-	        	if(info.code==0){
-	        		alert("提交成功");
-	        		window.location.href = window.location.href;
-	            }else if(info.code==1){
-	            	alert(info.msg);
-	            }
-	        }
-	    });
-	}
-	
-}
 
 function deleteItem(){
 	var baseData = { 
