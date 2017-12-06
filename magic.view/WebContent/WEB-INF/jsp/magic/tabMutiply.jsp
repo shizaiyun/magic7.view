@@ -151,10 +151,15 @@ function changeHiddenTrClass(){
 }
 
 function addRow(){
+	var parentObject =  $('#objectId', window.parent.document);
+	var objectId = '${objectId }';
+	if(objectId==''||objectId=='undefined'){
+		objectId = parentObject.val();
+	}
 	var baseData = { 
 			space:'${space }', 
 			region:'${region }', 
-			objectId:'${objectId }'
+			objectId:objectId
 			};
 	
 	$.ajax({

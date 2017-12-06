@@ -1,6 +1,7 @@
 package org.magic7.view.controller;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -125,17 +126,9 @@ public class MagicController {
 	 */
 	@RequestMapping(value = "/showDetail", method = RequestMethod.GET)
 	public ModelAndView showDetail(HttpServletRequest request) {
-		String space = request.getParameter("space");
-		String objectId = request.getParameter("objectId");
-		if (StringUtils.isBlank(objectId)) {
-			MagicObject magicObject = MagicSpaceHandler.createMagicObjectBySpace(space);
-			objectId = magicObject.getId();
-		} else {
-			MagicSpaceHandler.createSupplementMagicObject(objectId);
-		}
 		ModelAndView mode = new ModelAndView();
-		mode.addObject("space", space);
-		mode.addObject("objectId", objectId);
+		mode.addObject("space", request.getParameter("space"));
+		mode.addObject("objectId", request.getParameter("objectId"));
 		mode.addObject("mainlistView", request.getParameter("mainlistView"));
 		mode.addObject("mainViewAndMainButtonView", request.getParameter("mainViewAndMainButtonView"));
 		mode.addObject("regionViewAndRegionButtonView", request.getParameter("regionViewAndRegionButtonView"));
@@ -173,6 +166,81 @@ public class MagicController {
 		}
 		return mode;
 	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/disposeItem")
+	@ResponseBody
+	public ResultBean<String> disposeItem(@RequestBody String parm) throws Exception {
+		JSONObject rowData = JSONObject.fromObject(parm);
+		String spaceName = rowData.getString("spaceName");
+		String regionName = rowData.getString("regionName");
+		String objectId = rowData.getString("objectId");
+		String rowId = rowData.getString("rowId");
+		if(StringUtils.isBlank(objectId)) {
+			MagicObject object  = MagicSpaceHandler.createMagicObject(spaceName,regionName);
+			objectId = object.getId();
+		}
+		if(StringUtils.isBlank(rowId)) {
+			MagicRegionRow row  = MagicSpaceHandler.createMagicRegionRow(spaceName,regionName,objectId,true);
+			rowId = row.getId();
+		}
+		MagicRegionRow row = MagicSpaceHandler.getRowById(rowId);
+		Iterator<String> iterator = rowData.keys();
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			if (key.equals("spaceName")||key.equals("regionName")||key.equals("objectId")||key.equals("rowId")||key.equals("trigger")) {
+				continue;
+			}
+			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);
+			Object value = parseValue(item, rowData.getString(key));
+			MagicSpaceHandler.setRowItemValue(item, value);
+		}
+		
+		//以上的操作是在组装row，之后操作由trigger调用相应的方法序列完成业务逻辑
+		//MagicSpaceHandler.saveRow(row);
+		String trigger = rowData.getString("trigger");
+		if(StringUtils.isNotBlank(trigger)) {
+			MagicSpaceHandler.executeTrigger(row, trigger, rowData);
+		}
+		return new ResultBean<String>(objectId);
+	}
+
+	private Object parseValue(MagicSuperRowItem item, String valueStr) throws ParseException {
+		Object value = null;
+		if(StringUtils.isNotBlank(valueStr)) {
+			MagicDimension.ValueType valueType = MagicDimension.ValueType.getValueType(item.getValueType());
+			switch (valueType) {
+			case STR_VALUE:
+				value = valueStr;
+				break;
+			case DATE_VALUE:
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				value = sdf.parse(valueStr);
+				break;
+			case NUM_VALUE:
+				value = new BigDecimal(valueStr);
+				break;
+			case BOOLEAN_VALUE:
+				Boolean bool = null;
+				if("1".equals(valueStr)) {
+					bool = true;
+				}else if("0".equals(valueStr)) {
+					bool = false;
+				}
+				value = Boolean.valueOf(bool);
+				break;
+			case LIST_STR_VALUE:
+				value = valueStr;
+				break;
+			default:
+				value = valueStr;
+				break;
+			}
+		}
+		return value;
+	}
+	
 
 	/**
 	 * 保存单行信息
@@ -224,7 +292,11 @@ public class MagicController {
 		String space = requestParm.getString("space");
 		String region = requestParm.getString("region");
 		String objectId = requestParm.getString("objectId");
-		MagicRegionRow row = MagicSpaceHandler.createRow(space, region, objectId, false);
+		if(StringUtils.isBlank(objectId)) {
+			MagicObject object  = MagicSpaceHandler.createMagicObject(space,objectId);
+			objectId = object.getId();
+		}
+		MagicRegionRow row  = MagicSpaceHandler.createMagicRegionRow(space,region,objectId,false);
 		MagicSpaceHandler.saveRow(row);
 		return new ResultBean<String>(row.getId());
 	}
@@ -274,46 +346,15 @@ public class MagicController {
 	@SuppressWarnings("unchecked")
 	private void saveRow(JSONObject rowData) throws Exception {
 		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"));
-		String trigger = rowData.getString("trigger");
+		String trigger = rowData.containsKey("trigger")?rowData.getString("trigger"):StringUtils.EMPTY;
 		Iterator<String> iterator = rowData.keys();
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			if (key.equals("rowId")||key.equals("trigger")) {
 				continue;
 			}
-			Object value = null;
 			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);
-			String valueStr = rowData.getString(key);
-			if(StringUtils.isNotBlank(valueStr)) {
-				MagicDimension.ValueType valueType = MagicDimension.ValueType.getValueType(item.getValueType());
-				switch (valueType) {
-				case STR_VALUE:
-					value = valueStr;
-					break;
-				case DATE_VALUE:
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-					value = sdf.parse(valueStr);
-					break;
-				case NUM_VALUE:
-					value = new BigDecimal(valueStr);
-					break;
-				case BOOLEAN_VALUE:
-					Boolean bool = null;
-					if("1".equals(valueStr)) {
-						bool = true;
-					}else if("0".equals(valueStr)) {
-						bool = false;
-					}
-					value = Boolean.valueOf(bool);
-					break;
-				case LIST_STR_VALUE:
-					value = valueStr;
-					break;
-				default:
-					value = valueStr;
-					break;
-				}
-			}
+			Object value = parseValue(item, rowData.getString(key));
 			MagicSpaceHandler.setRowItemValue(item, value);
 		}
 		row.setValid(true);

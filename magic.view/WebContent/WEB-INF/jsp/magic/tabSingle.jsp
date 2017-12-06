@@ -173,13 +173,20 @@ function validForm(){
 	return valid;
 }   
 function disposeItem(e){
-	/* if($("#${region }_Form").valid()) {
-	} */
+	var parentObject =  $('#objectId', window.parent.document);
+	var object = $($('input[name="objectId"]')[0]);
+	var hasObjectId = true;
+	if(object.val() == ""){
+		hasObjectId = false;
+	}
+	if(object.val() == "" && parentObject.val()!=""){
+		object.val(parentObject.val());
+	}
     $("input[name='trigger']")[0].value = $(e).attr("trigger");
 	if(validForm()){
 		var rowData = $('#${region }_Form').serializeObject();
 		$.ajax({
-			url : "${pageContext.request.contextPath}/magic/saveRow", 
+			url : "${pageContext.request.contextPath}/magic/disposeItem", 
 	        type : 'post',
 	        data : JSON.stringify(rowData),
 	        contentType : 'application/json;charset=utf-8',
@@ -188,7 +195,16 @@ function disposeItem(e){
 	        	var info = eval(data);
 	        	if(info.code==0){
 	        		alert("操作成功");
-	        		window.location.href = window.location.href;
+	        		var objectId = info.data;
+	        		if(parentObject.val()==""){
+	        			parentObject.val(objectId)
+	        		}
+	        		if(!hasObjectId){
+	        			var newUrl = window.location.href.replace("objectId=&","objectId="+objectId+"&");
+	        			window.location.href = newUrl;
+	        		}else{
+	        			window.location.href = window.location.href;
+	        		}
 	            }else if(info.code==1){
 	            	alert(info.msg);
 	            }
