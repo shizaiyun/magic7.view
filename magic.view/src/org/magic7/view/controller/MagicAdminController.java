@@ -540,7 +540,7 @@ public class MagicAdminController {
 		String spaceName = request.getParameter("spaceName");
 		String spaceId = request.getParameter("spaceId");
 		ModelAndView mode = new ModelAndView();
-		mode.setViewName("redirect:showView?viewId="+viewId+"&spaceName="+spaceName+"&spaceId="+spaceId+"&regionId="+regionId+"&regionName="+regionName);
+		mode.setViewName("redirect:showView?viewId="+view.getId()+"&spaceName="+spaceName+"&spaceId="+spaceId+"&regionId="+regionId+"&regionName="+regionName);
 		return mode;
 	}
 	
