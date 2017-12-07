@@ -192,8 +192,13 @@ public class MagicController {
 			if (key.equals("spaceName")||key.equals("regionName")||key.equals("objectId")||key.equals("rowId")||key.equals("trigger")) {
 				continue;
 			}
-			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);
+			MagicSuperRowItem item = MagicSpaceHandler.getRowItemFromRow(row, key);//Destination为TEMP的item无法通过该方法获取
+			
+			if(item==null) {
+				item = MagicSpaceHandler.createRowItem(spaceName, regionName, service.getDimension(spaceName, regionName, key, MagicDimension.Destination.FOR_DATA.getCode()), objectId, rowId);
+			}
 			Object value = parseValue(item, rowData.getString(key));
+			row.getRowItems().add(item);
 			MagicSpaceHandler.setRowItemValue(item, value);
 		}
 		
