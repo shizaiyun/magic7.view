@@ -612,6 +612,7 @@ public class MagicAdminController {
 		item.setViewName(viewName);
 		item.setChoiceCode(request.getParameter("choiceCode"));
 		item.setBusinessTrigger(request.getParameter("businessTrigger"));
+		item.setRedirectUrl(request.getParameter("redirectUrl"));
 		
 		service.saveSpaceRegionViewItem(item);
 		
