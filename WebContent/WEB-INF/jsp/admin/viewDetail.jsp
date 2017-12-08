@@ -83,10 +83,10 @@
 					</select>
 				</td>
 				<td>
-					用户自定义页面名称：<a target="_blank" href="<%=request.getContextPath() %>/uploadFile/${view.cutomerPageName }">${view.cutomerPageName }</a>
+					用户自定义页面名称：<a target="_blank" href="<%=request.getContextPath() %>/uploadFile/${view.customerPageName }">${view.customerPageName }</a>
 					<a id='html_editor_href' href="javascript:showdiv()">打开编辑器</a>
 					<div id="html_editor_div" style="display: none;">
-						<textarea id="html_editor" name="html_editor">${view.cutomerPageName }</textarea>
+						<textarea id="html_editor" name="html_editor">${customerPage }</textarea>
 					</div>
 				</td>
 				</c:if>
