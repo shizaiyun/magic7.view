@@ -81,6 +81,7 @@
 		</tr>
 		<tr>
 			<td>触发器名称:<input type="text" name="businessTrigger" value="${item.businessTrigger}"></input></td>
+			<td>重地向地址：<input type="text" name="redirectUrl" value="${item.redirectUrl }"></input></td>
 		</tr>
 	</table>
 	<div style="text-align: center;">
