@@ -486,7 +486,6 @@ public class MagicAdminController {
 	public ModelAndView showView(HttpServletRequest request) {
 		String viewId = request.getParameter("viewId");
 		MagicSpaceRegionView view = null;
-		System.out.println("viewId:"+viewId);
 		if(StringUtils.isNotEmpty(viewId))
 			view = service.getViewById(viewId);
 		if(view!=null) {
@@ -498,6 +497,7 @@ public class MagicAdminController {
 		List<MagicSpaceRegion> regions = service.listSpaceRegion(spaceName, null, " seq ", 0, 1000);
 		
 		request.setAttribute("view", view);
+		request.setAttribute("customerPage", view.getCustomerPageContent(request.getServletContext().getRealPath("uploadFile")));
 		request.setAttribute("regions", regions);
 		request.setAttribute("spaceName", request.getParameter("spaceName"));
 		request.setAttribute("spaceId", request.getParameter("spaceId"));
