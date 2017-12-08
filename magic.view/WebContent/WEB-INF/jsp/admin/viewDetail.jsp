@@ -4,6 +4,9 @@
 <%@ page import="org.magic7.core.domain.MagicSpace"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<script type="text/javascript" src="<c:url value='/resources/js/jquery-3.2.1.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/resources/js/ckeditor/ckeditor.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/resources/js/ckeditor/adapters/jquery.js'/>"></script>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -81,6 +84,9 @@
 				</td>
 				<td>
 					用户自定义页面名称：<a target="_blank" href="<%=request.getContextPath() %>/uploadFile/${view.cutomerPageName }">${view.cutomerPageName }</a>
+					<div style="display: none;">
+						<textarea id="html_editor" name="html_editor">${view.cutomerPageName }</textarea>
+					</div>
 				</td>
 				</c:if>
 			</tr>
@@ -98,4 +104,7 @@
 </body>
 <hr>
 <jsp:include page="viewItemList.jsp" flush="true" />
+<script>
+	$("#html_editor").ckeditor()
+</script>
 </html>
