@@ -44,7 +44,7 @@
 </head>
 <body>
 	<div style="background-color: #11111;">编辑维度</div>
-	<form action="saveView" method="get" id="queryForm">
+	<form action="saveView" method="post" id="queryForm">
 		<input type="hidden" name="regionName" value="${regionName }">
 		<input type="hidden" name="spaceId" value="${spaceId }">
 		<input type="hidden" name="spaceName" value="${spaceName}">
@@ -86,7 +86,7 @@
 					用户自定义页面名称：<a target="_blank" href="<%=request.getContextPath() %>/uploadFile/${view.customerPageName }">${view.customerPageName }</a>
 					<a id='html_editor_href' href="javascript:showdiv()">打开编辑器</a>
 					<div id="html_editor_div" style="display: none;">
-						<textarea id="html_editor" name="html_editor">${customerPage }</textarea>
+						<textarea id="html_editor" name="customerPage">${customerPage }</textarea>
 					</div>
 				</td>
 				</c:if>
