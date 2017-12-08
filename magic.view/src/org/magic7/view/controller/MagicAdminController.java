@@ -508,7 +508,7 @@ public class MagicAdminController {
 		return mode;
 	}
 	
-	@RequestMapping(value = "/saveView", method = RequestMethod.GET)
+	@RequestMapping(value = "/saveView", method = RequestMethod.POST)
 	public ModelAndView saveView(HttpServletRequest request) {
 		String viewId = request.getParameter("viewId");
 		MagicSpaceRegionView view = null;
@@ -533,6 +533,7 @@ public class MagicAdminController {
 		}
 		
 		service.saveSpaceRegionView(view);
+		view.saveCustomerPageContent(request.getServletContext().getRealPath("uploadFile"), request.getParameter("customerPage"));
 		
 		List<MagicSpaceRegionViewItem> items = service.listSpaceRegionViewItem(view.getSpaceName(), view.getSpaceRegionName(), view.getName(), " seq ");
 		request.setAttribute("view", view);
