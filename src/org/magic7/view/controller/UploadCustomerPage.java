@@ -26,6 +26,7 @@ import org.magic7.utils.ServiceUtil;
 public class UploadCustomerPage extends HttpServlet {
 	private static final long serialVersionUID = 8975093576130821180L;
 	private static final MagicService service =  MagicServiceFactory.getMagicService();
+	private static final String suffix = "jsp";
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
@@ -42,7 +43,6 @@ public class UploadCustomerPage extends HttpServlet {
 	        }
 	        String fileName = null;
 	        String prefix = request.getContextPath();
-	        System.out.println("prefix:"+prefix);
 	        Part part = request.getPart("uploadFile");
 			if ( part !=null) {
 				String header = part.getHeader("content-disposition");
@@ -51,11 +51,11 @@ public class UploadCustomerPage extends HttpServlet {
 					part.write(savePath + File.separator + fileName);
 					fileList.add("uploadFile" + File.separator + fileName);
 					ConvertMhtToHtml.mht2html(savePath+ File.separator +fileName,
-							savePath+ File.separator +fileName.replaceAll("mht", "html"),fileName.replaceAll("mht", "html"),prefix); 
+							savePath+ File.separator +fileName.replaceAll("mht", suffix),fileName.replaceAll("mht", suffix),prefix); 
 				}
 			}
 			if(StringUtils.isNotEmpty(fileName)) {
-				view.setCutomerPageName(fileName.replaceAll("mht", "html"));
+				view.setCustomerPageName(fileName.replaceAll("mht", suffix));
 				service.saveSpaceRegionView(view);
 			}
 			response.sendRedirect("showView?viewId="+view.getId()+"&spaceName="+view.getSpaceName()+"&spaceId="+view.getSpaceId()+"&regionId="+view.getSpaceRegionId()+"&regionName="+view.getSpaceRegionName());
