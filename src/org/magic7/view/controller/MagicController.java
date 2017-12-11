@@ -205,7 +205,7 @@ public class MagicController {
 		//MagicSpaceHandler.saveRow(row);
 		String trigger = rowData.getString("trigger");
 		if(StringUtils.isNotBlank(trigger)) {
-			MagicSpaceHandler.executeTrigger(row, trigger, rowData);
+			MagicSpaceHandler.executeTrigger(row, trigger, new HashMap<String,Object>(rowData));
 		}
 		return new ResultBean<String>(objectId);
 	}
