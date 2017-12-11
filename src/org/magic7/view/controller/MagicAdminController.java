@@ -115,14 +115,10 @@ public class MagicAdminController {
 					deleteLnks.put(lnk.getId(),lnk);
 				}
 				for(String codeId:codeIdArray) {
-					System.out.println(codeIds);
-					System.out.println("process:"+codeId);
 					if(deleteLnks.get(codeId)!=null) {
 						deleteLnks.remove(codeId);
-						System.out.println("keep:"+codeId);
 					} else {
 						newLnks.add(codeId);
-						System.out.println("add:"+codeId);
 					}
 				}
 				for(String codeId:deleteLnks.keySet())
@@ -206,7 +202,6 @@ public class MagicAdminController {
 	public ModelAndView listRegion(HttpServletRequest request) {
 		String spaceName = request.getParameter("spaceName");
 		String spaceId = request.getParameter("spaceId");
-		System.out.println("spaceName:"+spaceName);
 		List<MagicSpaceRegion> spaceRegions = service.listSpaceRegion(spaceName, spaceId, " seq ", 0, 100);
 		request.setAttribute("spaceRegions", spaceRegions);
 		request.setAttribute("spaceName", spaceName);
@@ -235,8 +230,6 @@ public class MagicAdminController {
 		String viewName = request.getParameter("viewName");
 		String dimensionNames = request.getParameter("dimensionNames");
 		Integer destination = MagicDimension.Destination.FOR_DATA.getCode();
-		System.out.println("spaceName:"+spaceName);
-		System.out.println("regionName:"+regionName);
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
 		request.setAttribute("dimensions", dimensions);
 		String spaceId = request.getParameter("spaceId");
@@ -266,8 +259,6 @@ public class MagicAdminController {
 		String viewName = request.getParameter("viewName");
 		String dimensionNames = request.getParameter("dimensionNames");
 		Integer destination = MagicDimension.Destination.FOR_QUERY.getCode();
-		System.out.println("spaceName:"+spaceName);
-		System.out.println("regionName:"+regionName);
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
 		request.setAttribute("dimensionsForQuery", dimensions);
 		String spaceId = request.getParameter("spaceId");
@@ -297,8 +288,6 @@ public class MagicAdminController {
 		String viewName = request.getParameter("viewName");
 		String dimensionNames = request.getParameter("dimensionNames");
 		Integer destination = MagicDimension.Destination.FOR_BUTTON.getCode();
-		System.out.println("spaceName:"+spaceName);
-		System.out.println("regionName:"+regionName);
 		List<MagicDimension> dimensions = MagicSpaceHandler.listDimension(spaceName, regionName, viewName, dimensionNames, destination);
 		request.setAttribute("dimensionsForButton", dimensions);
 		String spaceId = request.getParameter("spaceId");
@@ -324,8 +313,6 @@ public class MagicAdminController {
 		else
 			regionName = request.getParameter("regionName");
 		
-		System.out.println("spaceName:"+spaceName);
-		System.out.println("regionName:"+regionName);
 		List<MagicSpaceRegionView> views = service.listSpaceRegionView(spaceName, regionName);
 		
 		request.setAttribute("views", views);
