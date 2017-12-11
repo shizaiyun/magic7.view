@@ -85,14 +85,10 @@ public class UploadCustomerPage extends HttpServlet {
         String tempArr1 = ("\u0000"+header.replaceAll("filename=", "\u0001")).replaceAll("\u0000[a-zA-Z\\\"\\;\\-= ]{1,}\u0001", "");
 		tempArr1=tempArr1.replaceAll("\"", "").replaceAll("\\&\\#", "");
 		tempArr1=tempArr1.replaceAll(" ", "");
-        
-        
-        System.out.println("tempArr1:"+tempArr1);
         String fileName = tempArr1;
         if ((fileName == null || "".equals(fileName))) {  
         	return null;  
         }
-        System.out.println("fileName:"+fileName);
         return fileName;
     }
     
@@ -110,13 +106,10 @@ public class UploadCustomerPage extends HttpServlet {
 		tempArr1=tempArr1.replaceAll("\"", "").replaceAll("\\&\\#", "\\u");
 		tempArr1=tempArr1.replaceAll(" ", "").replaceAll("\\.mht", "");
         
-        
-        System.out.println("getRealName:"+tempArr1);
         String fileName = tempArr1;
         if ((fileName == null || "".equals(fileName))) {  
         	return null;  
         }
-        System.out.println("fileName:"+fileName);
         return fileName;
     }
     
