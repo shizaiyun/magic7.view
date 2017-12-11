@@ -198,7 +198,6 @@ public class MagicController {
 				item = MagicSpaceHandler.createRowItem(spaceName, regionName, service.getDimension(spaceName, regionName, key, MagicDimension.Destination.FOR_DATA.getCode()), objectId, rowId);
 			}
 			Object value = parseValue(item, rowData.getString(key));
-			row.getRowItems().add(item);
 			MagicSpaceHandler.setRowItemValue(item, value);
 		}
 		
