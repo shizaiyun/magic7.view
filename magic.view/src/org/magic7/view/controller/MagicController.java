@@ -274,11 +274,15 @@ public class MagicController {
 	 * @throws Exception
 	 *             异常
 	 */
-	@RequestMapping(value = "/deleteObject")
+	@RequestMapping(value = "/deleteObjects")
 	@ResponseBody
-	public ResultBean<Boolean> deleteObject(@RequestBody String parm) throws Exception {
+	public ResultBean<Boolean> deleteObjects(@RequestBody String parm) throws Exception {
 		JSONObject requestParm = JSONObject.fromObject(parm);
-		return new ResultBean<Boolean>(MagicSpaceHandler.deleteMagicObjectById(requestParm.getString("objectId")));
+		JSONArray objectIds = requestParm.getJSONArray("objectIds");
+		for (Object objectId : objectIds) {
+			MagicSpaceHandler.deleteMagicObjectById(String.valueOf(objectId));
+		}
+		return new ResultBean<Boolean>(true);
 	}
 
 	/**
