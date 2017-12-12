@@ -81,6 +81,7 @@
     font-size: 12px;
     border-radius: 4px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    margin-right: 5px;
 }
 
 .s1 {
@@ -128,38 +129,38 @@ function initPagination(totalCount, pageSize,currentPage) {
     $('.now').text(currentPage);
 }
 
-function getTitles(){
-	var titles = new Array();
-	$('#gridTable tr:eq(0) th').each(function(){
-		titles.push($(this).attr("id"));
-	  });
-	return titles;
+function resetForm(){
+	$("#queryContent input").each(function(){
+		$(this).val("");
+	});
+	$("#queryContent select option:selected").each(function(){
+		$(this).attr("selected",false);
+	});
+	
+	$("#queryContent select").each(function(){
+		 if($(this).attr("multiple")=="multiple"){
+			 $(this).multiselect("destroy");
+			 $(this).multiselect().val([]).multiselect("refresh")
+		 };
+		});
 }
 
-function assembleGridData(datas){
-	var titles = getTitles();
-	$("#gridTable tbody tr").remove();
-	  $(datas).each(function(){
-		  var row = this;
-          var objectId = row.objectId;
-          var tr = "<tr id=\""+objectId+"\">";
-          var rowItems = row.rowItems;
-	          $(rowItems).each(function(){
-		        for (var i = 0; i < titles.length; i++) {
-		        	var rowItem = this;
-		        	if(rowItem.displayName==titles[i]){
-		        		if(rowItem.strValue!=null){
-		        			tr = tr+"<td id=\""+rowItem.rowId+"_"+rowItem.displayName+"\">"+rowItem.strValue+"</td>";
-		        		}else{
-		        			tr = tr+"<td id=\""+rowItem.rowId+"_"+rowItem.displayName+"\"></td>";
-		        		}
-		        		break;
-		        	}
-				}
-		    });  
-          tr = tr +"<td><input type=\"radio\" name=\"objectId\" value=\""+objectId+"\" /></td></tr>";
-          $("#gridTable tbody").append(tr);
-        });
+function checkAll() {
+	if($("#checkAll").is(':checked')){
+		$("input[name='objectId']").each(function(i){
+			if(!$(this).is(':checked')){
+				$(this).attr("checked","true");
+				$(this)[0].checked = true;
+			}
+		});
+	}else{
+		$("input[name='objectId']").each(function(i){
+			if($(this).is(':checked')){
+				$(this).removeAttr("checked");
+				$(this)[0].checked = false;
+			}
+		});
+	}
 }
 
 function addItem(){
@@ -177,13 +178,29 @@ function modifyItem(objectId){
 }
 
 function deleteItem(objectId){
-	var baseData = { 
-			objectId:objectId
-			};
+	var objectIds = new Array();
+	$("#gridTable tr:gt(1)").each(function(i){  
+	    $(this).find("td input[name='objectId']").each(function(){  
+	    	var content = $(this);
+	    	if(content.is(':checked')){
+	    		objectIds.push(content.val());
+	    	}
+	    });  
+	});
+	
+	if(objectIds.length==0){
+		alert("请选择需要删除的项");
+		return;
+	}
+	
+	var postData = {
+			objectIds:objectIds
+	}
+	
 	$.ajax({
-		url : "${pageContext.request.contextPath}/magic/deleteObject", 
+		url : "${pageContext.request.contextPath}/magic/deleteObjects", 
         type : 'post',
-        data : JSON.stringify(baseData),
+        data : JSON.stringify(postData),
         contentType : 'application/json;charset=utf-8',
         dataType : 'json',
         success : function(data) {
@@ -198,21 +215,7 @@ function deleteItem(objectId){
         }
     });
 }
-function resetForm(){
-	$("#queryContent input").each(function(){
-		$(this).val("");
-	});
-	$("#queryContent select option:selected").each(function(){
-		$(this).attr("selected",false);
-	});
-	
-	$("#queryContent select").each(function(){
-		 if($(this).attr("multiple")=="multiple"){
-			 $(this).multiselect("destroy");
-			 $(this).multiselect().val([]).multiselect("refresh")
-		 };
-		});
-}
+
 </script>
 </head>
 <body>

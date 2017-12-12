@@ -54,7 +54,7 @@ public class MagicTagUtil {
 				List<MagicDimension> dimensions  = MagicSpaceHandler.listDimension(space, region, null,null,Destination.FOR_QUERY.getCode());
 				html.append(assembleRegionSingleWithoutViewForQuery(dimensions,parmMap));
 			}
-			html.append("</div><div style=\"text-align: center;\"><input style=\"margin-right: 5px;\" class=\"button\" type=\"button\" value=\"查询\" onclick=\"loadGridTable(1)\"><input class=\"button\" type=\"button\" value=\"重置\" onclick=\"resetForm()\"></div>");
+			html.append("</div><div style=\"text-align: center;\"><input class=\"button\" type=\"button\" value=\"查询\" onclick=\"loadGridTable(1)\"><input class=\"button\" type=\"button\" value=\"重置\" onclick=\"resetForm()\"></div>");
 		return html.toString();
 	}
 	
@@ -117,13 +117,13 @@ public class MagicTagUtil {
 	
 
 	public static String getMagicListView(String space,  String listView,List<MagicRegionRow> rows, Integer destination) {
-		StringBuffer html = new StringBuffer("<div style=\"text-align: right;padding-right: 10px;padding-bottom:5px\"><input class=\"button\" type=\"button\" value=\"新增\" onclick=\"addItem()\"></div><table class=\"gridTable\" style=\"width: 100%\" id=\"gridTable\">");
+		StringBuffer html = new StringBuffer("<div style=\"text-align: right;padding-right: 10px;padding-bottom:5px\"><input  class=\"button\" type=\"button\" value=\"新增\" onclick=\"addItem()\"><input class=\"button\" type=\"button\" value=\"删除\" onclick=\"deleteItem()\"></div><table class=\"gridTable\" style=\"width: 100%\" id=\"gridTable\">");
 		MagicSpaceRegionView  listRegion= service.getSpaceRegionView(space, null, listView);
 		Assert.notNull(listRegion," can not find region by mainlistView,please check!!");
 		String region = listRegion.getSpaceRegionName();
 		List<MagicSpaceRegionViewItem> viewItems =service.listSpaceRegionViewItem(space, region, listView, " seq ");
 		if(!CollectionUtils.isEmpty(viewItems)) {
-			html.append("<thead><tr id=\"title\">");
+			html.append("<thead><tr id=\"title\"><th style=\"width: 10px;text-align: center;\"><input id=\"checkAll\"  type=\"checkbox\" onclick=\"checkAll()\" />");
 			for (MagicSpaceRegionViewItem viewItem : viewItems) {
 				if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
 					continue;
@@ -131,7 +131,7 @@ public class MagicTagUtil {
 				MagicDimension dimension = service.getDimensionById(viewItem.getDimensionId());
 				html.append("<th id=\""+dimension.getDisplayName()+"\" name=\""+dimension.getDisplayName()+"\">"+viewItem.getName()+"</th>");
 			}
-			html.append("<th style=\"width:10px\">操作</th></tr></thead>");
+			html.append("</tr></thead>");
 			
 			if(rows!=null) {
 				for (MagicRegionRow row : rows) {
@@ -139,7 +139,7 @@ public class MagicTagUtil {
 					if(rowItems == null || rowItems.size()==0) {
 						continue;
 					}
-					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\">");
+					html.append("<tr id=\""+row.getObjectId()+"\" ondblclick=\"modifyItem("+row.getObjectId()+")\"><td style=\"width: 10px;text-align: center;\"><input  type=\"checkbox\" name=\"objectId\" value=\""+row.getObjectId()+"\" /></td>");
 					for (MagicSpaceRegionViewItem viewItem : viewItems) { 
 						if(viewItem.getVisible()!=null &&!viewItem.getVisible()) {
 							continue;
@@ -165,7 +165,7 @@ public class MagicTagUtil {
 							}
 						}
 					}
-					html.append("<td style=\"width:10px\"><input type=\"button\" value=\"删除\" onclick=\"deleteItem("+row.getObjectId()+")\"></td></tr>");
+					html.append("</tr>");
 				}
 			}
 		}
