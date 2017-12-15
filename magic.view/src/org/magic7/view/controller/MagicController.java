@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.magic7.core.dao.DaoAssistant;
 import org.magic7.core.domain.MagicDimension;
 import org.magic7.core.domain.MagicObject;
 import org.magic7.core.domain.MagicRegionRow;
@@ -76,9 +77,8 @@ public class MagicController {
 			}
 			List<MagicDimension> searchCriterias = MagicSpaceHandler.createSearchCriterias(space, region,queryView, parmMap);
 			List<MagicRegionRow> rows = MagicSpaceHandler.listRow(space, region, mainlistView, null, null, true,
-					searchCriterias, " id ", (currentPage - 1) * pageSize, pageSize);
+					searchCriterias, " create_Date ", (currentPage - 1) * pageSize, pageSize);
 			Integer totalCount = MagicSpaceHandler.listRowCount(space, region, null, null, true, searchCriterias);
-			
 			mode.addObject("rows", rows);
 			mode.addObject("currentPage", currentPage);
 			mode.addObject("pageSize", pageSize);
@@ -177,6 +177,9 @@ public class MagicController {
 		String regionName = rowData.getString("regionName");
 		String objectId = rowData.getString("objectId");
 		String rowId = rowData.getString("rowId");
+		DaoAssistant.closeSessionByService();
+		DaoAssistant.currentSession(false);
+		DaoAssistant.beginTransaction();
 		if(StringUtils.isBlank(objectId)) {
 			MagicObject object  = MagicSpaceHandler.createMagicObject(spaceName);
 			objectId = object.getId();
@@ -185,7 +188,7 @@ public class MagicController {
 			MagicRegionRow row  = MagicSpaceHandler.createMagicRegionRow(spaceName,regionName,objectId,true);
 			rowId = row.getId();
 		}
-		MagicRegionRow row = MagicSpaceHandler.getRowById(rowId);
+		MagicRegionRow row = MagicSpaceHandler.getRowById(rowId, null);
 		Iterator<String> iterator = rowData.keys();
 		while (iterator.hasNext()) {
 			String key = iterator.next();
@@ -201,13 +204,14 @@ public class MagicController {
 			Object value = parseValue(item, rowData.getString(key));
 			MagicSpaceHandler.setRowItemValue(item, value);
 		}
-		
 		//以上的操作是在组装row，之后操作由trigger调用相应的方法序列完成业务逻辑
 		//MagicSpaceHandler.saveRow(row);
 		String trigger = rowData.getString("trigger");
 		if(StringUtils.isNotBlank(trigger)) {
 			MagicSpaceHandler.executeTrigger(row, trigger, new HashMap<String,Object>(rowData));
 		}
+		DaoAssistant.commitTransaction();
+		DaoAssistant.closeSessionByService();
 		return new ResultBean<String>(objectId);
 	}
 
@@ -354,7 +358,7 @@ public class MagicController {
 
 	@SuppressWarnings("unchecked")
 	private void saveRow(JSONObject rowData) throws Exception {
-		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"));
+		MagicRegionRow row = MagicSpaceHandler.getRowById(rowData.getString("rowId"), null);
 		String trigger = rowData.containsKey("trigger")?rowData.getString("trigger"):StringUtils.EMPTY;
 		Iterator<String> iterator = rowData.keys();
 		while (iterator.hasNext()) {

@@ -139,8 +139,11 @@ public class MagicAdminController {
 		service.saveSpaceRegion(region);
 		
 		for(String codeId:newLnks) {
-			MagicRegionCodeLnk lnk = new MagicRegionCodeLnk();
 			MagicCodeLib lib = service.getCodeLibById(codeId);
+			if(lib==null)
+				continue;
+			MagicRegionCodeLnk lnk = new MagicRegionCodeLnk();
+			
 			lnk.setCodeLidId(codeId);
 			lnk.setCodeName(lib.getName());
 			lnk.setParameterNames(lib.getParameterNames());
