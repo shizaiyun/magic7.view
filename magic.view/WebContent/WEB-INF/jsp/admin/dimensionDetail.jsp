@@ -82,8 +82,8 @@
 					</select>
 				</div>
 				<div id="urlDive" style="display: none;">请输入弹出框url地址：<textarea name="popUpUrl" style="vertical-align: middle;" rows="3" cols="30">${dimension.url }</textarea></div>
-				<c:if test="${not empty dimension.pageType and dimension.pageType eq dropDownList.code}"><script>choiceDiv.style.display='Inline';</script></c:if>
-				<c:if test="${not empty dimension.pageType and dimension.pageType eq popUp.code}"><script>urlDive.style.display='Inline';</script></c:if>
+				<c:if test="${not empty dimension.pageType and dimension.pageType eq Drop_Down_List.code}"><script>choiceDiv.style.display='Inline';</script></c:if>
+				<c:if test="${not empty dimension.pageType and dimension.pageType eq Risk_Pop_Up.code}"><script>urlDive.style.display='Inline';</script></c:if>
 			</td>
 		</tr>
 		<tr>
