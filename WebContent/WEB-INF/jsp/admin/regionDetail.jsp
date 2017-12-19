@@ -48,7 +48,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" valign="middle">
-				<div style="float: left;width: 25%">
+				<div style="float: left;width: 30%">
 				<div style="float:inherit ;"><div>可关联的JAVA代码:</div>
 				<select style="width:200px;" ondblclick="changeJavaCodeSelect(this.selectedIndex)" id="javaCodeSelect" name="choiceCode" multiple="multiple" size="10">
 				</select>
